@@ -1,7 +1,7 @@
 import React from 'react';
-import { Utensils, UtensilsCrossed } from 'lucide-react';
+import { UtensilsCrossed } from 'lucide-react';
 import { SpatialZone } from '../../../spatial/SpatialZone';
-import type { KitchenZone } from '../../../types/kitchen';
+import type { KitchenZone, KitchenZoneId } from '../../../types/kitchen';
 
 export const PREPARATION_ZONE_DATA: KitchenZone = {
   id: 'prep',
@@ -18,7 +18,7 @@ export const PREPARATION_ZONE_DATA: KitchenZone = {
 
 interface PreparationZoneProps {
   active?: boolean;
-  onHover?: (id: string | null) => void;
+  onHover?: (id: KitchenZoneId | null) => void;
   onClick?: (zone: KitchenZone) => void;
 }
 

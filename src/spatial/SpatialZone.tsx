@@ -1,13 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { KitchenZone } from '../types/kitchen';
+import type { KitchenZone, KitchenZoneId } from '../types/kitchen';
 import { SpatialObject } from './SpatialObject';
 
 interface SpatialZoneProps {
   zone: KitchenZone;
   children: React.ReactNode;
   active?: boolean;
-  onHover?: (id: string | null) => void;
+  onHover?: (id: KitchenZoneId | null) => void;
   onClick?: (zone: KitchenZone) => void;
 }
 

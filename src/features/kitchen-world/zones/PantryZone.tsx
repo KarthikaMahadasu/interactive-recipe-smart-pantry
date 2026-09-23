@@ -1,7 +1,7 @@
 import React from 'react';
-import { Package, Layers } from 'lucide-react';
+import { Package } from 'lucide-react';
 import { SpatialZone } from '../../../spatial/SpatialZone';
-import type { KitchenZone } from '../../../types/kitchen';
+import type { KitchenZone, KitchenZoneId } from '../../../types/kitchen';
 
 export const PANTRY_ZONE_DATA: KitchenZone = {
   id: 'pantry',
@@ -18,7 +18,7 @@ export const PANTRY_ZONE_DATA: KitchenZone = {
 
 interface PantryZoneProps {
   active?: boolean;
-  onHover?: (id: string | null) => void;
+  onHover?: (id: KitchenZoneId | null) => void;
   onClick?: (zone: KitchenZone) => void;
 }
 

@@ -22,7 +22,6 @@ export const SpatialTransition: React.FC<SpatialTransitionProps> = ({
   active = true
 }) => {
   const dx = endX - startX;
-  const dy = endY - startY;
 
   // Control points for a curved bezier path
   const cx1 = startX + dx * 0.5;

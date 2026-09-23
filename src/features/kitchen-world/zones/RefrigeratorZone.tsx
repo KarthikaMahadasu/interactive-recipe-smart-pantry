@@ -1,7 +1,7 @@
 import React from 'react';
-import { ThermometerSnowflake, Snowflake } from 'lucide-react';
+import { ThermometerSnowflake } from 'lucide-react';
 import { SpatialZone } from '../../../spatial/SpatialZone';
-import type { KitchenZone } from '../../../types/kitchen';
+import type { KitchenZone, KitchenZoneId } from '../../../types/kitchen';
 
 export const REFRIGERATOR_ZONE_DATA: KitchenZone = {
   id: 'refrigerator',
@@ -18,7 +18,7 @@ export const REFRIGERATOR_ZONE_DATA: KitchenZone = {
 
 interface RefrigeratorZoneProps {
   active?: boolean;
-  onHover?: (id: string | null) => void;
+  onHover?: (id: KitchenZoneId | null) => void;
   onClick?: (zone: KitchenZone) => void;
 }
 

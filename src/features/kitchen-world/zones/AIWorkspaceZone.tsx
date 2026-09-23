@@ -1,8 +1,10 @@
 import React from 'react';
-import { Brain, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { SpatialZone } from '../../../spatial/SpatialZone';
-import type { KitchenZone } from '../../../types/kitchen';
+import type { KitchenZone, KitchenZoneId } from '../../../types/kitchen';
 import { FloatingElement } from '../../../spatial/FloatingElement';
+import { AIBrainOrb } from '../../ai-brain/AIBrainOrb';
+import { useKitchenState } from '../../../state/KitchenContext';
 
 export const AI_WORKSPACE_ZONE_DATA: KitchenZone = {
   id: 'ai_workspace',
@@ -19,18 +21,20 @@ export const AI_WORKSPACE_ZONE_DATA: KitchenZone = {
 
 interface AIWorkspaceZoneProps {
   active?: boolean;
-  onHover?: (id: string | null) => void;
+  onHover?: (id: KitchenZoneId | null) => void;
   onClick?: (zone: KitchenZone) => void;
 }
 
 export const AIWorkspaceZone: React.FC<AIWorkspaceZoneProps> = ({ active, onHover, onClick }) => {
+  const { state } = useKitchenState();
+
   return (
     <SpatialZone zone={AI_WORKSPACE_ZONE_DATA} active={active} onHover={onHover} onClick={onClick}>
       {/* Circular Spatial Platform & Energy Movement Container */}
       <div
         style={{
           width: '100%',
-          height: '95px',
+          height: '110px',
           borderRadius: '20px',
           background: 'radial-gradient(circle at center, rgba(139, 92, 246, 0.3) 0%, rgba(15, 23, 42, 0.95) 80%)',
           border: '1.5px solid rgba(139, 92, 246, 0.5)',
@@ -39,42 +43,18 @@ export const AIWorkspaceZone: React.FC<AIWorkspaceZoneProps> = ({ active, onHove
           alignItems: 'center',
           justifyContent: 'center',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          padding: '8px 0'
         }}
       >
         {/* Floating Energy Particles */}
-        <FloatingElement color="#a78bfa" size={6} top="25%" left="20%" delay={0} />
-        <FloatingElement color="#06b6d4" size={5} top="65%" left="75%" delay={1} />
-        <FloatingElement color="#c084fc" size={7} top="30%" left="80%" delay={2} />
+        <FloatingElement color="#a78bfa" size={6} top="20%" left="15%" delay={0} />
+        <FloatingElement color="#06b6d4" size={5} top="65%" left="80%" delay={1} />
+        <FloatingElement color="#c084fc" size={7} top="30%" left="82%" delay={2} />
 
-        {/* Central Rotating Platform Ring */}
-        <div
-          style={{
-            width: 60,
-            height: 60,
-            borderRadius: '50%',
-            border: '2px dashed #a78bfa',
-            animation: 'spatialSpin 12s linear infinite',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <div
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, #8b5cf6 0%, #4c1d95 100%)',
-              boxShadow: '0 0 16px #8b5cf6',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#ffffff'
-            }}
-          >
-            <Brain size={20} />
-          </div>
+        {/* Central Reusable AI Brain Orb Component */}
+        <div style={{ transform: 'scale(0.72)', margin: '-16px 0' }}>
+          <AIBrainOrb state={state.aiState} size={130} showStatusLabel={true} />
         </div>
 
         <div style={{ position: 'absolute', top: 8, right: 12, color: '#a78bfa' }}>

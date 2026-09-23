@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Layers, Box } from 'lucide-react';
-import type { KitchenZone } from '../../types/kitchen';
+import type { KitchenZone, KitchenZoneId } from '../../types/kitchen';
 import { PantryZone } from './zones/PantryZone';
 import { RefrigeratorZone } from './zones/RefrigeratorZone';
 import { CookingZone } from './zones/CookingZone';
@@ -10,13 +10,16 @@ import { AIWorkspaceZone } from './zones/AIWorkspaceZone';
 import { QuickActionsBar } from './QuickActionsBar';
 import { SpatialCanvas } from '../../spatial/SpatialCanvas';
 import { ZoneDetailModal } from './ZoneDetailModal';
+import { AIBrainStatePicker } from '../ai-brain/AIBrainStatePicker';
+import { useKitchenState } from '../../state/KitchenContext';
 
 interface ConnectedKitchenEnvironmentProps {
   onZoneClick?: (zone: KitchenZone) => void;
 }
 
 export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentProps> = ({ onZoneClick }) => {
-  const [activeZoneId, setActiveZoneId] = useState<string | null>(null);
+  const { state, setAIState } = useKitchenState();
+  const [activeZoneId, setActiveZoneId] = useState<KitchenZoneId | null>(null);
   const [selectedZone, setSelectedZone] = useState<KitchenZone | null>(null);
   const [renderMode, setRenderMode] = useState<'spatial2d' | 'spatial3d'>('spatial2d');
 
@@ -89,53 +92,59 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
           </p>
         </div>
 
-        {/* View Mode Switcher (2.5D Connected Deck vs 3D Canvas) */}
-        <div
-          style={{
-            display: 'flex',
-            gap: '6px',
-            background: 'rgba(15, 23, 42, 0.7)',
-            padding: '4px',
-            borderRadius: '16px',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}
-        >
-          <button
-            onClick={() => setRenderMode('spatial2d')}
+        {/* Action Controls Group: View Mode & Dev State Testbed */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          {/* Dev State Picker Toggle */}
+          <AIBrainStatePicker currentState={state.aiState} onStateChange={setAIState} />
+
+          {/* View Mode Switcher (2.5D Connected Deck vs 3D Canvas) */}
+          <div
             style={{
-              padding: '6px 14px',
-              borderRadius: '12px',
-              border: 'none',
-              background: renderMode === 'spatial2d' ? 'var(--primary-cyan)' : 'transparent',
-              color: renderMode === 'spatial2d' ? '#000' : 'var(--text-muted)',
-              fontWeight: 700,
-              fontSize: '0.8rem',
               display: 'flex',
-              alignItems: 'center',
               gap: '6px',
-              cursor: 'pointer'
+              background: 'rgba(15, 23, 42, 0.7)',
+              padding: '4px',
+              borderRadius: '16px',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
             }}
           >
-            <Layers size={14} /> 2.5D Deck
-          </button>
-          <button
-            onClick={() => setRenderMode('spatial3d')}
-            style={{
-              padding: '6px 14px',
-              borderRadius: '12px',
-              border: 'none',
-              background: renderMode === 'spatial3d' ? 'var(--primary-cyan)' : 'transparent',
-              color: renderMode === 'spatial3d' ? '#000' : 'var(--text-muted)',
-              fontWeight: 700,
-              fontSize: '0.8rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer'
-            }}
-          >
-            <Box size={14} /> Interactive 3D
-          </button>
+            <button
+              onClick={() => setRenderMode('spatial2d')}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '12px',
+                border: 'none',
+                background: renderMode === 'spatial2d' ? 'var(--primary-cyan)' : 'transparent',
+                color: renderMode === 'spatial2d' ? '#000' : 'var(--text-muted)',
+                fontWeight: 700,
+                fontSize: '0.8rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer'
+              }}
+            >
+              <Layers size={14} /> 2.5D Deck
+            </button>
+            <button
+              onClick={() => setRenderMode('spatial3d')}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '12px',
+                border: 'none',
+                background: renderMode === 'spatial3d' ? 'var(--primary-cyan)' : 'transparent',
+                color: renderMode === 'spatial3d' ? '#000' : 'var(--text-muted)',
+                fontWeight: 700,
+                fontSize: '0.8rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer'
+              }}
+            >
+              <Box size={14} /> Interactive 3D
+            </button>
+          </div>
         </div>
       </div>
 

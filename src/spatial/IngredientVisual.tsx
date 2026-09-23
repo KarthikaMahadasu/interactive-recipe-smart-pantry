@@ -1,6 +1,5 @@
 import React from 'react';
 import type { Ingredient } from '../types/ingredient';
-import { Package } from 'lucide-react';
 
 interface IngredientVisualProps {
   ingredient: Ingredient;

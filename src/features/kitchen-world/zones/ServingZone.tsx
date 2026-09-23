@@ -1,7 +1,7 @@
 import React from 'react';
-import { Award, Utensils } from 'lucide-react';
+import { Award } from 'lucide-react';
 import { SpatialZone } from '../../../spatial/SpatialZone';
-import type { KitchenZone } from '../../../types/kitchen';
+import type { KitchenZone, KitchenZoneId } from '../../../types/kitchen';
 
 export const SERVING_ZONE_DATA: KitchenZone = {
   id: 'serving',
@@ -18,7 +18,7 @@ export const SERVING_ZONE_DATA: KitchenZone = {
 
 interface ServingZoneProps {
   active?: boolean;
-  onHover?: (id: string | null) => void;
+  onHover?: (id: KitchenZoneId | null) => void;
   onClick?: (zone: KitchenZone) => void;
 }
 

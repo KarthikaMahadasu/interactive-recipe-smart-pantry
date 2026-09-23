@@ -1,7 +1,7 @@
 import React from 'react';
 import { Flame } from 'lucide-react';
 import { SpatialZone } from '../../../spatial/SpatialZone';
-import type { KitchenZone } from '../../../types/kitchen';
+import type { KitchenZone, KitchenZoneId } from '../../../types/kitchen';
 
 export const COOKING_ZONE_DATA: KitchenZone = {
   id: 'cooking',
@@ -18,7 +18,7 @@ export const COOKING_ZONE_DATA: KitchenZone = {
 
 interface CookingZoneProps {
   active?: boolean;
-  onHover?: (id: string | null) => void;
+  onHover?: (id: KitchenZoneId | null) => void;
   onClick?: (zone: KitchenZone) => void;
 }
 
