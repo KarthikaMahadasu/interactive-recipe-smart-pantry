@@ -24,7 +24,7 @@ export interface AIPromptContext {
 
 export interface AIResponsePayload {
   message: string;
-  actionRequired?: 'explore_pantry' | 'view_recipes' | 'add_grocery' | 'none';
+  actionRequired?: 'explore_pantry' | 'view_recipes' | 'add_grocery' | 'start_cooking' | 'none';
   suggestedItems?: string[];
   timestamp: string;
   isMock: boolean;

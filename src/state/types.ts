@@ -38,9 +38,11 @@ export type KitchenAction =
   | { type: 'SET_AI_STATE'; payload: AIBrainState }
   | { type: 'SET_ACTIVE_ZONE'; payload: KitchenZoneId | null }
   | { type: 'ADD_INGREDIENT'; payload: Ingredient }
+  | { type: 'UPDATE_INGREDIENT'; payload: Ingredient }
   | { type: 'UPDATE_INGREDIENT_QUANTITY'; payload: { id: string; delta: number } }
   | { type: 'UPDATE_FRESHNESS'; payload: { id: string; freshness: FreshnessLevel } }
   | { type: 'REMOVE_INGREDIENT'; payload: string }
+  | { type: 'CLEAR_PANTRY' }
   | { type: 'ADD_RECIPE'; payload: Recipe }
   | { type: 'SET_SELECTED_RECIPE'; payload: string | null }
   | { type: 'START_COOKING_RECIPE'; payload: Recipe }

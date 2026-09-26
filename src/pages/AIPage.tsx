@@ -5,15 +5,15 @@ import { AIBrainOrb } from '../features/ai-brain/AIBrainOrb';
 import { useKitchenState } from '../state/KitchenContext';
 import { AICommandBar } from '../features/ai-brain/AICommandBar';
 import { AIBrainStatePicker } from '../features/ai-brain/AIBrainStatePicker';
-import { useAIBrain } from '../hooks/useAIBrain';
+import { useAIAgent } from '../features/ai-agent/hooks/useAIAgent';
 
 export const AIPage: React.FC = () => {
   const navigate = useNavigate();
-  const { state } = useKitchenState();
-  const { aiState, changeState, queryAI } = useAIBrain();
+  const { state, setAIState } = useKitchenState();
+  const { processCommand } = useAIAgent();
 
   const handleQuickPrompt = (prompt: string) => {
-    queryAI(prompt);
+    processCommand(prompt);
   };
 
   return (
@@ -50,20 +50,20 @@ export const AIPage: React.FC = () => {
           </button>
           <div>
             <div style={{ fontSize: '0.78rem', color: 'var(--accent-violet)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              Module 5 &bull; Agentic AI Core
+              Module 5 &bull; Pantry AI Agent & NLP Engine
             </div>
-            <h1 style={{ fontSize: '1.6rem', color: 'var(--text-main)' }}>Central AI Workspace & Chat</h1>
+            <h1 style={{ fontSize: '1.6rem', color: 'var(--text-main)' }}>Central AI Workspace & Kitchen OS Agent</h1>
           </div>
         </div>
 
-        <AIBrainStatePicker currentState={aiState} onStateChange={changeState} />
+        <AIBrainStatePicker currentState={state.aiState} onStateChange={setAIState} />
       </div>
 
       {/* AI Workspace Hero Center */}
       <div
         className="glass-panel"
         style={{
-          padding: '36px',
+          padding: '36px 24px',
           borderRadius: '28px',
           display: 'flex',
           flexDirection: 'column',
@@ -75,14 +75,14 @@ export const AIPage: React.FC = () => {
           boxShadow: '0 8px 32px rgba(139, 92, 246, 0.15)'
         }}
       >
-        <AIBrainOrb state={aiState} size={200} />
+        <AIBrainOrb state={state.aiState} size={200} />
 
         <div style={{ textAlign: 'center', maxWidth: '520px' }}>
           <h2 style={{ fontSize: '1.4rem', color: 'var(--text-main)' }}>
-            Neural Kitchen Intelligence Core
+            Neural Kitchen OS Assistant
           </h2>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-            Connected to your active pantry ({state.pantry.length} items) and recipe collection. Ask any question or request meal plans.
+            Connected to real pantry and recipe engines. Speak or type commands below for instant structured action.
           </p>
         </div>
 
@@ -92,7 +92,7 @@ export const AIPage: React.FC = () => {
       {/* Quick Action Prompt Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
         <button
-          onClick={() => handleQuickPrompt('Suggest a quick 15-minute dinner using my active pantry items')}
+          onClick={() => handleQuickPrompt('What can I cook with what I have?')}
           className="glass-panel glass-panel-hover"
           style={{
             padding: '16px 20px',
@@ -106,13 +106,13 @@ export const AIPage: React.FC = () => {
         >
           <Utensils size={24} color="var(--primary-cyan)" />
           <div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>Quick Dinner Idea</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Using current pantry items</div>
+            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>Discover Cookable Recipes</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Check current pantry matches</div>
           </div>
         </button>
 
         <button
-          onClick={() => handleQuickPrompt('Which of my pantry ingredients expire soon and how can I save them?')}
+          onClick={() => handleQuickPrompt('What is expiring soon?')}
           className="glass-panel glass-panel-hover"
           style={{
             padding: '16px 20px',
@@ -127,12 +127,12 @@ export const AIPage: React.FC = () => {
           <AlertTriangle size={24} color="var(--accent-amber)" />
           <div>
             <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>Zero-Waste Scan</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Check expiring stock</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Check expiring ingredients</div>
           </div>
         </button>
 
         <button
-          onClick={() => handleQuickPrompt('Create a 3-day high-protein vegetarian meal plan')}
+          onClick={() => handleQuickPrompt('What can I use instead of milk?')}
           className="glass-panel glass-panel-hover"
           style={{
             padding: '16px 20px',
@@ -146,8 +146,8 @@ export const AIPage: React.FC = () => {
         >
           <Sparkles size={24} color="var(--accent-violet)" />
           <div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>3-Day Meal Plan</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>High protein focus</div>
+            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>Ingredient Substitutions</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Smart culinary alternatives</div>
           </div>
         </button>
       </div>
@@ -165,7 +165,7 @@ export const AIPage: React.FC = () => {
           }}
         >
           <h3 style={{ fontSize: '1.1rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Clock size={18} color="var(--primary-cyan)" /> AI Conversation History
+            <Clock size={18} color="var(--primary-cyan)" /> AI Agent Conversation History
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -184,7 +184,7 @@ export const AIPage: React.FC = () => {
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-violet)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Bot size={16} /> Kitchen AI Response
+                    <Bot size={16} /> Kitchen OS Response
                   </span>
                   <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>{item.timestamp}</span>
                 </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { AIBrainState } from '../../types/ai';
-import { FlaskConical, ChevronDown, ChevronUp, Play } from 'lucide-react';
+import { FlaskConical, ChevronDown, ChevronUp, Play, AlertCircle } from 'lucide-react';
 
 interface AIBrainStatePickerProps {
   currentState: AIBrainState;
@@ -8,11 +8,11 @@ interface AIBrainStatePickerProps {
 }
 
 const STATES: { key: AIBrainState; label: string; badgeColor: string; description: string }[] = [
-  { key: 'idle', label: 'Idle', badgeColor: '#06b6d4', description: 'Calm breathing pulse (Waiting)' },
+  { key: 'idle', label: 'Idle', badgeColor: '#06b6d4', description: 'Calm breathing pulse (AI is ready)' },
   { key: 'listening', label: 'Listening', badgeColor: '#10b981', description: 'Soundwave ripples (Receiving input)' },
   { key: 'thinking', label: 'Thinking', badgeColor: '#f59e0b', description: 'Inward swirling energy (Processing)' },
-  { key: 'working', label: 'Working', badgeColor: '#8b5cf6', description: 'Directional orbital motion (Executing)' },
-  { key: 'success', label: 'Success', badgeColor: '#10b981', description: 'Stable glowing pulse (Completed)' },
+  { key: 'working', label: 'Working', badgeColor: '#8b5cf6', description: 'Directional orbital motion (Performing task)' },
+  { key: 'success', label: 'Success', badgeColor: '#10b981', description: 'Positive pulse (Task completed)' },
   { key: 'error', label: 'Error', badgeColor: '#f43f5e', description: 'Warning pulse (Encountered error)' }
 ];
 
@@ -23,14 +23,26 @@ export const AIBrainStatePicker: React.FC<AIBrainStatePickerProps> = ({
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [isRunningDemo, setIsRunningDemo] = useState<boolean>(false);
 
-  const handleRunDemoSequence = async () => {
+  const handleRunSuccessSequence = async () => {
     if (isRunningDemo) return;
     setIsRunningDemo(true);
 
     const sequence: AIBrainState[] = ['idle', 'listening', 'thinking', 'working', 'success', 'idle'];
     for (const step of sequence) {
       onStateChange(step);
-      await new Promise((res) => setTimeout(res, 1400));
+      await new Promise((res) => setTimeout(res, 1200));
+    }
+    setIsRunningDemo(false);
+  };
+
+  const handleRunErrorSequence = async () => {
+    if (isRunningDemo) return;
+    setIsRunningDemo(true);
+
+    const sequence: AIBrainState[] = ['idle', 'listening', 'thinking', 'working', 'error', 'idle'];
+    for (const step of sequence) {
+      onStateChange(step);
+      await new Promise((res) => setTimeout(res, 1200));
     }
     setIsRunningDemo(false);
   };
@@ -65,7 +77,7 @@ export const AIBrainStatePicker: React.FC<AIBrainStatePickerProps> = ({
         title="Toggle Development AI State Simulator"
       >
         <FlaskConical size={14} />
-        <span>Dev State Testbed</span>
+        <span>Dev AI State Testbed</span>
         <span
           style={{
             fontSize: '0.68rem',
@@ -92,7 +104,7 @@ export const AIBrainStatePicker: React.FC<AIBrainStatePickerProps> = ({
             background: 'rgba(15, 23, 42, 0.95)',
             border: '1px solid rgba(139, 92, 246, 0.35)',
             boxShadow: '0 12px 32px rgba(0, 0, 0, 0.5)',
-            maxWidth: '380px',
+            width: '360px',
             zIndex: 40,
             display: 'flex',
             flexDirection: 'column',
@@ -103,12 +115,20 @@ export const AIBrainStatePicker: React.FC<AIBrainStatePickerProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#c084fc', fontWeight: 700, fontSize: '0.8rem' }}>
               <FlaskConical size={14} /> Development AI State Simulator
             </div>
+          </div>
 
+          <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', lineHeight: 1.35 }}>
+            Developer testing controls to demonstrate all 6 AI Orb states and transition flows. Does NOT execute real AI operations.
+          </p>
+
+          {/* Sequence Automation Buttons */}
+          <div style={{ display: 'flex', gap: '8px' }}>
             <button
-              onClick={handleRunDemoSequence}
+              onClick={handleRunSuccessSequence}
               disabled={isRunningDemo}
               style={{
-                padding: '4px 10px',
+                flex: 1,
+                padding: '6px 10px',
                 borderRadius: '10px',
                 background: isRunningDemo ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.15)',
                 border: '1px solid rgba(16, 185, 129, 0.4)',
@@ -117,19 +137,38 @@ export const AIBrainStatePicker: React.FC<AIBrainStatePickerProps> = ({
                 fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '4px',
                 cursor: isRunningDemo ? 'wait' : 'pointer'
               }}
             >
-              <Play size={12} />
-              {isRunningDemo ? 'Running...' : 'Auto Demo'}
+              <Play size={12} /> Success Flow
+            </button>
+
+            <button
+              onClick={handleRunErrorSequence}
+              disabled={isRunningDemo}
+              style={{
+                flex: 1,
+                padding: '6px 10px',
+                borderRadius: '10px',
+                background: isRunningDemo ? 'rgba(244, 63, 94, 0.3)' : 'rgba(244, 63, 94, 0.15)',
+                border: '1px solid rgba(244, 63, 94, 0.4)',
+                color: '#fda4af',
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '4px',
+                cursor: isRunningDemo ? 'wait' : 'pointer'
+              }}
+            >
+              <AlertCircle size={12} /> Error Flow
             </button>
           </div>
 
-          <p style={{ fontSize: '0.73rem', color: 'var(--text-dim)', lineHeight: 1.35 }}>
-            Development testbed for inspecting AI Brain states in Module 1. Does NOT trigger external AI APIs.
-          </p>
-
+          {/* Individual State Buttons */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
             {STATES.map((s) => {
               const isActive = currentState === s.key;

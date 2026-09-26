@@ -5,33 +5,37 @@ interface IngredientVisualProps {
   ingredient: Ingredient;
   size?: 'sm' | 'md' | 'lg';
   showBadge?: boolean;
+  showCategory?: boolean;
   onClick?: (ingredient: Ingredient) => void;
   style?: React.CSSProperties;
 }
 
 /**
  * Reusable dynamic spatial visual component for ANY ingredient object.
- * Does NOT hardcode ingredient names (supports Dragon Fruit, Ragi, Paneer, Avocado, Cashew, Tofu, etc. dynamically).
+ * Does NOT hardcode ingredient names (supports Dragon Fruit, Ragi, Paneer, Avocado, Cashew, Tofu, Mango, etc. dynamically).
  */
 export const IngredientVisual: React.FC<IngredientVisualProps> = ({
   ingredient,
   size = 'md',
   showBadge = true,
+  showCategory = false,
   onClick,
   style = {}
 }) => {
   const color = ingredient.colorCode || '#06b6d4';
 
   const sizeDimensions = {
-    sm: { width: 36, height: 36, fontSize: '0.7rem', iconSize: 14 },
-    md: { width: 48, height: 48, fontSize: '0.8rem', iconSize: 18 },
-    lg: { width: 64, height: 64, fontSize: '0.9rem', iconSize: 24 }
+    sm: { width: 36, height: 36, fontSize: '0.7rem', iconSize: 14, textWidth: '70px' },
+    md: { width: 52, height: 52, fontSize: '0.85rem', iconSize: 18, textWidth: '85px' },
+    lg: { width: 68, height: 68, fontSize: '1.0rem', iconSize: 24, textWidth: '100px' }
   }[size];
 
   const initialLetter = ingredient.name ? ingredient.name.charAt(0).toUpperCase() : '?';
 
   return (
     <div
+      role={onClick ? 'button' : 'region'}
+      aria-label={`Ingredient: ${ingredient.name}, Quantity: ${ingredient.quantity} ${ingredient.unit}, Category: ${ingredient.category}`}
       onClick={() => onClick && onClick(ingredient)}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={(e) => {
@@ -40,7 +44,7 @@ export const IngredientVisual: React.FC<IngredientVisualProps> = ({
           onClick(ingredient);
         }
       }}
-      title={`${ingredient.name} (${ingredient.quantity} ${ingredient.unit})`}
+      title={`${ingredient.name} (${ingredient.quantity} ${ingredient.unit}) — ${ingredient.category}`}
       style={{
         display: 'inline-flex',
         flexDirection: 'column',
@@ -48,6 +52,7 @@ export const IngredientVisual: React.FC<IngredientVisualProps> = ({
         gap: '6px',
         cursor: onClick ? 'pointer' : 'default',
         userSelect: 'none',
+        transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
         ...style
       }}
     >
@@ -55,10 +60,10 @@ export const IngredientVisual: React.FC<IngredientVisualProps> = ({
         style={{
           width: sizeDimensions.width,
           height: sizeDimensions.height,
-          borderRadius: '16px',
-          background: `radial-gradient(circle at 35% 35%, ${color} 0%, rgba(15, 23, 42, 0.9) 90%)`,
+          borderRadius: '18px',
+          background: `radial-gradient(circle at 35% 35%, ${color} 0%, rgba(15, 23, 42, 0.95) 90%)`,
           border: `1.5px solid ${color}`,
-          boxShadow: `0 4px 16px ${color}33`,
+          boxShadow: `0 6px 20px ${color}44`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -83,7 +88,8 @@ export const IngredientVisual: React.FC<IngredientVisualProps> = ({
               padding: '1px 5px',
               fontSize: '0.65rem',
               fontWeight: 700,
-              color: 'var(--text-main)'
+              color: 'var(--text-main)',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.5)'
             }}
           >
             {ingredient.quantity}{ingredient.unit}
@@ -91,20 +97,35 @@ export const IngredientVisual: React.FC<IngredientVisualProps> = ({
         )}
       </div>
 
-      <span
-        style={{
-          fontSize: '0.75rem',
-          color: 'var(--text-main)',
-          fontWeight: 600,
-          textAlign: 'center',
-          maxWidth: '80px',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis'
-        }}
-      >
-        {ingredient.name}
-      </span>
+      <div style={{ textAlign: 'center', maxWidth: sizeDimensions.textWidth }}>
+        <span
+          style={{
+            fontSize: '0.78rem',
+            color: 'var(--text-main)',
+            fontWeight: 600,
+            display: 'block',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}
+        >
+          {ingredient.name}
+        </span>
+
+        {showCategory && (
+          <span
+            style={{
+              fontSize: '0.65rem',
+              color: 'var(--text-dim)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              display: 'block'
+            }}
+          >
+            {ingredient.category}
+          </span>
+        )}
+      </div>
     </div>
   );
 };

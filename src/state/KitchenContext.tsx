@@ -1,11 +1,13 @@
-import React, { createContext, useContext, useReducer, type ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react';
 import type { KitchenGlobalState, KitchenAction, GroceryItem, UserPreferences } from './types';
 import type { AIBrainState, AIResponsePayload } from '../types/ai';
 import type { KitchenZoneId } from '../types/kitchen';
 import type { Ingredient, FreshnessLevel } from '../types/ingredient';
 import type { Recipe } from '../types/recipe';
 
-const initialPantry: Ingredient[] = [
+const LOCAL_STORAGE_PANTRY_KEY = 'smart_pantry_items_v1';
+
+const defaultPantry: Ingredient[] = [
   {
     id: 'ing_1',
     name: 'Dragon Fruit',
@@ -96,6 +98,19 @@ const initialPantry: Ingredient[] = [
   }
 ];
 
+function loadSavedPantry(): Ingredient[] {
+  try {
+    const saved = localStorage.getItem(LOCAL_STORAGE_PANTRY_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (e) {
+    console.warn('Could not parse saved pantry from localStorage', e);
+  }
+  return defaultPantry;
+}
+
 const initialRecipes: Recipe[] = [
   {
     id: 'rec_1',
@@ -176,6 +191,32 @@ const initialRecipes: Recipe[] = [
       { step: 4, text: 'Stir in cashew cream and sweetener. Serve warm with toasted cashew garnish.', durationMinutes: 2 }
     ],
     nutrition: { calories: 360, protein: 11, carbs: 54, fat: 12 }
+  },
+  {
+    id: 'rec_4',
+    title: 'Comforting Rice & Potato Masala Fry',
+    description: 'A savory classic featuring fragrant seasoned rice paired with golden spiced potato cubes.',
+    prepTime: 10,
+    cookTime: 20,
+    servings: 3,
+    difficulty: 'Easy',
+    category: 'Dinner',
+    cuisine: 'Indian',
+    dietaryTags: ['Vegan', 'Gluten-Free', 'Comfort-Food'],
+    colorGradient: 'linear-gradient(135deg, #38bdf8 0%, #06b6d4 100%)',
+    createdAt: new Date().toISOString(),
+    ingredients: [
+      { name: 'Rice', amount: 200, unit: 'g' },
+      { name: 'Potato', amount: 2, unit: 'pcs' },
+      { name: 'Onion', amount: 1, unit: 'pcs', optional: true },
+      { name: 'Spices & Herbs', amount: 1, unit: 'tbsp', optional: true }
+    ],
+    instructions: [
+      { step: 1, text: 'Rinse rice and boil until fluffy and tender.', durationMinutes: 12 },
+      { step: 2, text: 'Dice potatoes into small cubes and pan-fry with spices until crispy.', durationMinutes: 8 },
+      { step: 3, text: 'Combine rice and potatoes, toss gently, and serve steaming hot.', durationMinutes: 2 }
+    ],
+    nutrition: { calories: 410, protein: 8, carbs: 78, fat: 8 }
   }
 ];
 
@@ -186,7 +227,7 @@ const initialGroceryList: GroceryItem[] = [
 ];
 
 const initialState: KitchenGlobalState = {
-  pantry: initialPantry,
+  pantry: loadSavedPantry(),
   recipes: initialRecipes,
   groceryList: initialGroceryList,
   selectedRecipeId: null,
@@ -215,6 +256,12 @@ function kitchenReducer(state: KitchenGlobalState, action: KitchenAction): Kitch
 
     case 'ADD_INGREDIENT':
       return { ...state, pantry: [action.payload, ...state.pantry] };
+
+    case 'UPDATE_INGREDIENT':
+      return {
+        ...state,
+        pantry: state.pantry.map((item) => (item.id === action.payload.id ? action.payload : item))
+      };
 
     case 'UPDATE_INGREDIENT_QUANTITY': {
       return {
@@ -245,6 +292,9 @@ function kitchenReducer(state: KitchenGlobalState, action: KitchenAction): Kitch
     case 'REMOVE_INGREDIENT':
       return { ...state, pantry: state.pantry.filter((item) => item.id !== action.payload) };
 
+    case 'CLEAR_PANTRY':
+      return { ...state, pantry: [] };
+
     case 'ADD_RECIPE':
       return { ...state, recipes: [action.payload, ...state.recipes] };
 
@@ -271,29 +321,9 @@ function kitchenReducer(state: KitchenGlobalState, action: KitchenAction): Kitch
         return pantryItem;
       });
 
-      // Auto add low/zero stock items to grocery list if not already there
-      const newGroceryItems: GroceryItem[] = [...state.groceryList];
-      recipe.ingredients.forEach((ing) => {
-        const matched = updatedPantry.find((p) => p.name.toLowerCase() === ing.name.toLowerCase());
-        if (!matched || matched.quantity <= 0) {
-          const exists = newGroceryItems.some((g) => g.name.toLowerCase() === ing.name.toLowerCase());
-          if (!exists) {
-            newGroceryItems.push({
-              id: `g_auto_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-              name: ing.name,
-              quantity: ing.amount * 2,
-              unit: ing.unit,
-              bought: false,
-              category: 'Auto Restock'
-            });
-          }
-        }
-      });
-
       return {
         ...state,
-        pantry: updatedPantry,
-        groceryList: newGroceryItems
+        pantry: updatedPantry
       };
     }
 
@@ -371,7 +401,9 @@ interface KitchenContextType {
   setAIState: (aiState: AIBrainState) => void;
   setActiveZone: (zoneId: KitchenZoneId | null) => void;
   addIngredient: (ingredient: Ingredient) => void;
+  updateIngredient: (ingredient: Ingredient) => void;
   removeIngredient: (id: string) => void;
+  clearPantry: () => void;
   updateQuantity: (id: string, delta: number) => void;
   updateFreshness: (id: string, freshness: FreshnessLevel) => void;
   addRecipe: (recipe: Recipe) => void;
@@ -391,6 +423,15 @@ const KitchenContext = createContext<KitchenContextType | undefined>(undefined);
 export const KitchenProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(kitchenReducer, initialState);
 
+  // Requirement 11: Persist pantry data to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_PANTRY_KEY, JSON.stringify(state.pantry));
+    } catch (e) {
+      console.warn('Failed to save pantry to localStorage', e);
+    }
+  }, [state.pantry]);
+
   const setAIState = (aiState: AIBrainState) => {
     dispatch({ type: 'SET_AI_STATE', payload: aiState });
   };
@@ -403,8 +444,16 @@ export const KitchenProvider: React.FC<{ children: ReactNode }> = ({ children })
     dispatch({ type: 'ADD_INGREDIENT', payload: ingredient });
   };
 
+  const updateIngredient = (ingredient: Ingredient) => {
+    dispatch({ type: 'UPDATE_INGREDIENT', payload: ingredient });
+  };
+
   const removeIngredient = (id: string) => {
     dispatch({ type: 'REMOVE_INGREDIENT', payload: id });
+  };
+
+  const clearPantry = () => {
+    dispatch({ type: 'CLEAR_PANTRY' });
   };
 
   const updateQuantity = (id: string, delta: number) => {
@@ -463,7 +512,9 @@ export const KitchenProvider: React.FC<{ children: ReactNode }> = ({ children })
         setAIState,
         setActiveZone,
         addIngredient,
+        updateIngredient,
         removeIngredient,
+        clearPantry,
         updateQuantity,
         updateFreshness,
         addRecipe,

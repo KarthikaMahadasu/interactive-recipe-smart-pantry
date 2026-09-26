@@ -11,6 +11,8 @@ import { QuickActionsBar } from './QuickActionsBar';
 import { SpatialCanvas } from '../../spatial/SpatialCanvas';
 import { ZoneDetailModal } from './ZoneDetailModal';
 import { AIBrainStatePicker } from '../ai-brain/AIBrainStatePicker';
+import { DevSpatialTestbed } from '../../spatial/DevSpatialTestbed';
+import { SpatialMotionPath } from '../../spatial/SpatialMotionPath';
 import { useKitchenState } from '../../state/KitchenContext';
 
 interface ConnectedKitchenEnvironmentProps {
@@ -92,8 +94,11 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
           </p>
         </div>
 
-        {/* Action Controls Group: View Mode & Dev State Testbed */}
+        {/* Action Controls Group: View Mode, Dev State Testbed & Spatial Testbed */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          {/* Dev Spatial Anchor Testbed */}
+          <DevSpatialTestbed />
+
           {/* Dev State Picker Toggle */}
           <AIBrainStatePicker currentState={state.aiState} onStateChange={setAIState} />
 
@@ -184,6 +189,20 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
             transition: 'opacity 0.6s ease'
           }}
         >
+          {/* Spatial Motion Trajectory Path overlay in 2.5D */}
+          <SpatialMotionPath
+            start="PantryAnchor"
+            destination="AIAnchor"
+            active={activeZoneId === 'pantry' || activeZoneId === 'ai_workspace'}
+            color="var(--primary-cyan)"
+          />
+          <SpatialMotionPath
+            start="AIAnchor"
+            destination="CookingAnchor"
+            active={activeZoneId === 'cooking' || activeZoneId === 'ai_workspace'}
+            color="var(--accent-violet)"
+          />
+
           {/* Spatial Upper Deck: Pantry ── AI Workspace ── Refrigerator */}
           <div
             style={{

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import type { AIBrainState } from '../../types/ai';
+import { SpatialAnchorNode } from '../../spatial/SpatialAnchor';
 
 interface AIBrainOrbProps {
   state: AIBrainState;
@@ -36,7 +37,7 @@ const STATE_CONFIGS: Record<
     speed: 0.015,
     pulseFrequency: 0.003,
     particleCount: 24,
-    ariaDescription: 'AI Kitchen Core is idle and ready for input.'
+    ariaDescription: 'AI Kitchen Core is idle and ready.'
   },
   listening: {
     coreColor: '#10b981',
@@ -45,7 +46,7 @@ const STATE_CONFIGS: Record<
     speed: 0.04,
     pulseFrequency: 0.008,
     particleCount: 36,
-    ariaDescription: 'AI Kitchen Core is listening to user input.'
+    ariaDescription: 'AI Kitchen Core is listening to input.'
   },
   thinking: {
     coreColor: '#f59e0b',
@@ -54,7 +55,7 @@ const STATE_CONFIGS: Record<
     speed: 0.07,
     pulseFrequency: 0.012,
     particleCount: 45,
-    ariaDescription: 'AI Kitchen Core is thinking and processing data.'
+    ariaDescription: 'AI Kitchen Core is thinking and processing.'
   },
   working: {
     coreColor: '#8b5cf6',
@@ -63,7 +64,7 @@ const STATE_CONFIGS: Record<
     speed: 0.09,
     pulseFrequency: 0.015,
     particleCount: 50,
-    ariaDescription: 'AI Kitchen Core is actively performing a culinary task.'
+    ariaDescription: 'AI Kitchen Core is performing a task.'
   },
   success: {
     coreColor: '#10b981',
@@ -81,7 +82,7 @@ const STATE_CONFIGS: Record<
     speed: 0.06,
     pulseFrequency: 0.018,
     particleCount: 30,
-    ariaDescription: 'AI Task encountered an error or warning.'
+    ariaDescription: 'AI Task encountered an error.'
   }
 };
 
@@ -94,7 +95,7 @@ export const AIBrainOrb: React.FC<AIBrainOrbProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
-  // Reduced motion preference check
+  // Check user preference for reduced motion
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setPrefersReducedMotion(mediaQuery.matches);
@@ -119,7 +120,7 @@ export const AIBrainOrb: React.FC<AIBrainOrbProps> = ({
     const isReduced = prefersReducedMotion;
     const speedFactor = isReduced ? 0.2 : 1.0;
 
-    // Create particle array
+    // Initialize particle array
     const particles = Array.from({ length: config.particleCount }, (_, i) => ({
       orbitRadius: (size * 0.22) + (i % 3) * (size * 0.08),
       angle: (i * Math.PI * 2) / config.particleCount,
@@ -140,7 +141,7 @@ export const AIBrainOrb: React.FC<AIBrainOrbProps> = ({
       const currentPulse = isReduced ? 0 : Math.sin(pulseAngle) * (size * 0.04);
       const orbRadius = baseRadius + currentPulse;
 
-      // 1. Outer Volumetric Ambient Glow Layer
+      // 1. Volumetric Ambient Glow Layer
       const glowGrad = ctx.createRadialGradient(
         centerX,
         centerY,
@@ -158,7 +159,7 @@ export const AIBrainOrb: React.FC<AIBrainOrbProps> = ({
       ctx.arc(centerX, centerY, orbRadius * 1.85, 0, Math.PI * 2);
       ctx.fill();
 
-      // 2. Listening & Working Wave Ripples (Soundwave / Directional energy)
+      // 2. Soundwave Ripples for Listening & Working states
       if ((state === 'listening' || state === 'working') && !isReduced) {
         ctx.strokeStyle = config.coreColor;
         ctx.lineWidth = state === 'listening' ? 2 : 1.5;
@@ -173,7 +174,7 @@ export const AIBrainOrb: React.FC<AIBrainOrbProps> = ({
         ctx.globalAlpha = 1.0;
       }
 
-      // 3. Error State Warning Ring Pulse
+      // 3. Error Warning Pulse Ring
       if (state === 'error' && !isReduced) {
         ctx.strokeStyle = '#f43f5e';
         ctx.lineWidth = 2;
@@ -185,7 +186,7 @@ export const AIBrainOrb: React.FC<AIBrainOrbProps> = ({
         ctx.globalAlpha = 1.0;
       }
 
-      // 4. Central Core Spherical Gradient
+      // 4. Central Spherical Core Gradient
       const coreGrad = ctx.createRadialGradient(
         centerX - orbRadius * 0.3,
         centerY - orbRadius * 0.3,
@@ -226,7 +227,6 @@ export const AIBrainOrb: React.FC<AIBrainOrbProps> = ({
       // 6. Orbiting Ambient Particles (Inward swirl for Thinking, outward for Working)
       particles.forEach((p, idx) => {
         if (state === 'thinking') {
-          // Particles swirl inward
           p.orbitRadius = Math.max(size * 0.1, p.orbitRadius - 0.15 * speedFactor);
           if (p.orbitRadius <= size * 0.1) p.orbitRadius = size * 0.35;
         }
@@ -258,67 +258,69 @@ export const AIBrainOrb: React.FC<AIBrainOrbProps> = ({
   const statusText = STATUS_TEXT_MAP[state] || 'Ready';
 
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      aria-label={`AI Kitchen Brain: ${statusText}. ${config.ariaDescription}`}
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onClick?.();
-        }
-      }}
-      className="ai-orb-container"
-      style={{
-        position: 'relative',
-        width: size,
-        height: size,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: onClick ? 'pointer' : 'default',
-        outline: 'none',
-        userSelect: 'none',
-        borderRadius: '50%'
-      }}
-    >
-      <canvas
-        ref={canvasRef}
-        width={size}
-        height={size}
-        style={{
-          display: 'block',
-          filter: state === 'thinking' ? 'contrast(1.15) brightness(1.1)' : 'none',
-          transition: 'filter 0.3s ease'
+    <SpatialAnchorNode id="AIAnchor">
+      <div
+        role="status"
+        aria-live="polite"
+        aria-label={`AI Kitchen Brain State: ${statusText}. ${config.ariaDescription}`}
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onClick?.();
+          }
         }}
-      />
-
-      {showStatusLabel && (
-        <div
+        className="ai-orb-container"
+        style={{
+          position: 'relative',
+          width: size,
+          height: size,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: onClick ? 'pointer' : 'default',
+          outline: 'none',
+          userSelect: 'none',
+          borderRadius: '50%'
+        }}
+      >
+        <canvas
+          ref={canvasRef}
+          width={size}
+          height={size}
           style={{
-            position: 'absolute',
-            bottom: -10,
-            fontSize: '0.78rem',
-            fontWeight: 700,
-            letterSpacing: '0.04em',
-            color: config.coreColor,
-            textShadow: `0 0 12px ${config.glowColor}`,
-            whiteSpace: 'nowrap',
-            pointerEvents: 'none',
-            background: 'rgba(8, 12, 20, 0.85)',
-            padding: '3px 12px',
-            borderRadius: '14px',
-            border: `1px solid ${config.glowColor}`,
-            boxShadow: `0 4px 16px ${config.glowColor}44`,
-            transition: 'all 0.3s ease'
+            display: 'block',
+            filter: state === 'thinking' ? 'contrast(1.15) brightness(1.1)' : 'none',
+            transition: 'filter 0.3s ease'
           }}
-        >
-          {statusText}
-        </div>
-      )}
-    </div>
+        />
+
+        {showStatusLabel && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: -10,
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              letterSpacing: '0.04em',
+              color: config.coreColor,
+              textShadow: `0 0 12px ${config.glowColor}`,
+              whiteSpace: 'nowrap',
+              pointerEvents: 'none',
+              background: 'rgba(8, 12, 20, 0.88)',
+              padding: '4px 14px',
+              borderRadius: '14px',
+              border: `1px solid ${config.glowColor}`,
+              boxShadow: `0 4px 16px ${config.glowColor}44`,
+              transition: 'all 0.3s ease'
+            }}
+          >
+            {statusText}
+          </div>
+        )}
+      </div>
+    </SpatialAnchorNode>
   );
 };

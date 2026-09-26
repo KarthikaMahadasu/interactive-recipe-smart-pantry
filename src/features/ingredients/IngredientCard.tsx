@@ -1,44 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Ingredient } from '../../types/ingredient';
-import { Tag, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
-import { useKitchenState } from '../../state/KitchenContext';
+import { Tag, Plus, Minus, Trash2, Edit3, AlertTriangle, Calendar } from 'lucide-react';
+import { usePantry } from '../../hooks/usePantry';
 
 interface IngredientCardProps {
   ingredient: Ingredient;
-  onSelect?: (ingredient: Ingredient) => void;
+  onEdit?: (ingredient: Ingredient) => void;
   compact?: boolean;
 }
 
 const FRESHNESS_BADGES: Record<string, { label: string; color: string; bg: string }> = {
-  fresh: { label: 'Peak Freshness', color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' },
-  expiring_soon: { label: 'Use Soon', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
-  critical: { label: 'Expiring Today', color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.15)' },
+  fresh: { label: 'Fresh', color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' },
+  expiring_soon: { label: 'Expiring Soon', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
+  critical: { label: 'Expired / Zero Stock', color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.15)' },
   pantry_stable: { label: 'Pantry Stable', color: '#06b6d4', bg: 'rgba(6, 182, 212, 0.15)' }
 };
 
 export const IngredientCard: React.FC<IngredientCardProps> = ({
   ingredient,
-  onSelect,
+  onEdit,
   compact = false
 }) => {
-  const { updateQuantity, removeIngredient, addGroceryItem } = useKitchenState();
+  const { deleteIngredient, updateQuantity } = usePantry();
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+
   const badge = FRESHNESS_BADGES[ingredient.freshness] || FRESHNESS_BADGES.fresh;
 
-  const handleAddGrocery = (e: React.MouseEvent) => {
+  const handleConfirmRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
-    addGroceryItem({
-      id: `g_manual_${Date.now()}`,
-      name: ingredient.name,
-      quantity: ingredient.quantity > 0 ? ingredient.quantity : 1,
-      unit: ingredient.unit,
-      bought: false,
-      category: ingredient.category
-    });
-  };
-
-  const handleRemove = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    removeIngredient(ingredient.id);
+    deleteIngredient(ingredient.id);
+    setShowConfirmDelete(false);
   };
 
   const handleDelta = (e: React.MouseEvent, delta: number) => {
@@ -48,21 +39,20 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
 
   return (
     <div
-      onClick={() => onSelect?.(ingredient)}
       className="glass-panel glass-panel-hover"
       style={{
         padding: compact ? '10px 14px' : '16px 20px',
-        borderRadius: '16px',
-        cursor: onSelect ? 'pointer' : 'default',
+        borderRadius: '18px',
         borderLeft: `4px solid ${ingredient.colorCode || 'var(--primary-cyan)'}`,
         display: 'flex',
         flexDirection: 'column',
-        gap: '10px',
+        gap: '12px',
         position: 'relative',
-        overflow: 'hidden'
+        background: 'rgba(15, 23, 42, 0.85)',
+        transition: 'all 0.3s ease'
       }}
     >
-      {/* Top Row: Name & Quantity controls */}
+      {/* Top Row: Color dot, Name & Quantity Adjuster */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div
@@ -74,7 +64,7 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
               boxShadow: `0 0 10px ${ingredient.colorCode || '#06b6d4'}`
             }}
           />
-          <span style={{ fontWeight: 600, fontSize: compact ? '0.9rem' : '1rem', color: 'var(--text-main)' }}>
+          <span style={{ fontWeight: 700, fontSize: compact ? '0.9rem' : '1.05rem', color: 'var(--text-main)' }}>
             {ingredient.name}
           </span>
         </div>
@@ -83,9 +73,9 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
           <button
             onClick={(e) => handleDelta(e, -1)}
             style={{
-              width: 24,
-              height: 24,
-              borderRadius: '6px',
+              width: 26,
+              height: 26,
+              borderRadius: '8px',
               background: 'rgba(30, 41, 59, 0.8)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               color: 'var(--text-main)',
@@ -96,17 +86,17 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
             }}
             title="Decrease quantity"
           >
-            <Minus size={12} />
+            <Minus size={13} />
           </button>
           <span
             style={{
-              fontSize: '0.85rem',
+              fontSize: '0.88rem',
               fontWeight: 700,
               color: ingredient.quantity === 0 ? 'var(--accent-rose)' : 'var(--primary-cyan)',
               background: ingredient.quantity === 0 ? 'rgba(244, 63, 94, 0.15)' : 'rgba(6, 182, 212, 0.12)',
-              padding: '2px 8px',
+              padding: '2px 10px',
               borderRadius: '10px',
-              minWidth: '45px',
+              minWidth: '50px',
               textAlign: 'center'
             }}
           >
@@ -115,9 +105,9 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
           <button
             onClick={(e) => handleDelta(e, 1)}
             style={{
-              width: 24,
-              height: 24,
-              borderRadius: '6px',
+              width: 26,
+              height: 26,
+              borderRadius: '8px',
               background: 'rgba(30, 41, 59, 0.8)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               color: 'var(--text-main)',
@@ -128,19 +118,19 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
             }}
             title="Increase quantity"
           >
-            <Plus size={12} />
+            <Plus size={13} />
           </button>
         </div>
       </div>
 
-      {/* Freshness Badge & Category */}
+      {/* Freshness Badge, Category & Actions */}
       {!compact && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span
               style={{
                 fontSize: '0.72rem',
-                fontWeight: 600,
+                fontWeight: 700,
                 padding: '2px 10px',
                 borderRadius: '12px',
                 color: badge.color,
@@ -166,65 +156,112 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            {onEdit && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(ingredient);
+                }}
+                style={{
+                  padding: '4px 10px',
+                  borderRadius: '10px',
+                  background: 'rgba(139, 92, 246, 0.15)',
+                  border: '1px solid rgba(139, 92, 246, 0.3)',
+                  color: '#c084fc',
+                  fontSize: '0.74rem',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  cursor: 'pointer'
+                }}
+                title="Edit ingredient details"
+              >
+                <Edit3 size={13} /> Edit
+              </button>
+            )}
+
             <button
-              onClick={handleAddGrocery}
-              style={{
-                padding: '4px 8px',
-                borderRadius: '8px',
-                background: 'rgba(16, 185, 129, 0.12)',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
-                color: '#34d399',
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                cursor: 'pointer'
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowConfirmDelete(true);
               }}
-              title="Add to Grocery Restock List"
-            >
-              <ShoppingBag size={12} /> Restock
-            </button>
-            <button
-              onClick={handleRemove}
               style={{
-                padding: '4px 8px',
-                borderRadius: '8px',
+                padding: '4px 10px',
+                borderRadius: '10px',
                 background: 'rgba(244, 63, 94, 0.12)',
                 border: '1px solid rgba(244, 63, 94, 0.3)',
                 color: '#fda4af',
-                fontSize: '0.7rem',
+                fontSize: '0.74rem',
                 fontWeight: 600,
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
                 cursor: 'pointer'
               }}
-              title="Remove item"
+              title="Delete ingredient"
             >
-              <Trash2 size={12} />
+              <Trash2 size={13} /> Delete
             </button>
           </div>
         </div>
       )}
 
-      {/* Tags */}
-      {!compact && ingredient.tags && ingredient.tags.length > 0 && (
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-          {ingredient.tags.map((t, idx) => (
-            <span
-              key={idx}
+      {/* Expiry Date Display */}
+      {!compact && ingredient.expiresAt && (
+        <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <Calendar size={12} color="var(--accent-amber)" /> Expiry Date: {ingredient.expiresAt}
+        </div>
+      )}
+
+      {/* Delete Confirmation Warning overlay */}
+      {showConfirmDelete && (
+        <div
+          style={{
+            marginTop: '6px',
+            padding: '10px 12px',
+            borderRadius: '12px',
+            background: 'rgba(244, 63, 94, 0.2)',
+            border: '1px solid #f43f5e',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '8px'
+          }}
+        >
+          <span style={{ fontSize: '0.76rem', color: '#ffffff', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <AlertTriangle size={14} color="#f43f5e" /> Remove {ingredient.name}?
+          </span>
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowConfirmDelete(false);
+              }}
               style={{
-                fontSize: '0.68rem',
-                color: 'var(--text-dim)',
-                background: 'rgba(30, 41, 59, 0.5)',
-                padding: '1px 8px',
-                borderRadius: '8px'
+                padding: '3px 8px',
+                borderRadius: '8px',
+                background: 'rgba(30, 41, 59, 0.8)',
+                color: 'var(--text-main)',
+                fontSize: '0.7rem'
               }}
             >
-              #{t}
-            </span>
-          ))}
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmRemove}
+              style={{
+                padding: '3px 8px',
+                borderRadius: '8px',
+                background: '#f43f5e',
+                color: '#ffffff',
+                fontWeight: 700,
+                fontSize: '0.7rem'
+              }}
+            >
+              Confirm
+            </button>
+          </div>
         </div>
       )}
     </div>
