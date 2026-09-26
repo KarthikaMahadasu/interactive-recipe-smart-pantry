@@ -1,6 +1,6 @@
 import type { AgentAction, AgentIntent, ExtractedEntities } from '../types/agentTypes';
 
-// Unit Normalization Dictionary (Layer 3)
+// Unit Normalization Dictionary
 const UNIT_MAP: Record<string, string> = {
   kg: 'kg',
   kgs: 'kg',
@@ -63,11 +63,11 @@ export class NLPParser {
     // 3. Layer 4 — Validation & Confirmation Check
     const validationResult = this.validateAction(intent, parameters, normalizedCommand);
 
-    // Calculate confidence based on parameter resolution
+    // Calculate confidence based on intent detection and parameters
     let confidence = 0.5;
     if (intent !== 'UNKNOWN') {
       confidence = 0.85;
-      if (parameters.name || parameters.recipeName) {
+      if (parameters.name || parameters.recipeName || intent === 'GET_PANTRY' || intent === 'FIND_RECIPES') {
         confidence = 0.95;
       }
     }
@@ -78,106 +78,115 @@ export class NLPParser {
       rawCommand,
       normalizedCommand,
       confidence,
-      requiresConfirmation: !validationResult.passed && (intent === 'CLEAR_PANTRY' || intent === 'REMOVE_PANTRY_ITEM'),
+      requiresConfirmation: !validationResult.passed,
       confirmationMessage: validationResult.reason,
       validationResult
     };
   }
 
   /**
-   * Layer 0: Normalizes user command (trim, lowercase, whitespace collapse, unit normalization).
+   * Layer 0: Normalizes user command (trim, lowercase, collapse whitespace).
    */
   static normalizeText(text: string): string {
     let normalized = text.trim().toLowerCase();
-    // Collapse whitespace
     normalized = normalized.replace(/\s+/g, ' ');
     return normalized;
   }
 
   /**
-   * Layer 1: Detects user intent using pattern matching rules.
+   * Layer 1: Central Intent Router.
+   * Matches intent using pattern rules in priority order.
    */
   private static detectIntent(text: string, rawText: string): AgentIntent {
     void rawText;
 
-    // 1. Help & Capabilities
-    if (/^(help|what can (you|i) (do|ask)|capabilities|commands|how to use)\b/i.test(text)) {
+    // 1. HELP & CAPABILITIES
+    if (/^(help|what can (you|i) (do|ask)|capabilities|commands|how to use|what can i do)\b/i.test(text)) {
       return 'HELP';
     }
 
-    // 2. Clear Pantry
+    // 2. CLEAR PANTRY
     if (/^(clear (my )?pantry|delete all pantry|empty (my )?pantry|reset pantry)\b/i.test(text)) {
       return 'CLEAR_PANTRY';
     }
 
-    // 3. Expiry Questions
-    if (/\b(expir(ing|e|es)|about to expire|use first|what should i use first|freshness|spoiling|going bad)\b/i.test(text)) {
+    // 3. EXPIRY QUESTIONS
+    if (/\b(expir(ing|e|es)|about to expire|use first|what should i use first|what to use first|freshness|spoiling|going bad)\b/i.test(text)) {
       return 'GET_EXPIRING_ITEMS';
     }
 
-    // 4. Missing Ingredients Questions
+    // 4. MISSING INGREDIENTS QUESTIONS
     if (
-      /\b(what am i missing|missing for|ingredients (needed|required) for|what (ingredients )?do i need|do i have everything for|what do i need to (make|cook|prepare))\b/i.test(text)
+      /\b(what am i missing|missing for|ingredients (needed|required) for|what (ingredients )?do i need for|do i have everything for|what do i need to (make|cook|prepare))\b/i.test(text)
     ) {
       return 'GET_MISSING_INGREDIENTS';
     }
 
-    // 5. Substitution Questions
-    if (/\b(instead of|substitute|substitution|replace|alternative for|can i replace|what can replace)\b/i.test(text)) {
+    // 5. SUBSTITUTION QUESTIONS
+    if (/\b(instead of|substitute|substitution|can i replace|what can replace|replace\s+[a-z]+|alternative for)\b/i.test(text)) {
       return 'SUGGEST_SUBSTITUTION';
     }
 
-    // 6. Recipe Search by Specific Ingredient
+    // 6. RECIPE SEARCH BY SPECIFIC INGREDIENT (Check before general recipe question to catch "what can I make with potatoes")
     if (
-      /\b(recipes (using|with|containing|made with)|find recipes (using|with|containing)|show me recipes (with|using)|what can i (make|cook|prepare) (with|using)|give me recipes containing)\b/i.test(text)
+      /\b(recipes (using|with|containing|made with)|find recipes (using|with|containing)|show (me )?recipes (with|using|containing)|what can i (make|cook|prepare) (with|using)|give me recipes containing)\b/i.test(text)
     ) {
+      // If the query specifically ends with generic pantry references, route to general FIND_RECIPES
+      if (/\b(with|using)\s+(what i have|my pantry|my ingredients|pantry|current stock|current ingredients|available ingredients)\b/i.test(text)) {
+        return 'FIND_RECIPES';
+      }
       return 'FIND_RECIPES_BY_INGREDIENT';
     }
 
-    // 7. General Recipe Questions
+    // 7. GENERAL RECIPE QUESTIONS
     if (
-      /\b(what can i (cook|make|prepare)|what recipes can i make|show recipes|recipes i can make|what to cook|what to make|recommend recipes|suggest recipes)\b/i.test(text)
+      /\b(what can i (cook|make|prepare) with what i have|what can i (cook|make|prepare) with my (pantry|ingredients)|what can i (cook|make|prepare)$|what recipes can i make|show recipes|recipes i can make|what to cook|what to make|recommend recipes|suggest recipes|what can i cook|what can i make)\b/i.test(text)
     ) {
       return 'FIND_RECIPES';
     }
 
-    // 8. Cooking Status
+    // 8. COOKING STATUS
     if (/\b(cooking status|what is my cooking status|am i cooking|current cooking|continue cooking)\b/i.test(text)) {
       return 'GET_COOKING_STATUS';
     }
 
-    // 9. Start Cooking Command
-    if (/\b(start cooking|cook recipe|prepare recipe|open (the )?cooking studio|lets cook)\b/i.test(text)) {
+    // 9. START COOKING COMMAND
+    if (/\b(start cooking|cook recipe|prepare recipe|open (the )?cooking studio|let's cook|lets cook)\b/i.test(text)) {
       return 'START_COOKING';
     }
 
-    // 10. Specific Pantry Item Quantity Query
-    if (/\b(how (much|many) .+ do i have|how (much|many) .+ is left|how much .+ in (my )?pantry|amount of .+)\b/i.test(text)) {
-      return 'GET_PANTRY_ITEM';
+    // 10. RECIPE DETAILS
+    if (/\b(recipe details|how to make|instructions for|show recipe for)\b/i.test(text)) {
+      return 'GET_RECIPE_DETAILS';
     }
 
-    // 11. Check Availability Query
-    if (/\b(do i have|do we have|is there|have i got|do i have enough)\b/i.test(text)) {
-      return 'CHECK_AVAILABILITY';
-    }
-
-    // 12. General Pantry Questions
+    // 11. GENERAL PANTRY QUESTIONS (Must be checked BEFORE specific quantity/availability to catch "what ingredients do I have?")
     if (
-      /\b(what do i have|show my pantry|what ingredients (do i have|are available)|what is in my (kitchen|pantry)|what's in my (kitchen|pantry)|list (my )?pantry|view pantry|show pantry|pantry stock|my ingredients)\b/i.test(text)
+      /^(what do i have|show (my )?pantry|what ingredients (do i have|are available)|what is in my (kitchen|pantry)|what's in my (kitchen|pantry)|list (my )?pantry|view pantry|show pantry|pantry stock|my ingredients)\b/i.test(text) ||
+      /^what (do i have|ingredients do i have)\??$/i.test(text)
     ) {
       return 'GET_PANTRY';
     }
 
-    // 13. Add Pantry Item
+    // 12. SPECIFIC PANTRY ITEM QUANTITY QUERY
+    if (/\b(how (much|many) .+ (do i have|is left|in my pantry|do we have)|amount of .+)\b/i.test(text)) {
+      return 'GET_PANTRY_ITEM';
+    }
+
+    // 13. CHECK AVAILABILITY QUERY
+    if (/\b(do i have|do we have|is there|have i got|do i have enough)\b/i.test(text)) {
+      return 'CHECK_AVAILABILITY';
+    }
+
+    // 14. ADD PANTRY ITEM
     if (
-      /^(add|put|bought|buy|store|stock|i bought)\b/i.test(text) ||
-      /\b(add|put|bought|buy|store|stock)\s+\d+/i.test(text) ||
-      /^i have \d+/i.test(text)
+      /^(add|put|bought|buy|store|stock|i bought|i have \d+)\b/i.test(text) ||
+      /\b(add|put|bought|buy|store|stock)\s+\d+/i.test(text)
     ) {
       return 'ADD_PANTRY_ITEM';
     }
 
-    // 14. Remove Pantry Item
+    // 15. REMOVE PANTRY ITEM
     if (
       /^(remove|delete|use|used|i used|subtract|take out)\b/i.test(text) ||
       /\btake\s+.+\s+out of (my )?pantry/i.test(text)
@@ -185,21 +194,16 @@ export class NLPParser {
       return 'REMOVE_PANTRY_ITEM';
     }
 
-    // 15. Update Pantry Item
+    // 16. UPDATE PANTRY ITEM
     if (/\b(update|change|set)\s+.+\s+(quantity|amount|to)\b/i.test(text)) {
       return 'UPDATE_PANTRY_ITEM';
-    }
-
-    // 16. Recipe Details
-    if (/\b(recipe details|how to make|instructions for|show recipe for)\b/i.test(text)) {
-      return 'GET_RECIPE_DETAILS';
     }
 
     return 'UNKNOWN';
   }
 
   /**
-   * Layer 2 & 3: Dynamically extracts entities (name, quantity, unit, recipe name).
+   * Layer 2 & 3: Dynamically extracts entities (name, quantity, unit, recipeName).
    */
   private static extractEntities(text: string, rawText: string, intent: AgentIntent): ExtractedEntities {
     const entities: ExtractedEntities = {};
@@ -228,13 +232,16 @@ export class NLPParser {
       }
     }
 
-    // 4. Extract Substitution Target
+    // 4. Extract Substitution Target Name
     if (intent === 'SUGGEST_SUBSTITUTION') {
-      const subMatch = rawText.match(/(?:instead of|substitute for|for|replace|alternative for)\s+([a-zA-Z0-9\s]+?)(?:\?|$)/i);
+      const subMatch = rawText.match(/(?:instead of|substitute for|substitute|for|replace|alternative for)\s+([a-zA-Z0-9\s]+?)(?:\?|$)/i);
       if (subMatch) {
-        let name = subMatch[1].trim().toLowerCase();
-        name = this.cleanIngredientName(name);
-        entities.name = name;
+        entities.name = this.cleanIngredientName(subMatch[1]);
+      } else {
+        const replaceMatch = rawText.match(/replace\s+([a-zA-Z0-9\s]+?)(?:\?|$)/i);
+        if (replaceMatch) {
+          entities.name = this.cleanIngredientName(replaceMatch[1]);
+        }
       }
     }
 
@@ -242,14 +249,17 @@ export class NLPParser {
     if (intent === 'FIND_RECIPES_BY_INGREDIENT') {
       const match = rawText.match(/(?:using|with|containing|made with)\s+([a-zA-Z0-9\s]+?)(?:\?|$)/i);
       if (match) {
-        let name = match[1].trim().toLowerCase();
-        name = this.cleanIngredientName(name);
-        entities.name = name;
+        entities.name = this.cleanIngredientName(match[1]);
       }
     }
 
     // 6. Extract Ingredient Name for ADD, REMOVE, GET_PANTRY_ITEM, CHECK_AVAILABILITY
-    if (intent === 'ADD_PANTRY_ITEM' || intent === 'REMOVE_PANTRY_ITEM' || intent === 'GET_PANTRY_ITEM' || intent === 'CHECK_AVAILABILITY') {
+    if (
+      intent === 'ADD_PANTRY_ITEM' ||
+      intent === 'REMOVE_PANTRY_ITEM' ||
+      intent === 'GET_PANTRY_ITEM' ||
+      intent === 'CHECK_AVAILABILITY'
+    ) {
       let extractedName = '';
 
       if (intent === 'GET_PANTRY_ITEM') {
@@ -259,7 +269,7 @@ export class NLPParser {
         }
       }
 
-      if (!extractedName && (intent === 'CHECK_AVAILABILITY')) {
+      if (!extractedName && intent === 'CHECK_AVAILABILITY') {
         const checkMatch = text.match(/(?:do i have|do we have|is there|have i got|do i have enough)\s+(?:(\d+(\.\d+)?)\s*(?:[a-zA-Z]+)\s+)?([a-zA-Z0-9\s]+?)(?:\?|$)/i);
         if (checkMatch && checkMatch[3]) {
           extractedName = checkMatch[3];
@@ -267,7 +277,7 @@ export class NLPParser {
       }
 
       if (!extractedName) {
-        // Fallback cleaning strategy: strip action verbs, quantities, units, locations, connectors
+        // Dynamic string reduction: remove action words, numbers, units, locations, connectors
         extractedName = text
           .replace(/^(add|put|bought|buy|store|stock|i bought|i have|remove|delete|use|used|i used|subtract|take out|take)\b/ig, '')
           .replace(/\b(to|from|in|out of|into)\s+(my\s+)?pantry\b/ig, '')
@@ -288,7 +298,8 @@ export class NLPParser {
   }
 
   /**
-   * Helper to clean and singularize ingredient names dynamically.
+   * Helper to clean dynamic ingredient names.
+   * Strips noise words while preserving food terms.
    */
   private static cleanIngredientName(name: string): string {
     let cleaned = name.trim().toLowerCase();
@@ -296,12 +307,12 @@ export class NLPParser {
 
     if (!cleaned) return '';
 
-    // Handle common plural singularization dynamically without destroying non-plural words
+    // Handle common plurals dynamically without destroying non-plural words like rice/couscous
     if (cleaned.endsWith('es') && (cleaned.endsWith('potatoes') || cleaned.endsWith('tomatoes') || cleaned.endsWith('mangoes'))) {
       cleaned = cleaned.slice(0, -2);
     } else if (cleaned.endsWith('s') && !cleaned.endsWith('ss') && cleaned.length > 3) {
       const nonPluralEnds = ['rice', 'cashews', 'couscous', 'hummus', 'grass'];
-      if (!nonPluralEnds.some(e => cleaned.endsWith(e))) {
+      if (!nonPluralEnds.some((e) => cleaned.endsWith(e))) {
         cleaned = cleaned.slice(0, -1);
       }
     }
@@ -310,7 +321,8 @@ export class NLPParser {
   }
 
   /**
-   * Layer 4: Validates parameters and checks for destructive/large action confirmation requirements.
+   * Layer 4: Validates parameters and checks for destructive confirmation requirements.
+   * Read-only commands DO NOT require confirmation.
    */
   private static validateAction(
     intent: AgentIntent,
@@ -325,7 +337,7 @@ export class NLPParser {
     }
 
     if (intent === 'REMOVE_PANTRY_ITEM') {
-      if (entities.quantity && entities.quantity >= 10) {
+      if (entities.quantity && entities.quantity >= 20) {
         return {
           passed: false,
           reason: `Confirm removing a large quantity (${entities.quantity} ${entities.unit || ''} of ${entities.name || 'item'})?`
@@ -341,3 +353,4 @@ export class NLPParser {
     return { passed: true };
   }
 }
+

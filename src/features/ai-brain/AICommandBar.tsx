@@ -20,6 +20,7 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
     confirmPendingAction,
     cancelPendingAction,
     isProcessing,
+    lastResponse,
     recentResponse
   } = useAIAgent();
 
@@ -59,6 +60,9 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
         return { color: '#06b6d4', bg: 'rgba(6, 182, 212, 0.15)', icon: HelpCircle, label: 'Info' };
     }
   };
+
+  const currentRespMessage = lastResponse?.message || recentResponse?.message;
+  const currentRespTimestamp = lastResponse?.timestamp || recentResponse?.timestamp;
 
   return (
     <div style={{ width: '100%', maxWidth: '740px', margin: '0 auto', ...style }}>
@@ -173,7 +177,7 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
       <AgentCommandHelper onSelectCommand={handleSelectCommand} disabled={isSubmitting} />
 
       {/* Real Structured AI Response Card */}
-      {recentResponse && (
+      {currentRespMessage && (
         <div
           className="glass-panel"
           style={{
@@ -181,7 +185,7 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
             padding: '16px 20px',
             borderRadius: '18px',
             background: 'rgba(15, 23, 42, 0.94)',
-            borderLeft: `4px solid ${getStatusBadge(recentResponse.actionRequired ? 'success' : 'info').color}`,
+            borderLeft: `4px solid ${getStatusBadge(lastResponse?.status || 'info').color}`,
             boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
             transition: 'all 0.3s ease'
           }}
@@ -191,12 +195,12 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
               <Bot size={18} /> Kitchen AI Agent Response
             </div>
             <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>
-              {recentResponse.timestamp}
+              {currentRespTimestamp}
             </span>
           </div>
 
-          <p style={{ fontSize: '0.92rem', color: 'var(--text-main)', lineHeight: 1.5, margin: '6px 0' }}>
-            {recentResponse.message}
+          <p style={{ fontSize: '0.92rem', color: 'var(--text-main)', lineHeight: 1.5, margin: '6px 0', whiteSpace: 'pre-line' }}>
+            {currentRespMessage}
           </p>
 
           <div
@@ -210,7 +214,7 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
             }}
           >
             <span style={{ fontSize: '0.73rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <Info size={14} color="var(--primary-cyan)" /> Module 5 NLP Agent Engine (Validated Structured Action)
+              <Info size={14} color="var(--primary-cyan)" /> Module 5 NLP Agent Engine (Validated Action)
             </span>
             <button
               onClick={() => setShowArchNote(!showArchNote)}
@@ -223,24 +227,42 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
                 textDecoration: 'underline'
               }}
             >
-              {showArchNote ? 'Hide NLP Spec' : 'View NLP Pipeline Spec'}
+              {showArchNote ? 'Hide NLP Debug Telemetry' : 'View Development Debug Panel'}
             </button>
           </div>
 
+          {/* Development Debug Panel View (Requirement 24) */}
           {showArchNote && (
             <div
               style={{
-                marginTop: '8px',
-                padding: '10px 12px',
-                background: 'rgba(8, 12, 20, 0.8)',
-                borderRadius: '10px',
-                fontSize: '0.78rem',
-                color: 'var(--text-dim)',
-                lineHeight: 1.45,
-                border: '1px solid rgba(6, 182, 212, 0.2)'
+                marginTop: '12px',
+                padding: '14px 16px',
+                background: 'rgba(8, 12, 20, 0.95)',
+                borderRadius: '12px',
+                fontSize: '0.8rem',
+                color: '#e2e8f0',
+                fontFamily: 'monospace',
+                lineHeight: 1.6,
+                border: '1px solid rgba(6, 182, 212, 0.3)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px'
               }}
             >
-              ⚡ <strong>5-Layer Architecture Active:</strong> User Input &rarr; Intent Detection &rarr; Entity Extraction &rarr; Unit Normalization &rarr; Validation & Confirmation &rarr; State Mutation. Zero fake AI responses.
+              <div style={{ color: 'var(--accent-violet)', fontWeight: 700, marginBottom: '4px' }}>
+                === DEVELOPMENT NLP DEBUG PANEL ===
+              </div>
+              <div><strong>User Input:</strong> {lastResponse?.debugInfo?.userInput || 'N/A'}</div>
+              <div><strong>Intent:</strong> <span style={{ color: 'var(--primary-cyan)' }}>{lastResponse?.intent || 'UNKNOWN'}</span></div>
+              <div>
+                <strong>Entities:</strong>{' '}
+                <span style={{ color: 'var(--accent-amber)' }}>
+                  {JSON.stringify(lastResponse?.debugInfo?.entities || {})}
+                </span>
+              </div>
+              <div><strong>Validation:</strong> <span style={{ color: lastResponse?.debugInfo?.validation.passed ? '#10b981' : '#f43f5e' }}>{lastResponse?.debugInfo?.validation.passed ? 'PASS' : `FAIL (${lastResponse?.debugInfo?.validation.reason})`}</span></div>
+              <div><strong>Action:</strong> {lastResponse?.intent || 'NONE'}</div>
+              <div><strong>Result:</strong> <span style={{ color: '#10b981' }}>{lastResponse?.status?.toUpperCase() || 'SUCCESS'}</span></div>
             </div>
           )}
         </div>

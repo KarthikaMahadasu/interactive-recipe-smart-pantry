@@ -13,22 +13,26 @@ export function useAIAgent() {
     removeIngredient,
     clearPantry,
     setSelectedRecipe,
+    startCooking,
     setAIState,
     addAIResponse
   } = useKitchenState();
 
   const [pendingAction, setPendingAction] = useState<AgentAction | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [lastResponse, setLastResponse] = useState<AgentResponse | null>(null);
 
   const processCommand = useCallback(
     async (commandText: string): Promise<AgentResponse> => {
       if (!commandText.trim()) {
-        return {
+        const resp: AgentResponse = {
           message: 'Please enter a valid kitchen command.',
           intent: 'UNKNOWN',
           status: 'warning',
           timestamp: new Date().toLocaleTimeString()
         };
+        setLastResponse(resp);
+        return resp;
       }
 
       setIsProcessing(true);
@@ -44,11 +48,13 @@ export function useAIAgent() {
       const executionContext: AgentExecutionContext = {
         pantry: state.pantry,
         recipes: state.recipes,
+        activeCookingRecipe: state.activeCookingRecipe,
         addIngredient,
         updateIngredient,
         removeIngredient,
         clearPantry,
         setSelectedRecipe,
+        startCooking,
         setAIState
       };
 
@@ -58,6 +64,7 @@ export function useAIAgent() {
       const response = await AIAgentService.executeUserCommand(commandText, executionContext);
 
       setIsProcessing(false);
+      setLastResponse(response);
 
       if (response.status === 'confirmation_required' && response.pendingAction) {
         setPendingAction(response.pendingAction);
@@ -91,7 +98,7 @@ export function useAIAgent() {
 
       return response;
     },
-    [state.pantry, state.recipes, addIngredient, updateIngredient, removeIngredient, clearPantry, setSelectedRecipe, setAIState, addAIResponse, navigate]
+    [state.pantry, state.recipes, state.activeCookingRecipe, addIngredient, updateIngredient, removeIngredient, clearPantry, setSelectedRecipe, startCooking, setAIState, addAIResponse, navigate]
   );
 
   const confirmPendingAction = useCallback(async () => {
@@ -103,11 +110,13 @@ export function useAIAgent() {
     const executionContext: AgentExecutionContext = {
       pantry: state.pantry,
       recipes: state.recipes,
+      activeCookingRecipe: state.activeCookingRecipe,
       addIngredient,
       updateIngredient,
       removeIngredient,
       clearPantry,
       setSelectedRecipe,
+      startCooking,
       setAIState
     };
 
@@ -115,6 +124,7 @@ export function useAIAgent() {
 
     setPendingAction(null);
     setIsProcessing(false);
+    setLastResponse(response);
     setAIState('success');
     setTimeout(() => setAIState('idle'), 2000);
 
@@ -128,7 +138,7 @@ export function useAIAgent() {
     if (response.actionRequired === 'explore_pantry') {
       setTimeout(() => navigate('/pantry'), 800);
     }
-  }, [pendingAction, state.pantry, state.recipes, addIngredient, updateIngredient, removeIngredient, clearPantry, setSelectedRecipe, setAIState, addAIResponse, navigate]);
+  }, [pendingAction, state.pantry, state.recipes, state.activeCookingRecipe, addIngredient, updateIngredient, removeIngredient, clearPantry, setSelectedRecipe, startCooking, setAIState, addAIResponse, navigate]);
 
   const cancelPendingAction = useCallback(() => {
     setPendingAction(null);
@@ -141,6 +151,7 @@ export function useAIAgent() {
     confirmPendingAction,
     cancelPendingAction,
     isProcessing,
+    lastResponse,
     recentResponse: state.aiHistory[0] || null
   };
 }
