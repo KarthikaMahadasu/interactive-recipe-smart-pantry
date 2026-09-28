@@ -1,20 +1,14 @@
 import React, { useState } from 'react';
 import type { Ingredient } from '../../types/ingredient';
-import { Tag, Plus, Minus, Trash2, Edit3, AlertTriangle, Calendar } from 'lucide-react';
+import { Tag, Plus, Minus, Trash2, Edit3, AlertTriangle, Calendar, User } from 'lucide-react';
 import { usePantry } from '../../hooks/usePantry';
+import { getInventoryStatus, getStatusBadgeConfig } from '../inventory/utils/inventoryUtils';
 
 interface IngredientCardProps {
   ingredient: Ingredient;
   onEdit?: (ingredient: Ingredient) => void;
   compact?: boolean;
 }
-
-const FRESHNESS_BADGES: Record<string, { label: string; color: string; bg: string }> = {
-  fresh: { label: 'Fresh', color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' },
-  expiring_soon: { label: 'Expiring Soon', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
-  critical: { label: 'Expired / Zero Stock', color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.15)' },
-  pantry_stable: { label: 'Pantry Stable', color: '#06b6d4', bg: 'rgba(6, 182, 212, 0.15)' }
-};
 
 export const IngredientCard: React.FC<IngredientCardProps> = ({
   ingredient,
@@ -24,7 +18,8 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
   const { deleteIngredient, updateQuantity } = usePantry();
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
-  const badge = FRESHNESS_BADGES[ingredient.freshness] || FRESHNESS_BADGES.fresh;
+  const status = getInventoryStatus(ingredient);
+  const badgeConfig = getStatusBadgeConfig(status);
 
   const handleConfirmRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -123,22 +118,22 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
         </div>
       </div>
 
-      {/* Freshness Badge, Category & Actions */}
+      {/* Real-time Status Badge, Category & Actions */}
       {!compact && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
             <span
               style={{
                 fontSize: '0.72rem',
                 fontWeight: 700,
                 padding: '2px 10px',
                 borderRadius: '12px',
-                color: badge.color,
-                background: badge.bg,
-                border: `1px solid ${badge.color}44`
+                color: badgeConfig.color,
+                background: badgeConfig.bg,
+                border: `1px solid ${badgeConfig.border}`
               }}
             >
-              {badge.label}
+              ● {badgeConfig.label}
             </span>
 
             <span
@@ -207,14 +202,29 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
         </div>
       )}
 
-      {/* Expiry Date Display */}
-      {!compact && ingredient.expiresAt && (
-        <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <Calendar size={12} color="var(--accent-amber)" /> Expiry Date: {ingredient.expiresAt}
+      {/* Expiry Date & Audit Information */}
+      {!compact && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingTop: '4px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+          {ingredient.expiresAt && (
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Calendar size={12} color="var(--accent-amber)" /> Expiry Date: {ingredient.expiresAt}
+            </div>
+          )}
+
+          {(ingredient.createdBy || ingredient.updatedBy) && (
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <User size={10} color="var(--primary-cyan)" />
+              <span>
+                {ingredient.updatedBy
+                  ? `Updated by ${ingredient.updatedBy}`
+                  : `Added by ${ingredient.createdBy}`}
+              </span>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Delete Confirmation Warning overlay */}
+      {/* Delete Confirmation Overlay */}
       {showConfirmDelete && (
         <div
           style={{

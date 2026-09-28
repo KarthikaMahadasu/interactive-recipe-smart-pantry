@@ -1,8 +1,9 @@
 import React from 'react';
-import { ArrowLeft, Sparkles, Bot, Clock, Utensils, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Sparkles, Bot, Clock, Utensils, AlertTriangle, Building2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AIBrainOrb } from '../features/ai-brain/AIBrainOrb';
 import { useKitchenState } from '../state/KitchenContext';
+import { useAuth } from '../contexts/AuthContext';
 import { AICommandBar } from '../features/ai-brain/AICommandBar';
 import { AIBrainStatePicker } from '../features/ai-brain/AIBrainStatePicker';
 import { useAIAgent } from '../features/ai-agent/hooks/useAIAgent';
@@ -10,6 +11,7 @@ import { useAIAgent } from '../features/ai-agent/hooks/useAIAgent';
 export const AIPage: React.FC = () => {
   const navigate = useNavigate();
   const { state, setAIState } = useKitchenState();
+  const { restaurant } = useAuth();
   const { processCommand } = useAIAgent();
 
   const handleQuickPrompt = (prompt: string) => {
@@ -49,8 +51,8 @@ export const AIPage: React.FC = () => {
             <ArrowLeft size={20} />
           </button>
           <div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--accent-violet)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              Module 5 &bull; Pantry AI Agent & NLP Engine
+            <div style={{ fontSize: '0.78rem', color: 'var(--accent-violet)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Building2 size={14} /> {restaurant?.name} &bull; Restaurant AI Agent
             </div>
             <h1 style={{ fontSize: '1.6rem', color: 'var(--text-main)' }}>Central AI Workspace & Kitchen OS Agent</h1>
           </div>
@@ -77,12 +79,12 @@ export const AIPage: React.FC = () => {
       >
         <AIBrainOrb state={state.aiState} size={200} />
 
-        <div style={{ textAlign: 'center', maxWidth: '520px' }}>
+        <div style={{ textAlign: 'center', maxWidth: '560px' }}>
           <h2 style={{ fontSize: '1.4rem', color: 'var(--text-main)' }}>
-            Neural Kitchen OS Assistant
+            {restaurant?.name} Neural Kitchen Agent
           </h2>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-            Connected to real pantry and recipe engines. Speak or type commands below for instant structured action.
+            Connected to shared restaurant inventory for <strong style={{ color: '#fff' }}>{restaurant?.name}</strong>. Speak or type commands below.
           </p>
         </div>
 
@@ -92,7 +94,7 @@ export const AIPage: React.FC = () => {
       {/* Quick Action Prompt Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
         <button
-          onClick={() => handleQuickPrompt('What can I cook with what I have?')}
+          onClick={() => handleQuickPrompt('What can we cook with what we have?')}
           className="glass-panel glass-panel-hover"
           style={{
             padding: '16px 20px',
@@ -107,7 +109,7 @@ export const AIPage: React.FC = () => {
           <Utensils size={24} color="var(--primary-cyan)" />
           <div>
             <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>Discover Cookable Recipes</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Check current pantry matches</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Check current restaurant stock matches</div>
           </div>
         </button>
 
@@ -127,7 +129,7 @@ export const AIPage: React.FC = () => {
           <AlertTriangle size={24} color="var(--accent-amber)" />
           <div>
             <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>Zero-Waste Scan</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Check expiring ingredients</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Check expiring stock items</div>
           </div>
         </button>
 
@@ -165,7 +167,7 @@ export const AIPage: React.FC = () => {
           }}
         >
           <h3 style={{ fontSize: '1.1rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Clock size={18} color="var(--primary-cyan)" /> AI Agent Conversation History
+            <Clock size={18} color="var(--primary-cyan)" /> AI Agent Conversation History ({restaurant?.name})
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>

@@ -4,12 +4,21 @@ import type { AIBrainState, AIResponsePayload } from '../types/ai';
 import type { KitchenZoneId } from '../types/kitchen';
 import type { Ingredient, FreshnessLevel } from '../types/ingredient';
 import type { Recipe } from '../types/recipe';
+import { useAuth } from '../contexts/AuthContext';
 
-const LOCAL_STORAGE_PANTRY_KEY = 'smart_pantry_items_v1';
+const DEFAULT_PANTRY_KEY = 'smart_pantry_items_v1';
 
-const defaultPantry: Ingredient[] = [
+function getPantryStorageKey(restaurantId?: string | null): string {
+  if (restaurantId) {
+    return `restaurant_${restaurantId}_inventory_v1`;
+  }
+  return DEFAULT_PANTRY_KEY;
+}
+
+const getDefaultPantry = (restaurantId?: string): Ingredient[] => [
   {
     id: 'ing_1',
+    restaurantId: restaurantId || 'rest_spice_garden',
     name: 'Dragon Fruit',
     category: 'produce',
     quantity: 2,
@@ -21,6 +30,7 @@ const defaultPantry: Ingredient[] = [
   },
   {
     id: 'ing_2',
+    restaurantId: restaurantId || 'rest_spice_garden',
     name: 'Finger Millet (Ragi)',
     category: 'grain',
     quantity: 500,
@@ -32,6 +42,7 @@ const defaultPantry: Ingredient[] = [
   },
   {
     id: 'ing_3',
+    restaurantId: restaurantId || 'rest_spice_garden',
     name: 'Fresh Paneer',
     category: 'dairy',
     quantity: 250,
@@ -43,6 +54,7 @@ const defaultPantry: Ingredient[] = [
   },
   {
     id: 'ing_4',
+    restaurantId: restaurantId || 'rest_spice_garden',
     name: 'Hass Avocado',
     category: 'produce',
     quantity: 3,
@@ -54,6 +66,7 @@ const defaultPantry: Ingredient[] = [
   },
   {
     id: 'ing_5',
+    restaurantId: restaurantId || 'rest_spice_garden',
     name: 'Raw Cashews',
     category: 'other',
     quantity: 300,
@@ -65,6 +78,7 @@ const defaultPantry: Ingredient[] = [
   },
   {
     id: 'ing_6',
+    restaurantId: restaurantId || 'rest_spice_garden',
     name: 'Organic Tofu',
     category: 'dairy',
     quantity: 400,
@@ -76,6 +90,7 @@ const defaultPantry: Ingredient[] = [
   },
   {
     id: 'ing_7',
+    restaurantId: restaurantId || 'rest_spice_garden',
     name: 'Cherry Tomatoes',
     category: 'produce',
     quantity: 200,
@@ -87,6 +102,7 @@ const defaultPantry: Ingredient[] = [
   },
   {
     id: 'ing_8',
+    restaurantId: restaurantId || 'rest_spice_garden',
     name: 'Greek Yogurt',
     category: 'dairy',
     quantity: 500,
@@ -95,20 +111,33 @@ const defaultPantry: Ingredient[] = [
     colorCode: '#38bdf8',
     tags: ['probiotic', 'high-protein'],
     createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ing_9',
+    restaurantId: restaurantId || 'rest_spice_garden',
+    name: 'Rice',
+    category: 'grain',
+    quantity: 25,
+    unit: 'kg',
+    freshness: 'pantry_stable',
+    colorCode: '#f8fafc',
+    tags: ['staple', 'restaurant-bulk'],
+    createdAt: new Date().toISOString()
   }
 ];
 
-function loadSavedPantry(): Ingredient[] {
+function loadPantryForRestaurant(restaurantId?: string | null): Ingredient[] {
+  const key = getPantryStorageKey(restaurantId);
   try {
-    const saved = localStorage.getItem(LOCAL_STORAGE_PANTRY_KEY);
+    const saved = localStorage.getItem(key);
     if (saved) {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed)) return parsed;
     }
   } catch (e) {
-    console.warn('Could not parse saved pantry from localStorage', e);
+    console.warn(`Could not parse saved pantry for key ${key}`, e);
   }
-  return defaultPantry;
+  return getDefaultPantry(restaurantId || undefined);
 }
 
 const initialRecipes: Recipe[] = [
@@ -163,7 +192,7 @@ const initialRecipes: Recipe[] = [
       { step: 3, text: 'Sear paneer cubes for 2-3 minutes per side until beautifully golden brown.', durationMinutes: 5, tip: 'Avoid over-cooking paneer to maintain soft texture.' },
       { step: 4, text: 'Assemble bowl with sliced avocado, blistered cherry tomatoes, and warm paneer.', durationMinutes: 2 }
     ],
-    nutrition: { calories: 480, protein: 24, carbs: 16, fat: 36 }
+    nutrition: { calories: 480, protein: 24, carbs: 36, fat: 36 }
   },
   {
     id: 'rec_3',
@@ -227,7 +256,7 @@ const initialGroceryList: GroceryItem[] = [
 ];
 
 const initialState: KitchenGlobalState = {
-  pantry: loadSavedPantry(),
+  pantry: loadPantryForRestaurant(null),
   recipes: initialRecipes,
   groceryList: initialGroceryList,
   selectedRecipeId: null,
@@ -248,6 +277,9 @@ const initialState: KitchenGlobalState = {
 
 function kitchenReducer(state: KitchenGlobalState, action: KitchenAction): KitchenGlobalState {
   switch (action.type) {
+    case 'SET_PANTRY_DATA':
+      return { ...state, pantry: action.payload };
+
     case 'SET_AI_STATE':
       return { ...state, aiState: action.payload };
 
@@ -421,16 +453,24 @@ interface KitchenContextType {
 const KitchenContext = createContext<KitchenContextType | undefined>(undefined);
 
 export const KitchenProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { restaurantId, user } = useAuth();
   const [state, dispatch] = useReducer(kitchenReducer, initialState);
 
-  // Requirement 11: Persist pantry data to localStorage
+  // Sync pantry data whenever restaurantId changes
   useEffect(() => {
+    const restaurantPantry = loadPantryForRestaurant(restaurantId);
+    dispatch({ type: 'SET_PANTRY_DATA', payload: restaurantPantry });
+  }, [restaurantId]);
+
+  // Persist pantry data to restaurant-isolated localStorage key
+  useEffect(() => {
+    const key = getPantryStorageKey(restaurantId);
     try {
-      localStorage.setItem(LOCAL_STORAGE_PANTRY_KEY, JSON.stringify(state.pantry));
+      localStorage.setItem(key, JSON.stringify(state.pantry));
     } catch (e) {
-      console.warn('Failed to save pantry to localStorage', e);
+      console.warn(`Failed to save pantry for key ${key}`, e);
     }
-  }, [state.pantry]);
+  }, [state.pantry, restaurantId]);
 
   const setAIState = (aiState: AIBrainState) => {
     dispatch({ type: 'SET_AI_STATE', payload: aiState });
@@ -441,11 +481,22 @@ export const KitchenProvider: React.FC<{ children: ReactNode }> = ({ children })
   };
 
   const addIngredient = (ingredient: Ingredient) => {
-    dispatch({ type: 'ADD_INGREDIENT', payload: ingredient });
+    const stamped: Ingredient = {
+      ...ingredient,
+      restaurantId: restaurantId || ingredient.restaurantId || 'rest_spice_garden',
+      createdBy: ingredient.createdBy || user?.name || 'Staff Member'
+    };
+    dispatch({ type: 'ADD_INGREDIENT', payload: stamped });
   };
 
   const updateIngredient = (ingredient: Ingredient) => {
-    dispatch({ type: 'UPDATE_INGREDIENT', payload: ingredient });
+    const stamped: Ingredient = {
+      ...ingredient,
+      restaurantId: restaurantId || ingredient.restaurantId || 'rest_spice_garden',
+      updatedBy: user?.name || 'Staff Member',
+      updatedAt: new Date().toISOString()
+    };
+    dispatch({ type: 'UPDATE_INGREDIENT', payload: stamped });
   };
 
   const removeIngredient = (id: string) => {
@@ -481,7 +532,11 @@ export const KitchenProvider: React.FC<{ children: ReactNode }> = ({ children })
   };
 
   const addGroceryItem = (item: GroceryItem) => {
-    dispatch({ type: 'ADD_GROCERY_ITEM', payload: item });
+    const stamped: GroceryItem = {
+      ...item,
+      restaurantId: restaurantId || item.restaurantId || 'rest_spice_garden'
+    };
+    dispatch({ type: 'ADD_GROCERY_ITEM', payload: stamped });
   };
 
   const toggleGroceryItem = (id: string) => {

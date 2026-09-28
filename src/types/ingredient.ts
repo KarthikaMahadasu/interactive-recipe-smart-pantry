@@ -14,6 +14,7 @@ export type FreshnessLevel = 'fresh' | 'expiring_soon' | 'critical' | 'pantry_st
 
 export interface Ingredient {
   id: string;
+  restaurantId?: string; // Associated Restaurant Workspace ID
   name: string;
   category: IngredientCategory;
   quantity: number;
@@ -24,6 +25,9 @@ export interface Ingredient {
   tags?: string[];
   notes?: string;
   createdAt: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
   expiresAt?: string;
   spatialPosition?: [number, number, number]; // [x, y, z] for 3D kitchen placement
 }

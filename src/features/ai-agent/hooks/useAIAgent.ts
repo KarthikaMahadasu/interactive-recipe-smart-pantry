@@ -1,11 +1,13 @@
 import { useState, useCallback } from 'react';
 import { useKitchenState } from '../../../state/KitchenContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import { AIAgentService, type AgentExecutionContext } from '../services/aiAgentService';
 import type { AgentResponse, AgentAction } from '../types/agentTypes';
 import { useNavigate } from 'react-router-dom';
 
 export function useAIAgent() {
   const navigate = useNavigate();
+  const { user, restaurant } = useAuth();
   const {
     state,
     addIngredient,
@@ -39,11 +41,11 @@ export function useAIAgent() {
 
       // 1. Visual AI Brain State: listening
       setAIState('listening');
-      await new Promise((res) => setTimeout(res, 400));
+      await new Promise((res) => setTimeout(res, 300));
 
       // 2. Visual AI Brain State: thinking (NLP parsing)
       setAIState('thinking');
-      await new Promise((res) => setTimeout(res, 500));
+      await new Promise((res) => setTimeout(res, 400));
 
       const executionContext: AgentExecutionContext = {
         pantry: state.pantry,
@@ -55,7 +57,9 @@ export function useAIAgent() {
         clearPantry,
         setSelectedRecipe,
         startCooking,
-        setAIState
+        setAIState,
+        user,
+        restaurant
       };
 
       // 3. Visual AI Brain State: working (State execution)
@@ -98,7 +102,7 @@ export function useAIAgent() {
 
       return response;
     },
-    [state.pantry, state.recipes, state.activeCookingRecipe, addIngredient, updateIngredient, removeIngredient, clearPantry, setSelectedRecipe, startCooking, setAIState, addAIResponse, navigate]
+    [state.pantry, state.recipes, state.activeCookingRecipe, addIngredient, updateIngredient, removeIngredient, clearPantry, setSelectedRecipe, startCooking, setAIState, addAIResponse, user, restaurant, navigate]
   );
 
   const confirmPendingAction = useCallback(async () => {
@@ -117,7 +121,9 @@ export function useAIAgent() {
       clearPantry,
       setSelectedRecipe,
       startCooking,
-      setAIState
+      setAIState,
+      user,
+      restaurant
     };
 
     const response = AIAgentService.executeAction(pendingAction, executionContext);
@@ -138,7 +144,7 @@ export function useAIAgent() {
     if (response.actionRequired === 'explore_pantry') {
       setTimeout(() => navigate('/pantry'), 800);
     }
-  }, [pendingAction, state.pantry, state.recipes, state.activeCookingRecipe, addIngredient, updateIngredient, removeIngredient, clearPantry, setSelectedRecipe, startCooking, setAIState, addAIResponse, navigate]);
+  }, [pendingAction, state.pantry, state.recipes, state.activeCookingRecipe, addIngredient, updateIngredient, removeIngredient, clearPantry, setSelectedRecipe, startCooking, setAIState, addAIResponse, user, restaurant, navigate]);
 
   const cancelPendingAction = useCallback(() => {
     setPendingAction(null);

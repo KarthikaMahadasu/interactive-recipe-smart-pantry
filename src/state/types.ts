@@ -10,6 +10,7 @@ export interface GroceryItem {
   unit: string;
   bought: boolean;
   category?: string;
+  restaurantId?: string;
 }
 
 export interface UserPreferences {
@@ -37,6 +38,7 @@ export interface KitchenGlobalState {
 export type KitchenAction =
   | { type: 'SET_AI_STATE'; payload: AIBrainState }
   | { type: 'SET_ACTIVE_ZONE'; payload: KitchenZoneId | null }
+  | { type: 'SET_PANTRY_DATA'; payload: Ingredient[] }
   | { type: 'ADD_INGREDIENT'; payload: Ingredient }
   | { type: 'UPDATE_INGREDIENT'; payload: Ingredient }
   | { type: 'UPDATE_INGREDIENT_QUANTITY'; payload: { id: string; delta: number } }

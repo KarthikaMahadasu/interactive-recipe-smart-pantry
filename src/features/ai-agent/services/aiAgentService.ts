@@ -2,6 +2,7 @@ import { NLPParser } from '../parsers/nlpParser';
 import type { AgentAction, AgentResponse, AgentDebugInfo } from '../types/agentTypes';
 import type { Ingredient, IngredientCategory, FreshnessLevel } from '../../../types/ingredient';
 import type { Recipe } from '../../../types/recipe';
+import type { User, Restaurant } from '../../../types/auth';
 import { RecipeMatchingService } from '../../../services/recipes/recipeMatchingService';
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -49,6 +50,8 @@ export interface AgentExecutionContext {
   setSelectedRecipe: (id: string | null) => void;
   startCooking?: (recipe: Recipe) => void;
   setAIState: (state: any) => void;
+  user?: User | null;
+  restaurant?: Restaurant | null;
 }
 
 export class AIAgentService {
@@ -116,9 +119,13 @@ export class AIAgentService {
       clearPantry,
       updateIngredient,
       setSelectedRecipe,
-      startCooking
+      startCooking,
+      restaurant,
+      user
     } = context;
     const params = action.parameters;
+
+    const restName = restaurant?.name || 'Restaurant';
 
     let responseMessage = '';
     let responseStatus: AgentResponse['status'] = 'info';
@@ -128,7 +135,7 @@ export class AIAgentService {
     switch (action.intent) {
       case 'ADD_PANTRY_ITEM': {
         if (!params.name) {
-          responseMessage = 'Which ingredient would you like to add to your Smart Pantry?';
+          responseMessage = `Which ingredient would you like to add to ${restName}'s inventory?`;
           responseStatus = 'warning';
           break;
         }
@@ -138,40 +145,42 @@ export class AIAgentService {
         const itemName = this.formatIngredientName(params.name);
         const category = this.inferCategory(itemName);
 
-        // Check if item already exists in pantry (case-insensitive)
+        // Check if item already exists in shared pantry (case-insensitive)
         const existing = pantry.find(
           (p) => p.name.toLowerCase() === itemName.toLowerCase() || p.name.toLowerCase().includes(params.name!.toLowerCase())
         );
 
         if (existing) {
-          // Convert units if necessary for addition
           const convertedAddQty = this.convertQuantity(qty, unit, existing.unit);
           const updatedQty = Math.round((existing.quantity + convertedAddQty) * 100) / 100;
 
           updateIngredient({
             ...existing,
             quantity: updatedQty,
-            freshness: 'fresh'
+            freshness: 'fresh',
+            updatedBy: user?.name
           });
 
-          responseMessage = `Updated stock: Added ${qty} ${unit} to existing ${existing.name}. New total quantity: ${updatedQty} ${existing.unit}.`;
+          responseMessage = `Updated ${restName} stock: Added ${qty} ${unit} to existing ${existing.name}. New total quantity: ${updatedQty} ${existing.unit}.`;
           responseStatus = 'success';
           actionRequired = 'explore_pantry';
         } else {
           const newIng: Ingredient = {
             id: `ing_agent_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+            restaurantId: restaurant?.id,
             name: itemName,
             quantity: qty,
             unit,
             category,
             freshness: 'fresh' as FreshnessLevel,
             colorCode: CATEGORY_COLORS[category] || '#06b6d4',
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            createdBy: user?.name || 'Staff'
           };
 
           addIngredient(newIng);
 
-          responseMessage = `Added ${qty} ${unit} of ${itemName} to your Smart Pantry!`;
+          responseMessage = `Added ${qty} ${unit} of ${itemName} to ${restName}'s shared inventory!`;
           responseStatus = 'success';
           actionRequired = 'explore_pantry';
         }
@@ -180,7 +189,7 @@ export class AIAgentService {
 
       case 'REMOVE_PANTRY_ITEM': {
         if (!params.name) {
-          responseMessage = 'Which ingredient would you like to remove from your Smart Pantry?';
+          responseMessage = `Which ingredient would you like to remove from ${restName}'s inventory?`;
           responseStatus = 'warning';
           break;
         }
@@ -191,7 +200,7 @@ export class AIAgentService {
         );
 
         if (!existing) {
-          responseMessage = `Could not find "${params.name}" in your Smart Pantry.`;
+          responseMessage = `Could not find "${params.name}" in ${restName}'s shared inventory.`;
           responseStatus = 'error';
           break;
         }
@@ -201,7 +210,7 @@ export class AIAgentService {
           const convertedRemoveQty = this.convertQuantity(params.quantity, requestedUnit, existing.unit);
 
           if (convertedRemoveQty > existing.quantity) {
-            responseMessage = `You have only ${existing.quantity} ${existing.unit} of ${existing.name}, but you requested to remove ${params.quantity} ${requestedUnit}. I cannot remove ${params.quantity} ${requestedUnit}.`;
+            responseMessage = `${restName} has only ${existing.quantity} ${existing.unit} of ${existing.name}, but you requested to remove ${params.quantity} ${requestedUnit}.`;
             responseStatus = 'warning';
             break;
           }
@@ -209,16 +218,16 @@ export class AIAgentService {
           const newQty = Math.round((existing.quantity - convertedRemoveQty) * 100) / 100;
           if (newQty <= 0) {
             removeIngredient(existing.id);
-            responseMessage = `Used all remaining ${existing.quantity} ${existing.unit} of ${existing.name}. Removed item from active pantry.`;
+            responseMessage = `Used all remaining ${existing.quantity} ${existing.unit} of ${existing.name}. Removed item from ${restName}'s active stock.`;
           } else {
-            updateIngredient({ ...existing, quantity: newQty });
-            responseMessage = `Removed ${params.quantity} ${requestedUnit} of ${existing.name}. Remaining stock: ${newQty} ${existing.unit}.`;
+            updateIngredient({ ...existing, quantity: newQty, updatedBy: user?.name });
+            responseMessage = `Removed ${params.quantity} ${requestedUnit} of ${existing.name} from ${restName}'s stock. Remaining stock: ${newQty} ${existing.unit}.`;
           }
           responseStatus = 'success';
           actionRequired = 'explore_pantry';
         } else {
           removeIngredient(existing.id);
-          responseMessage = `Removed ${existing.name} from your Smart Pantry.`;
+          responseMessage = `Removed ${existing.name} from ${restName}'s inventory.`;
           responseStatus = 'success';
           actionRequired = 'explore_pantry';
         }
@@ -237,16 +246,16 @@ export class AIAgentService {
         );
 
         if (!existing) {
-          responseMessage = `Could not find "${params.name}" in your Smart Pantry to update.`;
+          responseMessage = `Could not find "${params.name}" in ${restName}'s inventory to update.`;
           responseStatus = 'error';
           break;
         }
 
         const newQty = params.quantity !== undefined ? params.quantity : existing.quantity;
         const newUnit = params.unit || existing.unit;
-        updateIngredient({ ...existing, quantity: newQty, unit: newUnit });
+        updateIngredient({ ...existing, quantity: newQty, unit: newUnit, updatedBy: user?.name });
 
-        responseMessage = `Updated ${existing.name} stock to ${newQty} ${newUnit}.`;
+        responseMessage = `Updated ${existing.name} stock in ${restName} to ${newQty} ${newUnit}.`;
         responseStatus = 'success';
         actionRequired = 'explore_pantry';
         break;
@@ -254,7 +263,7 @@ export class AIAgentService {
 
       case 'CLEAR_PANTRY': {
         clearPantry();
-        responseMessage = 'Smart Pantry vault cleared completely.';
+        responseMessage = `${restName}'s shared inventory vault cleared completely.`;
         responseStatus = 'success';
         actionRequired = 'explore_pantry';
         break;
@@ -262,14 +271,14 @@ export class AIAgentService {
 
       case 'GET_PANTRY': {
         if (pantry.length === 0) {
-          responseMessage = 'Your Smart Pantry is currently empty. Add ingredients by typing commands like "Add 2 kg rice" or "Add 500 g paneer".';
+          responseMessage = `${restName}'s shared inventory is currently empty. Add ingredients by typing commands like "Add 25 kg rice" or "Add 5 kg paneer".`;
           responseStatus = 'info';
           actionRequired = 'explore_pantry';
           break;
         }
 
         const itemsList = pantry.map((i) => `${i.name} (${i.quantity} ${i.unit})`).join(', ');
-        responseMessage = `Your Smart Pantry currently contains ${pantry.length} ingredient(s): ${itemsList}.`;
+        responseMessage = `${restName}'s shared inventory currently contains ${pantry.length} ingredient(s): ${itemsList}.`;
         responseStatus = 'info';
         actionRequired = 'explore_pantry';
         responseData = { items: pantry };
@@ -278,7 +287,7 @@ export class AIAgentService {
 
       case 'GET_PANTRY_ITEM': {
         if (!params.name) {
-          responseMessage = 'Which ingredient would you like to check? (e.g. "How much rice do I have?")';
+          responseMessage = 'Which ingredient would you like to check? (e.g. "How much rice do we have?")';
           responseStatus = 'warning';
           break;
         }
@@ -289,10 +298,10 @@ export class AIAgentService {
         );
 
         if (existing && existing.quantity > 0) {
-          responseMessage = `You currently have ${existing.quantity} ${existing.unit} of ${existing.name} in your Smart Pantry.`;
+          responseMessage = `${restName} currently has ${existing.quantity} ${existing.unit} of ${existing.name} in shared inventory.`;
           responseStatus = 'info';
         } else {
-          responseMessage = `You don't currently have any ${params.name} in your Smart Pantry.`;
+          responseMessage = `${restName} does not currently have any ${params.name} in shared inventory.`;
           responseStatus = 'warning';
         }
         break;
@@ -300,7 +309,7 @@ export class AIAgentService {
 
       case 'CHECK_AVAILABILITY': {
         if (!params.name) {
-          responseMessage = 'Which ingredient would you like to verify in your pantry?';
+          responseMessage = 'Which ingredient would you like to verify in inventory?';
           responseStatus = 'warning';
           break;
         }
@@ -316,19 +325,19 @@ export class AIAgentService {
             const convertedReqQty = this.convertQuantity(params.quantity, reqUnit, item.unit);
 
             if (item.quantity >= convertedReqQty) {
-              responseMessage = `Yes! You have ${item.quantity} ${item.unit} of ${item.name} in your pantry, which is enough for your requested ${params.quantity} ${reqUnit}.`;
+              responseMessage = `Yes! ${restName} has ${item.quantity} ${item.unit} of ${item.name} in stock, sufficient for requested ${params.quantity} ${reqUnit}.`;
               responseStatus = 'success';
             } else {
               const diff = Math.round((convertedReqQty - item.quantity) * 100) / 100;
-              responseMessage = `You have only ${item.quantity} ${item.unit} of ${item.name} in your pantry, but requested ${params.quantity} ${reqUnit}. You are short by ${diff} ${item.unit}.`;
+              responseMessage = `${restName} has only ${item.quantity} ${item.unit} of ${item.name} in stock. Short by ${diff} ${item.unit}.`;
               responseStatus = 'warning';
             }
           } else {
-            responseMessage = `Yes! You have ${item.quantity} ${item.unit} of ${item.name} available in your Smart Pantry.`;
+            responseMessage = `Yes! ${restName} has ${item.quantity} ${item.unit} of ${item.name} available in shared inventory.`;
             responseStatus = 'success';
           }
         } else {
-          responseMessage = `No, "${params.name}" is not currently in your Smart Pantry.`;
+          responseMessage = `No, "${params.name}" is not currently in ${restName}'s shared inventory.`;
           responseStatus = 'warning';
         }
         break;
@@ -336,7 +345,7 @@ export class AIAgentService {
 
       case 'FIND_RECIPES': {
         if (pantry.length === 0) {
-          responseMessage = 'Your pantry is empty! Add ingredients first to discover matched recipes.';
+          responseMessage = `${restName}'s inventory is empty! Add ingredients first to discover matched recipes.`;
           responseStatus = 'warning';
           actionRequired = 'explore_pantry';
           break;
@@ -351,11 +360,11 @@ export class AIAgentService {
             .map((m, i) => `${i + 1}. ${m.recipe.title} (${m.matchPercentage}% match — ${m.availableIngredients.length}/${m.recipe.ingredients.length} available)`)
             .join('\n');
 
-          responseMessage = `Based on your current pantry, you can make:\n\n${recipeList}`;
+          responseMessage = `Based on ${restName}'s current shared inventory, you can prepare:\n\n${recipeList}`;
           responseStatus = 'success';
           actionRequired = 'view_recipes';
         } else {
-          responseMessage = 'No recipes matched your current pantry stock. Try adding more ingredients to your pantry.';
+          responseMessage = `No recipes matched ${restName}'s current stock. Try restocking ingredients in shared inventory.`;
           responseStatus = 'info';
           actionRequired = 'view_recipes';
         }
@@ -364,7 +373,7 @@ export class AIAgentService {
 
       case 'FIND_RECIPES_BY_INGREDIENT': {
         if (!params.name) {
-          responseMessage = 'Which ingredient would you like to search recipes for? (e.g. "Find recipes using paneer")';
+          responseMessage = 'Which ingredient would you like to search recipes for?';
           responseStatus = 'warning';
           break;
         }
@@ -377,14 +386,14 @@ export class AIAgentService {
         if (matchingRecipes.length > 0) {
           const matches = RecipeMatchingService.matchAllRecipes(matchingRecipes, pantry);
           const list = matches
-            .map((m, i) => `${i + 1}. ${m.recipe.title} (${m.matchPercentage}% pantry match)`)
+            .map((m, i) => `${i + 1}. ${m.recipe.title} (${m.matchPercentage}% ${restName} stock match)`)
             .join('\n');
 
           responseMessage = `Found ${matchingRecipes.length} recipe(s) containing "${params.name}":\n\n${list}`;
           responseStatus = 'success';
           actionRequired = 'view_recipes';
         } else {
-          responseMessage = `No recipes in our catalog contain "${params.name}". Catalog contains: ${recipes.map((r) => `"${r.title}"`).join(', ')}.`;
+          responseMessage = `No recipes in catalog contain "${params.name}". Catalog contains: ${recipes.map((r) => `"${r.title}"`).join(', ')}.`;
           responseStatus = 'info';
           actionRequired = 'view_recipes';
         }
@@ -417,14 +426,14 @@ export class AIAgentService {
 
         const match = RecipeMatchingService.matchRecipe(targetRecipe, pantry);
         if (match.missingIngredients.length === 0) {
-          responseMessage = `You have 100% of required ingredients to prepare "${targetRecipe.title}"!`;
+          responseMessage = `${restName} has 100% of required ingredients to prepare "${targetRecipe.title}"!`;
           responseStatus = 'success';
         } else {
           const missingItemsText = match.missingIngredients
             .map((m) => `${m.recipeIngredient.name} (${m.recipeIngredient.amount} ${m.recipeIngredient.unit})`)
             .join(', ');
 
-          responseMessage = `For "${targetRecipe.title}", you are missing: ${missingItemsText}.`;
+          responseMessage = `For "${targetRecipe.title}", ${restName} is missing: ${missingItemsText}.`;
           responseStatus = 'info';
           actionRequired = 'add_grocery';
         }
@@ -437,12 +446,12 @@ export class AIAgentService {
         );
 
         if (expiring.length === 0) {
-          responseMessage = 'All your pantry ingredients are fresh! None are expiring soon.';
+          responseMessage = `All ingredients in ${restName}'s inventory are fresh!`;
           responseStatus = 'info';
           actionRequired = 'explore_pantry';
         } else {
           const list = expiring.map((i) => `${i.name} (${i.quantity} ${i.unit})`).join(', ');
-          responseMessage = `Found ${expiring.length} item(s) expiring soon: ${list}.`;
+          responseMessage = `Found ${expiring.length} item(s) expiring/low in ${restName}'s stock: ${list}.`;
           responseStatus = 'warning';
           actionRequired = 'explore_pantry';
         }
@@ -453,26 +462,25 @@ export class AIAgentService {
         const targetName = params.name ? params.name.toLowerCase().trim() : '';
 
         if (!targetName) {
-          responseMessage = 'Which ingredient would you like a substitution for? (e.g. "What can I use instead of milk?")';
+          responseMessage = 'Which ingredient would you like a substitution for?';
           responseStatus = 'warning';
           break;
         }
 
         const subs = EXTENDED_SUBSTITUTIONS[targetName];
         if (subs && subs.length > 0) {
-          // Check if any substitute is available in user's active pantry
           const inPantrySub = pantry.find((p) =>
             subs.some((s) => p.name.toLowerCase().includes(s.toLowerCase()))
           );
 
           if (inPantrySub) {
-            responseMessage = `Substitution advice for ${this.formatIngredientName(targetName)}: You can substitute with ${subs.join(', ')}. (Tip: You already have ${inPantrySub.name} in your Smart Pantry!)`;
+            responseMessage = `Substitution advice for ${this.formatIngredientName(targetName)}: You can substitute with ${subs.join(', ')}. (Tip: ${restName} already has ${inPantrySub.name} in stock!)`;
           } else {
             responseMessage = `Substitution advice for ${this.formatIngredientName(targetName)}: You can substitute with ${subs.join(', ')}.`;
           }
           responseStatus = 'info';
         } else {
-          responseMessage = `I don't currently have a suitable substitution for "${targetName}" in my culinary dataset. Try using a similar staple in the same food category.`;
+          responseMessage = `I don't currently have a suitable substitution for "${targetName}" in my culinary dataset.`;
           responseStatus = 'info';
         }
         break;
@@ -514,11 +522,11 @@ export class AIAgentService {
 
       case 'GET_COOKING_STATUS': {
         if (activeCookingRecipe) {
-          responseMessage = `Currently cooking "${activeCookingRecipe.title}".`;
+          responseMessage = `Currently cooking "${activeCookingRecipe.title}" in ${restName}'s kitchen.`;
           responseStatus = 'info';
           actionRequired = 'start_cooking';
         } else {
-          responseMessage = 'No active cooking session right now. Say "Start cooking" or select a recipe to begin.';
+          responseMessage = 'No active cooking session right now.';
           responseStatus = 'info';
         }
         break;
@@ -544,13 +552,13 @@ export class AIAgentService {
       }
 
       case 'HELP': {
-        responseMessage = `I can help you with:\n\n• Add or remove pantry ingredients (e.g. "Add 2 kg rice", "Remove 500 g paneer")\n• Check pantry quantities (e.g. "How much rice do I have?", "Do I have paneer?")\n• Find recipes (e.g. "What can I cook?", "Find recipes using paneer")\n• Check missing ingredients (e.g. "What am I missing for Paneer Curry?")\n• Expiry scan (e.g. "What is expiring soon?")\n• Suggest substitutions (e.g. "What can I use instead of milk?")\n• Guided cooking (e.g. "Start cooking Paneer Curry")`;
+        responseMessage = `I am your ${restName} AI Kitchen Assistant. I can help with:\n\n• Add/remove inventory items (e.g. "Add 25 kg rice", "Remove 5 kg paneer")\n• Check stock quantities (e.g. "How much rice do we have?", "Do we have paneer?")\n• Recipe matching (e.g. "What can we cook?", "Find recipes using paneer")\n• Expiry scan (e.g. "What is expiring soon?")\n• Ingredient substitutions (e.g. "What can I use instead of milk?")\n• Guided cooking (e.g. "Start cooking Paneer Curry")`;
         responseStatus = 'info';
         break;
       }
 
       default: {
-        responseMessage = `I am your Kitchen AI Assistant. I can help you with pantry management, recipe discovery, ingredients, cooking, and substitutions.`;
+        responseMessage = `I am ${restName}'s AI Kitchen Assistant. Ready to help with stock, recipes, cooking, and staff workspace commands.`;
         responseStatus = 'info';
         break;
       }
@@ -579,9 +587,6 @@ export class AIAgentService {
     };
   }
 
-  /**
-   * Helper to format ingredient names neatly (e.g. "dragon fruit" -> "Dragon Fruit").
-   */
   private static formatIngredientName(name: string): string {
     return name
       .trim()
@@ -590,9 +595,6 @@ export class AIAgentService {
       .join(' ');
   }
 
-  /**
-   * Helper to infer ingredient category dynamically from name.
-   */
   private static inferCategory(name: string): IngredientCategory {
     const n = name.toLowerCase();
     if (/fruit|apple|banana|mango|avocado|dragon|berry|tomato|potato|onion|garlic|lemon|orange|spinach|carrot|lettuce|cucumber|pepper/i.test(n)) {
@@ -622,20 +624,15 @@ export class AIAgentService {
     return 'produce';
   }
 
-  /**
-   * Converts quantity between common metric units.
-   */
   private static convertQuantity(amount: number, fromUnit: string, toUnit: string): number {
     const from = fromUnit.toLowerCase();
     const to = toUnit.toLowerCase();
 
     if (from === to) return amount;
 
-    // Weight conversions: kg <-> g
     if (from === 'kg' && to === 'g') return amount * 1000;
     if (from === 'g' && to === 'kg') return amount / 1000;
 
-    // Volume conversions: L <-> ml
     if ((from === 'l' || from === 'litre' || from === 'liter') && to === 'ml') return amount * 1000;
     if (from === 'ml' && (to === 'l' || to === 'litre' || to === 'liter')) return amount / 1000;
 
