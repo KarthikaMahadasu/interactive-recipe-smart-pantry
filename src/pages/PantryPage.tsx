@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Search, AlertTriangle, PackageCheck, Trash2, Building2, Lock, Camera, ArrowUpDown, PackageX, MinusCircle, SlidersHorizontal, History } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { IngredientCard } from '../features/ingredients/IngredientCard';
 import { AddIngredientModal } from '../features/pantry/components/AddIngredientModal';
 import { EditIngredientModal } from '../features/pantry/components/EditIngredientModal';
@@ -36,6 +36,7 @@ const STATUS_FILTERS: { label: string; value: InventoryStatus | 'all' }[] = [
 
 export const PantryPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     searchPantry,
     totalCount,
@@ -59,6 +60,12 @@ export const PantryPage: React.FC = () => {
   const [isWasteOpen, setIsWasteOpen] = useState(false);
   const [isAdjustOpen, setIsAdjustOpen] = useState(false);
   const [editingIngredient, setEditingIngredient] = useState<Ingredient | null>(null);
+
+  useEffect(() => {
+    if (location.search.includes('camera=true')) {
+      setIsCameraOpen(true);
+    }
+  }, [location.search]);
 
   const filteredPantry = searchPantry(searchQuery, selectedCategory, statusFilter, sortOption);
   const canManage = hasPermission('manage_inventory');

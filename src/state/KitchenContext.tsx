@@ -127,6 +127,42 @@ const getDefaultPantry = (restaurantId?: string): Ingredient[] => [
     colorCode: '#f8fafc',
     tags: ['staple', 'restaurant-bulk'],
     createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ing_10',
+    restaurantId: restaurantId || 'rest_spice_garden',
+    name: 'Chicken',
+    category: 'meat',
+    quantity: 5,
+    unit: 'kg',
+    freshness: 'fresh',
+    colorCode: '#f43f5e',
+    tags: ['poultry', 'protein'],
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ing_11',
+    restaurantId: restaurantId || 'rest_spice_garden',
+    name: 'Onion',
+    category: 'produce',
+    quantity: 10,
+    unit: 'kg',
+    freshness: 'pantry_stable',
+    colorCode: '#a855f7',
+    tags: ['veggie', 'staple'],
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ing_12',
+    restaurantId: restaurantId || 'rest_spice_garden',
+    name: 'Tomato',
+    category: 'produce',
+    quantity: 4,
+    unit: 'kg',
+    freshness: 'fresh',
+    colorCode: '#ef4444',
+    tags: ['veggie', 'fresh'],
+    createdAt: new Date().toISOString()
   }
 ];
 
@@ -242,6 +278,57 @@ const initialRecipes: Recipe[] = [
       { step: 3, text: 'Combine rice and potatoes and serve hot.', durationMinutes: 2 }
     ],
     nutrition: { calories: 410, protein: 8, carbs: 78, fat: 8 }
+  },
+  {
+    id: 'rec_5',
+    title: 'Chicken Curry',
+    description: 'Traditional restaurant style chicken curry prepared with tender chicken pieces, onion gravy, and aromatic spices.',
+    prepTime: 20,
+    cookTime: 30,
+    servings: 4,
+    difficulty: 'Medium',
+    category: 'Dinner',
+    cuisine: 'Indian',
+    dietaryTags: ['High-Protein', 'Non-Vegetarian', 'Gluten-Free'],
+    colorGradient: 'linear-gradient(135deg, #f43f5e 0%, #b91c1c 100%)',
+    createdAt: new Date().toISOString(),
+    ingredients: [
+      { name: 'Chicken', amount: 2, unit: 'kg' },
+      { name: 'Onion', amount: 1, unit: 'kg' },
+      { name: 'Tomato', amount: 500, unit: 'g' }
+    ],
+    instructions: [
+      { step: 1, text: 'Marinate chicken with ginger garlic paste and spices.', durationMinutes: 10 },
+      { step: 2, text: 'Sauté chopped onions and tomatoes until oil separates.', durationMinutes: 10 },
+      { step: 3, text: 'Add chicken and simmer until cooked thoroughly.', durationMinutes: 20 }
+    ],
+    nutrition: { calories: 520, protein: 45, carbs: 12, fat: 32 }
+  },
+  {
+    id: 'rec_6',
+    title: 'Paneer Butter Masala',
+    description: 'Rich and creamy paneer curry in a fragrant tomato-butter gravy.',
+    prepTime: 15,
+    cookTime: 20,
+    servings: 3,
+    difficulty: 'Medium',
+    category: 'Dinner',
+    cuisine: 'North Indian',
+    dietaryTags: ['Vegetarian', 'High-Protein'],
+    colorGradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+    createdAt: new Date().toISOString(),
+    ingredients: [
+      { name: 'Fresh Paneer', amount: 400, unit: 'g' },
+      { name: 'Tomato', amount: 400, unit: 'g' },
+      { name: 'Raw Cashews', amount: 100, unit: 'g' },
+      { name: 'Greek Yogurt', amount: 100, unit: 'g' }
+    ],
+    instructions: [
+      { step: 1, text: 'Make cashew and tomato puree.', durationMinutes: 5 },
+      { step: 2, text: 'Simmer gravy with spices.', durationMinutes: 10 },
+      { step: 3, text: 'Add paneer cubes and simmer.', durationMinutes: 5 }
+    ],
+    nutrition: { calories: 450, protein: 18, carbs: 22, fat: 32 }
   }
 ];
 

@@ -111,6 +111,8 @@ export function useAIAgent() {
         setTimeout(() => navigate('/cooking'), 800);
       } else if (response.actionRequired === 'add_grocery') {
         setTimeout(() => navigate('/grocery'), 800);
+      } else if (response.actionRequired === 'open_camera') {
+        setTimeout(() => navigate('/pantry?camera=true'), 800);
       }
 
       return response;

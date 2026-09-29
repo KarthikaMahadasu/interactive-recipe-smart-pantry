@@ -1,4 +1,4 @@
-import { NLPParser } from '../parsers/nlpParser';
+import { NLPParser, type AgentConversationContext } from '../parsers/nlpParser';
 import type { AgentAction, AgentResponse, AgentDebugInfo } from '../types/agentTypes';
 import type { Ingredient, IngredientCategory, FreshnessLevel } from '../../../types/ingredient';
 import type { Recipe } from '../../../types/recipe';
@@ -45,6 +45,8 @@ export interface AgentExecutionContext {
 }
 
 export class AIAgentService {
+  private static memory: AgentConversationContext = {};
+
   static async executeUserCommand(
     command: string,
     context: AgentExecutionContext
@@ -60,11 +62,11 @@ export class AIAgentService {
       };
     }
 
-    const action: AgentAction = NLPParser.parse(command);
+    const action: AgentAction = NLPParser.parse(command, this.memory);
     const { pantry, groceryList = [] } = context;
     const params = action.parameters;
 
-    // Requirement 12.19: Handle ambiguous commands cleanly
+    // Requirement: Handle ambiguous commands cleanly
     if (
       action.intent === 'RECORD_USAGE' ||
       action.intent === 'RECORD_WASTE' ||
@@ -103,7 +105,7 @@ export class AIAgentService {
       }
     }
 
-    // Requirement 12.6: Format real state confirmation prompts for significant actions
+    // Format real state confirmation prompts for significant actions
     let confirmationMsg = '';
     let needsConfirmation = false;
 
@@ -199,14 +201,97 @@ export class AIAgentService {
     } = context;
     const params = action.parameters;
 
-    const restName = restaurant?.name || 'Restaurant';
+    const restName = restaurant?.name || 'Spice Garden';
 
     let responseMessage = '';
     let responseStatus: AgentResponse['status'] = 'info';
     let actionRequired: AgentResponse['actionRequired'] = 'none';
     let responseData: Record<string, unknown> | undefined = undefined;
 
+    // Track memory for context
+    if (params.name) {
+      this.memory.lastIngredientName = params.name;
+    }
+    if (params.recipeName) {
+      this.memory.lastRecipeName = params.recipeName;
+    }
+    this.memory.lastIntent = action.intent;
+    this.memory.lastTimestamp = Date.now();
+
     switch (action.intent) {
+      case 'GREETING': {
+        responseMessage = `Hello! I am your AI Kitchen Assistant for ${restName}. Ready to assist with inventory, recipes, cooking, waste logging, camera scanning, and grocery management!`;
+        responseStatus = 'info';
+        break;
+      }
+
+      case 'OPEN_CAMERA':
+      case 'CAPTURE_ITEM':
+      case 'ANALYZE_ITEM':
+      case 'CONFIRM_DETECTED_ITEM':
+      case 'UPDATE_INVENTORY_FROM_CAMERA': {
+        responseMessage = `Opening Camera Inventory Scanner for ${restName}. Position an ingredient item in the camera frame to scan and auto-detect stock!`;
+        responseStatus = 'info';
+        actionRequired = 'open_camera';
+        break;
+      }
+
+      case 'GET_RECIPE_INGREDIENTS': {
+        const queryName = params.name || params.recipeName || this.memory.lastRecipeName || 'Chicken Curry';
+        const targetRecipe = recipes.find((r: Recipe) => r.title.toLowerCase().includes(queryName.toLowerCase()));
+
+        if (!targetRecipe) {
+          responseMessage = `Could not find recipe "${queryName}" in ${restName}'s database.`;
+          responseStatus = 'warning';
+          break;
+        }
+
+        this.memory.lastRecipeName = targetRecipe.title;
+
+        const ingList = targetRecipe.ingredients
+          .map((i) => `• ${i.name} — ${i.amount} ${i.unit}`)
+          .join('\n');
+
+        responseMessage = `${targetRecipe.title} ingredients:\n\n${ingList}`;
+        responseStatus = 'info';
+        actionRequired = 'view_recipes';
+        break;
+      }
+
+      case 'GET_PENDING_GROCERIES': {
+        const pending = groceryList.filter((g) => g.status === 'NEEDED' || g.status === 'ORDERED');
+        if (pending.length === 0) {
+          responseMessage = `No pending grocery items for ${restName}.`;
+          responseStatus = 'info';
+        } else {
+          const list = pending.map((g) => `• [${g.priority}] ${g.name}: ${g.quantity} ${g.unit}`).join('\n');
+          responseMessage = `${restName} has ${pending.length} pending grocery item(s):\n\n${list}`;
+          responseStatus = 'info';
+        }
+        actionRequired = 'add_grocery';
+        break;
+      }
+
+      case 'GET_PURCHASED_GROCERIES': {
+        const purchased = groceryList.filter((g) => g.status === 'PURCHASED');
+        if (purchased.length === 0) {
+          responseMessage = `No items currently marked as PURCHASED on ${restName}'s grocery list. (Note: Items update inventory once RECEIVED).`;
+          responseStatus = 'info';
+        } else {
+          const list = purchased.map((g) => `• ${g.name}: ${g.quantity} ${g.unit} (Awaiting Delivery)`).join('\n');
+          responseMessage = `Purchased grocery items for ${restName} awaiting delivery receipt:\n\n${list}`;
+          responseStatus = 'info';
+        }
+        actionRequired = 'add_grocery';
+        break;
+      }
+
+      case 'GET_STAFF_ROLE': {
+        responseMessage = `Role information for ${restName}:\n\n• Manager: ${user?.name || 'Admin Chef'} (${user?.role.toUpperCase() || 'MANAGER'})\n• Kitchen Staff: Executive Chef, Sous Chef, Station Line Cooks.`;
+        responseStatus = 'info';
+        break;
+      }
+
       case 'RECORD_USAGE': {
         if (!params.name) {
           responseMessage = 'Which ingredient usage would you like to record?';
@@ -312,31 +397,39 @@ export class AIAgentService {
       }
 
       case 'ADD_GROCERY_ITEM': {
-        if (!params.name) {
+        let itemsToAdd: Array<{ name: string; quantity: number; unit: string }> = [];
+
+        if (params.name) {
+          itemsToAdd.push({ name: params.name, quantity: params.quantity && params.quantity > 0 ? params.quantity : 1, unit: params.unit || 'pcs' });
+        } else if (this.memory.lastMissingIngredients && this.memory.lastMissingIngredients.length > 0) {
+          itemsToAdd = this.memory.lastMissingIngredients.map((item) => ({ name: item.name, quantity: item.amount, unit: item.unit }));
+        }
+
+        if (itemsToAdd.length === 0) {
           responseMessage = 'Which item would you like to add to the grocery list?';
           responseStatus = 'warning';
           break;
         }
 
-        const qty = params.quantity && params.quantity > 0 ? params.quantity : 1;
-        const unit = params.unit || 'pcs';
-
         if (addGroceryItem) {
-          addGroceryItem({
-            id: `g_ai_${Date.now()}`,
-            restaurantId: restaurant?.id,
-            name: params.name,
-            quantity: qty,
-            unit,
-            reason: 'Added via AI Command',
-            priority: 'HIGH',
-            source: 'MANUAL',
-            status: 'NEEDED',
-            createdAt: new Date().toISOString()
+          itemsToAdd.forEach((item) => {
+            addGroceryItem({
+              id: `g_ai_${Date.now()}_${Math.random().toString(36).substring(2, 5)}`,
+              restaurantId: restaurant?.id,
+              name: item.name,
+              quantity: item.quantity,
+              unit: item.unit,
+              reason: 'Added via AI Command',
+              priority: 'HIGH',
+              source: 'MANUAL',
+              status: 'NEEDED',
+              createdAt: new Date().toISOString()
+            });
           });
         }
 
-        responseMessage = `Added ${qty} ${unit} of ${params.name} to ${restName}'s smart grocery list.`;
+        const itemNames = itemsToAdd.map((i) => `${i.quantity} ${i.unit} of ${i.name}`).join(', ');
+        responseMessage = `Added ${itemNames} to ${restName}'s smart grocery list.`;
         responseStatus = 'success';
         actionRequired = 'add_grocery';
         break;
@@ -360,7 +453,7 @@ export class AIAgentService {
           markGroceryPurchased(target.id);
         }
 
-        responseMessage = `Marked "${target.name}" as PURCHASED on ${restName}'s grocery list!`;
+        responseMessage = `Marked "${target.name}" as PURCHASED on ${restName}'s grocery list! (Note: Stock will be updated once delivery is RECEIVED).`;
         responseStatus = 'success';
         actionRequired = 'add_grocery';
         break;
@@ -534,23 +627,38 @@ export class AIAgentService {
         break;
       }
 
+      case 'CHECK_AVAILABILITY':
       case 'GET_PANTRY_ITEM': {
-        if (!params.name) {
+        const queryName = params.name || this.memory.lastIngredientName;
+        if (!queryName) {
           responseMessage = 'Which ingredient would you like to check?';
           responseStatus = 'warning';
           break;
         }
 
-        const targetName = params.name.toLowerCase().trim();
+        const targetName = queryName.toLowerCase().trim();
         const existing = pantry.find(
-          (p) => p.name.toLowerCase() === targetName || p.name.toLowerCase().includes(targetName)
+          (p) => p.name.toLowerCase() === targetName || p.name.toLowerCase().includes(targetName) || targetName.includes(p.name.toLowerCase())
         );
 
         if (existing && existing.quantity > 0) {
-          responseMessage = `${restName} currently has ${existing.quantity} ${existing.unit} of ${existing.name} in shared inventory.`;
-          responseStatus = 'info';
+          this.memory.lastIngredientName = existing.name;
+          if (params.quantity && params.quantity > 0) {
+            const reqUnit = params.unit || existing.unit;
+            const converted = this.convertQuantity(params.quantity, reqUnit, existing.unit);
+            if (existing.quantity >= converted) {
+              responseMessage = `Yes! ${restName} has ${existing.quantity} ${existing.unit} of ${existing.name} in shared inventory (you requested ${params.quantity} ${reqUnit}).`;
+              responseStatus = 'success';
+            } else {
+              responseMessage = `${restName} only has ${existing.quantity} ${existing.unit} of ${existing.name} (short by ${converted - existing.quantity} ${existing.unit}).`;
+              responseStatus = 'warning';
+            }
+          } else {
+            responseMessage = `${restName} currently has ${existing.quantity} ${existing.unit} of ${existing.name} in shared inventory.`;
+            responseStatus = 'success';
+          }
         } else {
-          responseMessage = `${restName} does not currently have any ${params.name} in shared inventory.`;
+          responseMessage = `${restName} does not currently have any ${queryName} in shared inventory.`;
           responseStatus = 'warning';
         }
         break;
@@ -584,6 +692,33 @@ export class AIAgentService {
         break;
       }
 
+      case 'FIND_RECIPES_BY_INGREDIENT': {
+        if (!params.name) {
+          responseMessage = 'Which ingredient would you like recipes for?';
+          responseStatus = 'warning';
+          break;
+        }
+        const targetIng = params.name.toLowerCase().trim();
+        const matchingRecipes = recipes.filter(
+          (r: Recipe) =>
+            r.title.toLowerCase().includes(targetIng) ||
+            r.ingredients.some((ing) => ing.name.toLowerCase().includes(targetIng))
+        );
+
+        if (matchingRecipes.length === 0) {
+          responseMessage = `No recipes found matching ingredient "${params.name}" in restaurant database.`;
+          responseStatus = 'warning';
+        } else {
+          const list = matchingRecipes
+            .map((r: Recipe) => `• ${r.title} (${r.prepTime + r.cookTime} mins)`)
+            .join('\n');
+          responseMessage = `Found ${matchingRecipes.length} recipe(s) matching "${params.name}":\n\n${list}`;
+          responseStatus = 'success';
+        }
+        actionRequired = 'view_recipes';
+        break;
+      }
+
       case 'FIND_RECIPES': {
         const cookable = recipes.filter((r: Recipe) => {
           return r.ingredients.every((req: { name: string; amount: number; unit: string }) => {
@@ -606,7 +741,7 @@ export class AIAgentService {
 
       case 'CHECK_RECIPE_AVAILABILITY':
       case 'GET_MISSING_INGREDIENTS': {
-        const queryName = params.name || params.recipeName || '';
+        const queryName = params.name || params.recipeName || this.memory.lastRecipeName || 'Chicken Curry';
         const targetRecipe = recipes.find((r: Recipe) => r.title.toLowerCase().includes(queryName.toLowerCase()));
 
         if (!targetRecipe) {
@@ -616,6 +751,8 @@ export class AIAgentService {
           responseStatus = 'warning';
           break;
         }
+
+        this.memory.lastRecipeName = targetRecipe.title;
 
         const missing: Array<{ name: string; amount: number; unit: string }> = [];
         const available: Array<{ name: string; available: number; required: number; unit: string }> = [];
@@ -637,6 +774,8 @@ export class AIAgentService {
             });
           }
         });
+
+        this.memory.lastMissingIngredients = missing;
 
         if (missing.length === 0) {
           responseMessage = `"${targetRecipe.title}" can be prepared! All required ingredients are available in ${restName}'s inventory.`;
@@ -701,7 +840,7 @@ export class AIAgentService {
           break;
         }
 
-        // Verify ingredient availability first (Requirement 12.8: MUST NOT deduct inventory on start)
+        // Verify ingredient availability first (MUST NOT deduct inventory on start)
         const missing = targetRecipe.ingredients.filter((req: { name: string; amount: number; unit: string }) => {
           const match = pantry.find((p) => p.name.toLowerCase() === req.name.toLowerCase());
           return !match || match.quantity < req.amount;
@@ -762,13 +901,13 @@ export class AIAgentService {
       }
 
       case 'HELP': {
-        responseMessage = `I am your ${restName} AI Kitchen Assistant. Commands include:\n\n• Record Usage: "We used 5 kg rice today"\n• Record Waste: "1.5 kg potatoes were wasted"\n• Stock Correction: "Correct rice stock to 20 kg"\n• Inventory History: "Show today's inventory changes"\n• Smart Grocery: "Create a grocery list for low-stock items", "Add 10 kg rice to grocery list"\n• Deliveries: "Rice has arrived, received 10 kg"\n• Recipe Matching & Guided Cooking: "What can we cook?", "Start cooking Biryani", "Complete cooking"`;
+        responseMessage = `I am your ${restName} AI Kitchen Assistant. Commands include:\n\n• Record Usage: "We used 5 kg rice today"\n• Record Waste: "1 kg tomatoes were wasted"\n• Stock Correction: "Correct rice stock to 20 kg"\n• Inventory History: "Show today's inventory changes"\n• Smart Grocery: "What should we buy?", "Add 10 kg rice to grocery list"\n• Camera Scan: "Scan ingredient", "Open camera"\n• Deliveries: "Rice has arrived, received 10 kg"\n• Recipe Matching & Guided Cooking: "What can we cook?", "Start cooking Chicken Curry", "Complete cooking"`;
         responseStatus = 'info';
         break;
       }
 
       default: {
-        responseMessage = `I am ${restName}'s AI Kitchen Assistant. Ready to help with stock, recipes, cooking, waste, and grocery management.`;
+        responseMessage = `I am ${restName}'s AI Kitchen Assistant. Ready to help with stock, recipes, cooking, waste, camera scanning, and grocery management.`;
         responseStatus = 'info';
         break;
       }

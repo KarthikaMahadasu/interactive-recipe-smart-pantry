@@ -9,13 +9,19 @@ export type AgentIntent =
   | 'FIND_RECIPES'
   | 'FIND_RECIPES_BY_INGREDIENT'
   | 'CHECK_RECIPE_AVAILABILITY'
+  | 'GET_RECIPE'
+  | 'GET_RECIPE_DETAILS'
+  | 'GET_RECIPE_INGREDIENTS'
+  | 'GET_RECIPE_INSTRUCTIONS'
+  | 'GET_AVAILABLE_RECIPES'
   | 'GET_MISSING_INGREDIENTS'
   | 'GET_EXPIRING_ITEMS'
-  | 'GET_RECIPE_DETAILS'
   | 'SUGGEST_SUBSTITUTION'
   | 'START_COOKING'
   | 'GET_COOKING_STATUS'
   | 'COMPLETE_COOKING'
+  | 'RECORD_COOKING_USAGE'
+  | 'GET_COOKING_HISTORY'
   | 'CLEAR_PANTRY'
   | 'RECORD_USAGE'
   | 'RECORD_WASTE'
@@ -23,12 +29,22 @@ export type AgentIntent =
   | 'GET_INVENTORY_HISTORY'
   | 'GENERATE_GROCERY_LIST'
   | 'GET_GROCERY_STATUS'
+  | 'GET_PENDING_GROCERIES'
+  | 'GET_PURCHASED_GROCERIES'
   | 'ADD_GROCERY_ITEM'
   | 'UPDATE_GROCERY_ITEM'
   | 'MARK_GROCERY_PURCHASED'
   | 'RECEIVE_GROCERY'
   | 'GET_GROCERY_HISTORY'
+  | 'OPEN_CAMERA'
+  | 'CAPTURE_ITEM'
+  | 'ANALYZE_ITEM'
+  | 'CONFIRM_DETECTED_ITEM'
+  | 'UPDATE_INVENTORY_FROM_CAMERA'
   | 'GET_STAFF'
+  | 'GET_STAFF_MEMBER'
+  | 'GET_STAFF_ROLE'
+  | 'GREETING'
   | 'HELP'
   | 'UNKNOWN';
 
@@ -78,8 +94,9 @@ export interface AgentResponse {
   intent: AgentIntent;
   status: AgentResponseStatus;
   data?: Record<string, unknown>;
-  actionRequired?: 'explore_pantry' | 'view_recipes' | 'start_cooking' | 'add_grocery' | 'none';
+  actionRequired?: 'explore_pantry' | 'view_recipes' | 'start_cooking' | 'add_grocery' | 'open_camera' | 'none';
   pendingAction?: AgentAction;
   debugInfo?: AgentDebugInfo;
   timestamp: string;
 }
+
