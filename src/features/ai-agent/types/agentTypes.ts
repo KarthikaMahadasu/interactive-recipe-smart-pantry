@@ -5,15 +5,30 @@ export type AgentIntent =
   | 'GET_PANTRY'
   | 'GET_PANTRY_ITEM'
   | 'CHECK_AVAILABILITY'
+  | 'GET_LOW_STOCK_ITEMS'
   | 'FIND_RECIPES'
   | 'FIND_RECIPES_BY_INGREDIENT'
+  | 'CHECK_RECIPE_AVAILABILITY'
   | 'GET_MISSING_INGREDIENTS'
   | 'GET_EXPIRING_ITEMS'
   | 'GET_RECIPE_DETAILS'
   | 'SUGGEST_SUBSTITUTION'
   | 'START_COOKING'
   | 'GET_COOKING_STATUS'
+  | 'COMPLETE_COOKING'
   | 'CLEAR_PANTRY'
+  | 'RECORD_USAGE'
+  | 'RECORD_WASTE'
+  | 'ADJUST_STOCK'
+  | 'GET_INVENTORY_HISTORY'
+  | 'GENERATE_GROCERY_LIST'
+  | 'GET_GROCERY_STATUS'
+  | 'ADD_GROCERY_ITEM'
+  | 'UPDATE_GROCERY_ITEM'
+  | 'MARK_GROCERY_PURCHASED'
+  | 'RECEIVE_GROCERY'
+  | 'GET_GROCERY_HISTORY'
+  | 'GET_STAFF'
   | 'HELP'
   | 'UNKNOWN';
 
@@ -25,7 +40,8 @@ export interface ExtractedEntities {
   recipeName?: string;
   targetIngredient?: string;
   expiryDate?: string;
-  queryType?: 'all' | 'expiring' | 'specific';
+  reason?: string;
+  queryType?: 'all' | 'expiring' | 'specific' | 'waste' | 'history' | 'grocery';
 }
 
 export interface AgentAction {
@@ -33,7 +49,7 @@ export interface AgentAction {
   parameters: ExtractedEntities;
   rawCommand: string;
   normalizedCommand: string;
-  confidence: number; // 0.0 to 1.0
+  confidence: number;
   requiresConfirmation: boolean;
   confirmationMessage?: string;
   validationResult?: {
@@ -67,4 +83,3 @@ export interface AgentResponse {
   debugInfo?: AgentDebugInfo;
   timestamp: string;
 }
-

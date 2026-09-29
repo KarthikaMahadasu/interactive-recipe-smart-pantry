@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Sparkles, LogIn, UserCheck, Shield, ChefHat, PackageCheck, AlertCircle } from 'lucide-react';
+import { Sparkles, LogIn, UserCheck, Shield, ChefHat, PackageCheck, AlertCircle, ArrowLeft } from 'lucide-react';
 
 export const SignInPage: React.FC = () => {
   const navigate = useNavigate();
@@ -43,11 +43,12 @@ export const SignInPage: React.FC = () => {
   return (
     <div
       style={{
-        minHeight: '80vh',
+        minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '24px 16px'
+        padding: '32px 16px',
+        background: '#090d16'
       }}
     >
       <div
@@ -55,26 +56,43 @@ export const SignInPage: React.FC = () => {
         style={{
           width: '100%',
           maxWidth: '480px',
-          padding: '36px 32px',
+          padding: '40px 32px',
           borderRadius: '28px',
-          background: 'rgba(15, 23, 42, 0.85)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
-          backdropFilter: 'blur(20px)'
+          background: '#111827',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6)'
         }}
       >
+        {/* Back Link to Welcome */}
+        <div style={{ marginBottom: '16px' }}>
+          <Link
+            to="/welcome"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: '#38bdf8',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              textDecoration: 'none'
+            }}
+          >
+            <ArrowLeft size={16} /> Back to Welcome Home
+          </Link>
+        </div>
+
         {/* Header Branding */}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <div
             style={{
-              width: 52,
-              height: 52,
+              width: 54,
+              height: 54,
               borderRadius: '16px',
-              background: 'linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%)',
+              background: 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 24px rgba(6, 182, 212, 0.5)',
+              boxShadow: '0 0 24px rgba(56, 189, 248, 0.4)',
               marginBottom: '12px'
             }}
           >
@@ -82,17 +100,17 @@ export const SignInPage: React.FC = () => {
           </div>
           <h2
             style={{
-              fontSize: '1.75rem',
+              fontSize: '1.8rem',
               fontWeight: 800,
               fontFamily: 'var(--font-heading)',
-              color: 'var(--text-main)',
+              color: '#f9fafb',
               letterSpacing: '-0.02em'
             }}
           >
-            Restaurant Workspace
+            Sign In to Workspace
           </h2>
-          <p style={{ fontSize: '0.88rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-            Sign in to access your shared Intelligent Kitchen
+          <p style={{ fontSize: '0.88rem', color: '#9ca3af', marginTop: '4px' }}>
+            Access your shared Intelligent Kitchen Management System
           </p>
         </div>
 
@@ -100,36 +118,29 @@ export const SignInPage: React.FC = () => {
         {error && (
           <div
             style={{
-              padding: '12px 16px',
+              padding: '14px 16px',
               borderRadius: '16px',
-              background: 'rgba(239, 68, 68, 0.15)',
-              border: '1px solid rgba(239, 68, 68, 0.4)',
+              background: 'rgba(239, 68, 68, 0.18)',
+              border: '1.5px solid #ef4444',
               color: '#fca5a5',
-              fontSize: '0.85rem',
+              fontSize: '0.88rem',
+              fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
               marginBottom: '20px'
             }}
           >
-            <AlertCircle size={18} />
+            <AlertCircle size={20} color="#ef4444" />
             <span>{error}</span>
           </div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
-            <label
-              style={{
-                display: 'block',
-                fontSize: '0.82rem',
-                fontWeight: 600,
-                color: 'var(--text-muted)',
-                marginBottom: '6px'
-              }}
-            >
-              Email Address
+            <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: 700, color: '#f9fafb', marginBottom: '6px' }}>
+              Email Address *
             </label>
             <input
               type="email"
@@ -139,29 +150,20 @@ export const SignInPage: React.FC = () => {
               placeholder="owner@spicegarden.com"
               style={{
                 width: '100%',
-                padding: '12px 16px',
+                padding: '14px 16px',
                 borderRadius: '14px',
-                background: 'rgba(30, 41, 59, 0.6)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: 'var(--text-main)',
-                fontSize: '0.92rem',
-                outline: 'none',
-                transition: 'all 0.2s ease'
+                background: '#1f2937',
+                border: '1.5px solid #374151',
+                color: '#f9fafb',
+                fontSize: '0.95rem',
+                outline: 'none'
               }}
             />
           </div>
 
           <div>
-            <label
-              style={{
-                display: 'block',
-                fontSize: '0.82rem',
-                fontWeight: 600,
-                color: 'var(--text-muted)',
-                marginBottom: '6px'
-              }}
-            >
-              Password
+            <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: 700, color: '#f9fafb', marginBottom: '6px' }}>
+              Password *
             </label>
             <input
               type="password"
@@ -171,14 +173,13 @@ export const SignInPage: React.FC = () => {
               placeholder="••••••••"
               style={{
                 width: '100%',
-                padding: '12px 16px',
+                padding: '14px 16px',
                 borderRadius: '14px',
-                background: 'rgba(30, 41, 59, 0.6)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: 'var(--text-main)',
-                fontSize: '0.92rem',
-                outline: 'none',
-                transition: 'all 0.2s ease'
+                background: '#1f2937',
+                border: '1.5px solid #374151',
+                color: '#f9fafb',
+                fontSize: '0.95rem',
+                outline: 'none'
               }}
             />
           </div>
@@ -187,120 +188,120 @@ export const SignInPage: React.FC = () => {
             type="submit"
             disabled={loading}
             style={{
-              marginTop: '6px',
-              padding: '14px',
+              marginTop: '8px',
+              padding: '16px',
               borderRadius: '16px',
-              background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)',
-              color: '#fff',
-              fontWeight: 700,
-              fontSize: '0.95rem',
+              background: 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
+              color: '#ffffff',
+              fontWeight: 800,
+              fontSize: '1rem',
+              fontFamily: 'var(--font-heading)',
               border: 'none',
               cursor: loading ? 'wait' : 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '8px',
-              boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4)',
-              transition: 'all 0.2s ease'
+              gap: '10px',
+              boxShadow: '0 6px 20px rgba(56, 189, 248, 0.35)'
             }}
           >
-            <LogIn size={18} />
+            <LogIn size={20} />
             <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
           </button>
         </form>
 
         {/* Quick Demo Logins */}
-        <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
-          <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', textAlign: 'center', marginBottom: '12px' }}>
-            Quick Demo Accounts (Spice Garden):
+        <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+          <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#38bdf8', textAlign: 'center', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Quick Demo Workspace Logins:
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <button
               type="button"
               onClick={() => handleQuickDemoLogin('owner@spicegarden.com')}
               style={{
-                padding: '8px 10px',
-                borderRadius: '12px',
-                background: 'rgba(244, 63, 94, 0.12)',
-                border: '1px solid rgba(244, 63, 94, 0.3)',
+                padding: '10px 12px',
+                borderRadius: '14px',
+                background: 'rgba(244, 63, 94, 0.15)',
+                border: '1px solid rgba(244, 63, 94, 0.4)',
                 color: '#fda4af',
-                fontSize: '0.78rem',
-                fontWeight: 600,
+                fontSize: '0.82rem',
+                fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '8px',
                 cursor: 'pointer'
               }}
             >
-              <UserCheck size={14} /> Owner (Tejaswi)
+              <UserCheck size={16} /> Owner (Tejaswi)
             </button>
 
             <button
               type="button"
               onClick={() => handleQuickDemoLogin('manager@spicegarden.com')}
               style={{
-                padding: '8px 10px',
-                borderRadius: '12px',
-                background: 'rgba(139, 92, 246, 0.12)',
-                border: '1px solid rgba(139, 92, 246, 0.3)',
-                color: '#c084fc',
-                fontSize: '0.78rem',
-                fontWeight: 600,
+                padding: '10px 12px',
+                borderRadius: '14px',
+                background: 'rgba(168, 85, 247, 0.15)',
+                border: '1px solid rgba(168, 85, 247, 0.4)',
+                color: '#e9d5ff',
+                fontSize: '0.82rem',
+                fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '8px',
                 cursor: 'pointer'
               }}
             >
-              <Shield size={14} /> Manager (Rahul)
+              <Shield size={16} /> Manager (Rahul)
             </button>
 
             <button
               type="button"
               onClick={() => handleQuickDemoLogin('chef@spicegarden.com')}
               style={{
-                padding: '8px 10px',
-                borderRadius: '12px',
-                background: 'rgba(245, 158, 11, 0.12)',
-                border: '1px solid rgba(245, 158, 11, 0.3)',
-                color: '#fcd34d',
-                fontSize: '0.78rem',
-                fontWeight: 600,
+                padding: '10px 12px',
+                borderRadius: '14px',
+                background: 'rgba(245, 158, 11, 0.15)',
+                border: '1px solid rgba(245, 158, 11, 0.4)',
+                color: '#fef08a',
+                fontSize: '0.82rem',
+                fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '8px',
                 cursor: 'pointer'
               }}
             >
-              <ChefHat size={14} /> Chef (Priya)
+              <ChefHat size={16} /> Chef (Priya)
             </button>
 
             <button
               type="button"
               onClick={() => handleQuickDemoLogin('inventory@spicegarden.com')}
               style={{
-                padding: '8px 10px',
-                borderRadius: '12px',
-                background: 'rgba(16, 185, 129, 0.12)',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
-                color: '#6ee7b7',
-                fontSize: '0.78rem',
-                fontWeight: 600,
+                padding: '10px 12px',
+                borderRadius: '14px',
+                background: 'rgba(16, 185, 129, 0.15)',
+                border: '1px solid rgba(16, 185, 129, 0.4)',
+                color: '#a7f3d0',
+                fontSize: '0.82rem',
+                fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '8px',
                 cursor: 'pointer'
               }}
             >
-              <PackageCheck size={14} /> Staff (Arun)
+              <PackageCheck size={16} /> Staff (Arun)
             </button>
           </div>
         </div>
 
         {/* Footer Link */}
-        <div style={{ textAlign: 'center', marginTop: '24px', fontSize: '0.85rem', color: 'var(--text-dim)' }}>
-          Don't have a restaurant workspace?{' '}
-          <Link to="/signup" style={{ color: 'var(--primary-cyan)', fontWeight: 600, textDecoration: 'none' }}>
+        <div style={{ textAlign: 'center', marginTop: '28px', fontSize: '0.88rem', color: '#9ca3af' }}>
+          Don't have a workspace?{' '}
+          <Link to="/signup" style={{ color: '#38bdf8', fontWeight: 700, textDecoration: 'underline' }}>
             Register Restaurant
           </Link>
         </div>

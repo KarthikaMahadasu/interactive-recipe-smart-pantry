@@ -85,17 +85,17 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
           gap: '12px',
           padding: '10px 16px',
           borderRadius: '24px',
-          background: 'rgba(15, 23, 42, 0.92)',
+          background: 'var(--glass-bg)',
           border: isError
-            ? '1.5px solid #f43f5e'
+            ? '1.5px solid var(--accent-rose)'
             : isSubmitting
             ? '1.5px solid var(--accent-violet)'
             : !isEmpty
             ? '1.5px solid var(--primary-cyan)'
-            : '1px solid rgba(255, 255, 255, 0.12)',
+            : '1px solid var(--glass-border)',
           boxShadow: !isEmpty
-            ? '0 8px 24px rgba(6, 182, 212, 0.25)'
-            : '0 8px 24px rgba(0, 0, 0, 0.4)',
+            ? '0 8px 24px rgba(2, 132, 199, 0.15)'
+            : 'var(--glass-shadow)',
           transition: 'all 0.3s ease'
         }}
       >
@@ -184,9 +184,9 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
             marginTop: '16px',
             padding: '16px 20px',
             borderRadius: '18px',
-            background: 'rgba(15, 23, 42, 0.94)',
+            background: 'var(--bg-surface)',
             borderLeft: `4px solid ${getStatusBadge(lastResponse?.status || 'info').color}`,
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+            boxShadow: 'var(--glass-shadow)',
             transition: 'all 0.3s ease'
           }}
         >

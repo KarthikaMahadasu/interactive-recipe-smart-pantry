@@ -12,12 +12,17 @@ import { SettingsPage } from '../pages/SettingsPage';
 import { SignInPage } from '../pages/SignInPage';
 import { SignUpPage } from '../pages/SignUpPage';
 import { StaffPage } from '../pages/StaffPage';
+import { WelcomePage } from '../pages/WelcomePage';
 
 export const router = createBrowserRouter([
   // Public Unauthenticated Routes
   {
     element: <PublicRoute />,
     children: [
+      {
+        path: '/welcome',
+        element: <WelcomePage />
+      },
       {
         path: '/signin',
         element: <SignInPage />

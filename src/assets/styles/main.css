@@ -1,29 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* Color Palette - Cyber Kitchen Dark / Modern HSL */
-  --bg-dark: #080c14;
-  --bg-surface: #0f172a;
-  --bg-surface-elevated: #1e293b;
+  /* Consistent High-Contrast Slate & Sky Cyan Kitchen OS Theme System */
+  --bg-dark: #090d16;          /* Deep Slate Canvas Background */
+  --bg-surface: #111827;       /* Card Surface - Dark Gray/Slate 900 */
+  --bg-surface-elevated: #1f2937; /* Elevated Surface / Inset Panel - Slate 800 */
+  --bg-input: #1f2937;         /* Form Input Field Background */
+  --border-input: #374151;      /* Input Field Border */
+  --border-input-focus: #38bdf8;/* Input Field Focus Border */
   
-  --primary-cyan: #06b6d4;
-  --primary-cyan-glow: rgba(6, 182, 212, 0.4);
-  --accent-emerald: #10b981;
-  --accent-violet: #8b5cf6;
-  --accent-amber: #f59e0b;
-  --accent-rose: #f43f5e;
+  --primary-cyan: #38bdf8;      /* Vibrant Sky Cyan Accent */
+  --primary-cyan-hover: #0284c7;
+  --accent-emerald: #10b981;    /* Vibrant Emerald Green */
+  --accent-violet: #a855f7;     /* Vibrant Purple Accent */
+  --accent-amber: #f59e0b;      /* Warm Warning Amber */
+  --accent-rose: #f43f5e;       /* Crisp Red/Rose Error */
   
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --text-main: #f9fafb;         /* Primary Text - Pure Bright White (100% Contrast) */
+  --text-muted: #d1d5db;        /* Secondary Text - Light Gray */
+  --text-dim: #9ca3af;          /* Dim Subtitle Text - Mid Gray */
 
-  --glass-bg: rgba(15, 23, 42, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-border-hover: rgba(6, 182, 212, 0.4);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --glass-bg: rgba(17, 24, 39, 0.88);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-border-hover: rgba(56, 189, 248, 0.5);
+  --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -32,7 +35,6 @@
 
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 * {
@@ -52,6 +54,53 @@ html, body, #root {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Global Form Input & Field High Contrast Enforcement */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="search"],
+select,
+textarea {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  border: 1.5px solid #374151 !important;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af !important;
+  opacity: 1;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25) !important;
+  background-color: #111827 !important;
+}
+
+select option {
+  background-color: #111827 !important;
+  color: #f9fafb !important;
+}
+
+label {
+  color: #f3f4f6 !important;
+  font-weight: 700;
+  font-size: 0.88rem;
+  margin-bottom: 6px;
+  display: block;
+}
+
 /* Accessible Focus States */
 :focus-visible {
   outline: 2px solid var(--primary-cyan);
@@ -66,13 +115,13 @@ html, body, #root {
   pointer-events: none;
   z-index: 0;
   background: 
-    radial-gradient(circle at 50% 20%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
-    radial-gradient(circle at 10% 60%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 85% 75%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
     var(--bg-dark);
 }
 
-/* Glassmorphism Classes */
+/* Glassmorphism / High-Contrast Card Classes */
 .glass-panel {
   background: var(--glass-bg);
   backdrop-filter: blur(16px);
@@ -80,40 +129,46 @@ html, body, #root {
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   border-radius: var(--radius-lg);
-  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal), transform var(--transition-normal);
 }
 
 .glass-panel-hover:hover {
   border-color: var(--glass-border-hover);
-  box-shadow: 0 12px 40px 0 rgba(6, 182, 212, 0.2);
+  box-shadow: 0 10px 30px rgba(56, 189, 248, 0.15);
+  transform: translateY(-2px);
 }
 
 .glass-pill {
-  background: rgba(30, 41, 59, 0.6);
+  background: var(--bg-surface-elevated);
   backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-full);
   padding: 6px 16px;
+  color: var(--text-main);
 }
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-main);
   letter-spacing: -0.02em;
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+  background: linear-gradient(135deg, #38bdf8 0%, #a855f7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gradient-text-emerald {
-  background: linear-gradient(135deg, #34d399 0%, #38bdf8 100%);
+  background: linear-gradient(135deg, #10b981 0%, #38bdf8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
 }
 
 /* Custom Scrollbars */
@@ -123,11 +178,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.5);
+  background: var(--bg-surface-elevated);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
+  background: rgba(156, 163, 175, 0.3);
   border-radius: var(--radius-full);
 }
 
@@ -138,27 +193,17 @@ h1, h2, h3, h4, h5, h6 {
 /* Animations */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-6px); }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.05); }
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.03); }
 }
 
 @keyframes spin-slow {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-}
-
-@keyframes spatialPathPulse {
-  0% { stroke-dashoffset: 100; }
-  100% { stroke-dashoffset: 0; }
-}
-
-@keyframes spatialPulseFloat {
-  0% { transform: translateY(0px) scale(0.95); opacity: 0.7; }
-  100% { transform: translateY(-10px) scale(1.05); opacity: 1; }
 }
 
 .animate-float {
@@ -188,16 +233,13 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
 }
 
-/* Touch friendly buttons & interactive controls */
-button, input, select {
-  font-family: inherit;
-}
-
+/* Form Controls & Buttons */
 button {
+  font-family: inherit;
   cursor: pointer;
   border: none;
   outline: none;
-  min-height: 36px;
+  min-height: 38px;
   touch-action: manipulation;
 }
 

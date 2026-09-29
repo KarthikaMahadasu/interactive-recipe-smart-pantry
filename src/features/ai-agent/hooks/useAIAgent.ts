@@ -14,8 +14,15 @@ export function useAIAgent() {
     updateIngredient,
     removeIngredient,
     clearPantry,
+    recordUsage,
+    recordWaste,
+    adjustStock,
+    addGroceryItem,
+    markGroceryPurchased,
+    receiveGroceryDelivery,
     setSelectedRecipe,
     startCooking,
+    finishCookingDeduction,
     setAIState,
     addAIResponse
   } = useKitchenState();
@@ -38,31 +45,36 @@ export function useAIAgent() {
       }
 
       setIsProcessing(true);
-
-      // 1. Visual AI Brain State: listening
       setAIState('listening');
       await new Promise((res) => setTimeout(res, 300));
 
-      // 2. Visual AI Brain State: thinking (NLP parsing)
       setAIState('thinking');
       await new Promise((res) => setTimeout(res, 400));
 
       const executionContext: AgentExecutionContext = {
         pantry: state.pantry,
         recipes: state.recipes,
+        groceryList: state.groceryList,
+        transactions: state.transactions,
         activeCookingRecipe: state.activeCookingRecipe,
         addIngredient,
         updateIngredient,
         removeIngredient,
         clearPantry,
+        recordUsage,
+        recordWaste,
+        adjustStock,
+        addGroceryItem,
+        markGroceryPurchased,
+        receiveGroceryDelivery,
         setSelectedRecipe,
         startCooking,
+        finishCookingDeduction,
         setAIState,
         user,
         restaurant
       };
 
-      // 3. Visual AI Brain State: working (State execution)
       setAIState('working');
 
       const response = await AIAgentService.executeUserCommand(commandText, executionContext);
@@ -91,18 +103,19 @@ export function useAIAgent() {
         isMock: false
       });
 
-      // Handle navigation routing based on actionRequired
       if (response.actionRequired === 'explore_pantry') {
         setTimeout(() => navigate('/pantry'), 800);
       } else if (response.actionRequired === 'view_recipes') {
         setTimeout(() => navigate('/recipes'), 800);
       } else if (response.actionRequired === 'start_cooking') {
         setTimeout(() => navigate('/cooking'), 800);
+      } else if (response.actionRequired === 'add_grocery') {
+        setTimeout(() => navigate('/grocery'), 800);
       }
 
       return response;
     },
-    [state.pantry, state.recipes, state.activeCookingRecipe, addIngredient, updateIngredient, removeIngredient, clearPantry, setSelectedRecipe, startCooking, setAIState, addAIResponse, user, restaurant, navigate]
+    [state.pantry, state.recipes, state.groceryList, state.transactions, state.activeCookingRecipe, addIngredient, updateIngredient, removeIngredient, clearPantry, recordUsage, recordWaste, adjustStock, addGroceryItem, markGroceryPurchased, receiveGroceryDelivery, setSelectedRecipe, startCooking, setAIState, addAIResponse, user, restaurant, navigate]
   );
 
   const confirmPendingAction = useCallback(async () => {
@@ -114,13 +127,22 @@ export function useAIAgent() {
     const executionContext: AgentExecutionContext = {
       pantry: state.pantry,
       recipes: state.recipes,
+      groceryList: state.groceryList,
+      transactions: state.transactions,
       activeCookingRecipe: state.activeCookingRecipe,
       addIngredient,
       updateIngredient,
       removeIngredient,
       clearPantry,
+      recordUsage,
+      recordWaste,
+      adjustStock,
+      addGroceryItem,
+      markGroceryPurchased,
+      receiveGroceryDelivery,
       setSelectedRecipe,
       startCooking,
+      finishCookingDeduction,
       setAIState,
       user,
       restaurant
@@ -144,7 +166,7 @@ export function useAIAgent() {
     if (response.actionRequired === 'explore_pantry') {
       setTimeout(() => navigate('/pantry'), 800);
     }
-  }, [pendingAction, state.pantry, state.recipes, state.activeCookingRecipe, addIngredient, updateIngredient, removeIngredient, clearPantry, setSelectedRecipe, startCooking, setAIState, addAIResponse, user, restaurant, navigate]);
+  }, [pendingAction, state.pantry, state.recipes, state.groceryList, state.transactions, state.activeCookingRecipe, addIngredient, updateIngredient, removeIngredient, clearPantry, recordUsage, recordWaste, adjustStock, addGroceryItem, markGroceryPurchased, receiveGroceryDelivery, setSelectedRecipe, startCooking, finishCookingDeduction, setAIState, addAIResponse, user, restaurant, navigate]);
 
   const cancelPendingAction = useCallback(() => {
     setPendingAction(null);

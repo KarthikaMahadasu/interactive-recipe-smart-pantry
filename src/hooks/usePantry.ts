@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from 'react';
 import { useKitchenState } from '../state/KitchenContext';
 import { getInventoryStatus, sortInventory, type InventoryStatus, type InventorySortOption } from '../features/inventory/utils/inventoryUtils';
-import type { Ingredient, IngredientCategory } from '../types/ingredient';
+import type { IngredientCategory } from '../types/ingredient';
 
 export function usePantry() {
   const { state, addIngredient, updateIngredient, removeIngredient, clearPantry, updateQuantity, updateFreshness } = useKitchenState();

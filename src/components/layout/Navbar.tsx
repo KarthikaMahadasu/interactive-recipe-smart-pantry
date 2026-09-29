@@ -41,11 +41,11 @@ export const Navbar: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '10px 20px',
+          padding: '12px 24px',
           borderRadius: '24px',
-          background: 'rgba(15, 23, 42, 0.85)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
+          background: 'var(--glass-bg)',
+          border: '1px solid var(--glass-border)',
+          boxShadow: 'var(--glass-shadow)'
         }}
       >
         {/* Brand Logo & Restaurant Workspace Badge */}
@@ -232,7 +232,9 @@ export const Navbar: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             gap: '8px',
-            background: 'rgba(15, 23, 42, 0.95)'
+            background: '#ffffff',
+            border: '1px solid #cbd5e1',
+            boxShadow: '0 10px 30px rgba(15, 23, 42, 0.1)'
           }}
         >
           {user && (

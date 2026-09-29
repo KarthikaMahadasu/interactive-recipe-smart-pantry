@@ -26,7 +26,7 @@ export const ProtectedRoute: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/signin" replace />;
+    return <Navigate to="/welcome" replace />;
   }
 
   return <Outlet />;

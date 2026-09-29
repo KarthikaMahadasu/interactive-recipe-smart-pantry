@@ -72,9 +72,9 @@ export const AIPage: React.FC = () => {
           alignItems: 'center',
           justifyContent: 'center',
           gap: '24px',
-          background: 'radial-gradient(circle at center, rgba(139, 92, 246, 0.18) 0%, rgba(15, 23, 42, 0.95) 75%)',
-          border: '1px solid rgba(139, 92, 246, 0.3)',
-          boxShadow: '0 8px 32px rgba(139, 92, 246, 0.15)'
+          background: 'radial-gradient(circle at center, rgba(109, 40, 217, 0.08) 0%, var(--bg-surface) 80%)',
+          border: '1px solid rgba(109, 40, 217, 0.2)',
+          boxShadow: '0 8px 30px rgba(109, 40, 217, 0.08)'
         }}
       >
         <AIBrainOrb state={state.aiState} size={200} />
@@ -84,7 +84,7 @@ export const AIPage: React.FC = () => {
             {restaurant?.name} Neural Kitchen Agent
           </h2>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-            Connected to shared restaurant inventory for <strong style={{ color: '#fff' }}>{restaurant?.name}</strong>. Speak or type commands below.
+            Connected to shared restaurant inventory for <strong style={{ color: 'var(--text-main)' }}>{restaurant?.name}</strong>. Speak or type commands below.
           </p>
         </div>
 
@@ -177,7 +177,7 @@ export const AIPage: React.FC = () => {
                 style={{
                   padding: '14px 18px',
                   borderRadius: '16px',
-                  background: 'rgba(30, 41, 59, 0.5)',
+                  background: 'var(--bg-surface-elevated)',
                   borderLeft: '4px solid var(--accent-violet)',
                   display: 'flex',
                   flexDirection: 'column',
@@ -190,7 +190,7 @@ export const AIPage: React.FC = () => {
                   </span>
                   <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>{item.timestamp}</span>
                 </div>
-                <p style={{ fontSize: '0.88rem', color: 'var(--text-main)', lineHeight: 1.5 }}>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-main)', lineHeight: 1.5, whiteSpace: 'pre-line' }}>
                   {item.message}
                 </p>
               </div>

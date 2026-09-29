@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ConnectedKitchenEnvironment } from '../features/kitchen-world/ConnectedKitchenEnvironment';
+import { AICommandBar } from '../features/ai-brain/AICommandBar';
 import { IngredientCard } from '../features/ingredients/IngredientCard';
 import { CameraScannerModal } from '../features/inventory/camera/components/CameraScannerModal';
 import { useKitchenState } from '../state/KitchenContext';
@@ -242,6 +243,9 @@ export const HomePage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Central AI Intelligent Command Bar */}
+      <AICommandBar style={{ maxWidth: '100%' }} />
 
       {/* Primary AI Kitchen World Connected Spatial Environment (Module 1 Foundation Preserved!) */}
       <ConnectedKitchenEnvironment />

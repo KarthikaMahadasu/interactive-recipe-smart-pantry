@@ -120,9 +120,9 @@ export const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ ingred
           maxWidth: '480px',
           padding: '24px 28px',
           borderRadius: '24px',
-          background: 'rgba(15, 23, 42, 0.95)',
-          border: '1.5px solid rgba(139, 92, 246, 0.35)',
-          boxShadow: '0 16px 40px rgba(0, 0, 0, 0.6)',
+          background: '#ffffff',
+          border: '1.5px solid #cbd5e1',
+          boxShadow: '0 20px 50px rgba(15, 23, 42, 0.15)',
           display: 'flex',
           flexDirection: 'column',
           gap: '16px'

@@ -1,9 +1,13 @@
 import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react';
-import type { KitchenGlobalState, KitchenAction, GroceryItem, UserPreferences } from './types';
+import type { KitchenGlobalState, KitchenAction, UserPreferences } from './types';
 import type { AIBrainState, AIResponsePayload } from '../types/ai';
 import type { KitchenZoneId } from '../types/kitchen';
 import type { Ingredient, FreshnessLevel } from '../types/ingredient';
 import type { Recipe } from '../types/recipe';
+import type { InventoryTransaction } from '../features/inventory/types/transactionTypes';
+import type { SmartGroceryItem } from '../features/grocery/types/groceryTypes';
+import { InventoryTransactionService } from '../features/inventory/services/inventoryTransactionService';
+import { GroceryService } from '../features/grocery/services/groceryService';
 import { useAuth } from '../contexts/AuthContext';
 
 const DEFAULT_PANTRY_KEY = 'smart_pantry_items_v1';
@@ -157,13 +161,12 @@ const initialRecipes: Recipe[] = [
     ingredients: [
       { name: 'Dragon Fruit', amount: 1, unit: 'pcs' },
       { name: 'Greek Yogurt', amount: 150, unit: 'g' },
-      { name: 'Raw Cashews', amount: 30, unit: 'g' },
-      { name: 'Honey or Maple Syrup', amount: 1, unit: 'tbsp', optional: true }
+      { name: 'Raw Cashews', amount: 30, unit: 'g' }
     ],
     instructions: [
-      { step: 1, text: 'Dice the fresh dragon fruit into uniform cubes, reserving half for topping.', durationMinutes: 2, tip: 'Keep fruit chilled beforehand for maximum freshness.' },
-      { step: 2, text: 'Blend remaining dragon fruit with Greek yogurt until velvety smooth.', durationMinutes: 3, tip: 'Add a splash of almond milk if blend is too thick.' },
-      { step: 3, text: 'Pour into chilled serving bowl and garnish with cashews and fresh dragon fruit slices.', durationMinutes: 2 }
+      { step: 1, text: 'Dice the fresh dragon fruit into uniform cubes, reserving half for topping.', durationMinutes: 2 },
+      { step: 2, text: 'Blend remaining dragon fruit with Greek yogurt until velvety smooth.', durationMinutes: 3 },
+      { step: 3, text: 'Pour into chilled serving bowl and garnish with cashews.', durationMinutes: 2 }
     ],
     nutrition: { calories: 310, protein: 12, carbs: 42, fat: 11 }
   },
@@ -183,14 +186,12 @@ const initialRecipes: Recipe[] = [
     ingredients: [
       { name: 'Fresh Paneer', amount: 200, unit: 'g' },
       { name: 'Hass Avocado', amount: 1, unit: 'pcs' },
-      { name: 'Cherry Tomatoes', amount: 100, unit: 'g' },
-      { name: 'Olive Oil', amount: 1, unit: 'tbsp' }
+      { name: 'Cherry Tomatoes', amount: 100, unit: 'g' }
     ],
     instructions: [
-      { step: 1, text: 'Cut paneer into 1-inch cubes and toss gently with salt, turmeric, and paprika.', durationMinutes: 3 },
-      { step: 2, text: 'Heat olive oil in a non-stick skillet over medium-high heat.', durationMinutes: 2 },
-      { step: 3, text: 'Sear paneer cubes for 2-3 minutes per side until beautifully golden brown.', durationMinutes: 5, tip: 'Avoid over-cooking paneer to maintain soft texture.' },
-      { step: 4, text: 'Assemble bowl with sliced avocado, blistered cherry tomatoes, and warm paneer.', durationMinutes: 2 }
+      { step: 1, text: 'Cut paneer into 1-inch cubes and toss gently with spices.', durationMinutes: 3 },
+      { step: 2, text: 'Sear paneer cubes until golden brown.', durationMinutes: 5 },
+      { step: 3, text: 'Assemble bowl with avocado, cherry tomatoes, and warm paneer.', durationMinutes: 2 }
     ],
     nutrition: { calories: 480, protein: 24, carbs: 36, fat: 36 }
   },
@@ -209,15 +210,12 @@ const initialRecipes: Recipe[] = [
     createdAt: new Date().toISOString(),
     ingredients: [
       { name: 'Finger Millet (Ragi)', amount: 100, unit: 'g' },
-      { name: 'Raw Cashews', amount: 50, unit: 'g' },
-      { name: 'Water or Milk', amount: 400, unit: 'ml' },
-      { name: 'Jaggery or Brown Sugar', amount: 2, unit: 'tbsp', optional: true }
+      { name: 'Raw Cashews', amount: 50, unit: 'g' }
     ],
     instructions: [
-      { step: 1, text: 'Soak cashews in warm water for 10 mins and blend into a rich smooth paste.', durationMinutes: 5 },
-      { step: 2, text: 'Whisk ragi flour in room temperature water to form a lump-free slurry.', durationMinutes: 2 },
-      { step: 3, text: 'Bring mixture to a gentle boil on low heat, stirring continuously until thickened.', durationMinutes: 8, tip: 'Constant stirring prevents sticking to bottom.' },
-      { step: 4, text: 'Stir in cashew cream and sweetener. Serve warm with toasted cashew garnish.', durationMinutes: 2 }
+      { step: 1, text: 'Soak cashews and blend into a rich smooth paste.', durationMinutes: 5 },
+      { step: 2, text: 'Whisk ragi flour in water and simmer until thickened.', durationMinutes: 8 },
+      { step: 3, text: 'Stir in cashew cream and serve warm.', durationMinutes: 2 }
     ],
     nutrition: { calories: 360, protein: 11, carbs: 54, fat: 12 }
   },
@@ -235,30 +233,23 @@ const initialRecipes: Recipe[] = [
     colorGradient: 'linear-gradient(135deg, #38bdf8 0%, #06b6d4 100%)',
     createdAt: new Date().toISOString(),
     ingredients: [
-      { name: 'Rice', amount: 200, unit: 'g' },
-      { name: 'Potato', amount: 2, unit: 'pcs' },
-      { name: 'Onion', amount: 1, unit: 'pcs', optional: true },
-      { name: 'Spices & Herbs', amount: 1, unit: 'tbsp', optional: true }
+      { name: 'Rice', amount: 2, unit: 'kg' },
+      { name: 'Potato', amount: 1, unit: 'kg' }
     ],
     instructions: [
-      { step: 1, text: 'Rinse rice and boil until fluffy and tender.', durationMinutes: 12 },
-      { step: 2, text: 'Dice potatoes into small cubes and pan-fry with spices until crispy.', durationMinutes: 8 },
-      { step: 3, text: 'Combine rice and potatoes, toss gently, and serve steaming hot.', durationMinutes: 2 }
+      { step: 1, text: 'Rinse rice and cook until fluffy.', durationMinutes: 12 },
+      { step: 2, text: 'Dice potatoes and pan-fry with spices.', durationMinutes: 8 },
+      { step: 3, text: 'Combine rice and potatoes and serve hot.', durationMinutes: 2 }
     ],
     nutrition: { calories: 410, protein: 8, carbs: 78, fat: 8 }
   }
 ];
 
-const initialGroceryList: GroceryItem[] = [
-  { id: 'g_1', name: 'Fresh Mint Leaves', quantity: 1, unit: 'bunch', bought: false, category: 'Produce' },
-  { id: 'g_2', name: 'Extra Virgin Olive Oil', quantity: 500, unit: 'ml', bought: false, category: 'Pantry' },
-  { id: 'g_3', name: 'Almond Milk', quantity: 1, unit: 'L', bought: true, category: 'Dairy/Alt' }
-];
-
 const initialState: KitchenGlobalState = {
   pantry: loadPantryForRestaurant(null),
   recipes: initialRecipes,
-  groceryList: initialGroceryList,
+  groceryList: GroceryService.loadGrocery(null),
+  transactions: InventoryTransactionService.loadTransactions(null),
   selectedRecipeId: null,
   activeCookingRecipe: null,
   aiState: 'idle',
@@ -279,6 +270,12 @@ function kitchenReducer(state: KitchenGlobalState, action: KitchenAction): Kitch
   switch (action.type) {
     case 'SET_PANTRY_DATA':
       return { ...state, pantry: action.payload };
+
+    case 'SET_TRANSACTIONS_DATA':
+      return { ...state, transactions: action.payload };
+
+    case 'SET_GROCERY_DATA':
+      return { ...state, groceryList: action.payload };
 
     case 'SET_AI_STATE':
       return { ...state, aiState: action.payload };
@@ -327,6 +324,108 @@ function kitchenReducer(state: KitchenGlobalState, action: KitchenAction): Kitch
     case 'CLEAR_PANTRY':
       return { ...state, pantry: [] };
 
+    case 'LOG_TRANSACTION':
+      return { ...state, transactions: [action.payload, ...state.transactions] };
+
+    case 'RECORD_USAGE': {
+      const { itemId, quantity, unit, reason, createdBy } = action.payload;
+      const target = state.pantry.find((p) => p.id === itemId);
+      if (!target) return state;
+
+      const prevQty = target.quantity;
+      const newQty = Math.max(0, prevQty - quantity);
+      const updatedPantry = state.pantry.map((p) =>
+        p.id === itemId ? { ...p, quantity: newQty, freshness: newQty === 0 ? ('critical' as FreshnessLevel) : p.freshness } : p
+      );
+
+      const tx: InventoryTransaction = {
+        id: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        restaurantId: target.restaurantId || 'rest_spice_garden',
+        inventoryItemId: itemId,
+        itemName: target.name,
+        type: 'MANUAL_ADJUSTMENT',
+        quantity,
+        unit,
+        previousQuantity: prevQty,
+        newQuantity: newQty,
+        reason: reason || 'Kitchen Usage',
+        createdBy,
+        createdAt: new Date().toISOString()
+      };
+
+      return {
+        ...state,
+        pantry: updatedPantry,
+        transactions: [tx, ...state.transactions]
+      };
+    }
+
+    case 'RECORD_WASTE': {
+      const { itemId, quantity, unit, reason, createdBy } = action.payload;
+      const target = state.pantry.find((p) => p.id === itemId);
+      if (!target) return state;
+
+      const prevQty = target.quantity;
+      const newQty = Math.max(0, prevQty - quantity);
+      const updatedPantry = state.pantry.map((p) =>
+        p.id === itemId ? { ...p, quantity: newQty, freshness: newQty === 0 ? ('critical' as FreshnessLevel) : p.freshness } : p
+      );
+
+      const tx: InventoryTransaction = {
+        id: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        restaurantId: target.restaurantId || 'rest_spice_garden',
+        inventoryItemId: itemId,
+        itemName: target.name,
+        type: 'WASTE',
+        quantity,
+        unit,
+        previousQuantity: prevQty,
+        newQuantity: newQty,
+        reason: reason || 'Waste recorded',
+        createdBy,
+        createdAt: new Date().toISOString()
+      };
+
+      return {
+        ...state,
+        pantry: updatedPantry,
+        transactions: [tx, ...state.transactions]
+      };
+    }
+
+    case 'ADJUST_STOCK': {
+      const { itemId, actualQuantity, reason, createdBy } = action.payload;
+      const target = state.pantry.find((p) => p.id === itemId);
+      if (!target) return state;
+
+      const prevQty = target.quantity;
+      const diff = actualQuantity - prevQty;
+      const updatedPantry = state.pantry.map((p) =>
+        p.id === itemId ? { ...p, quantity: actualQuantity, freshness: actualQuantity === 0 ? ('critical' as FreshnessLevel) : p.freshness } : p
+      );
+
+      const tx: InventoryTransaction = {
+        id: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        restaurantId: target.restaurantId || 'rest_spice_garden',
+        inventoryItemId: itemId,
+        itemName: target.name,
+        type: 'CORRECTION',
+        quantity: Math.abs(diff),
+        unit: target.unit,
+        previousQuantity: prevQty,
+        newQuantity: actualQuantity,
+        reason: reason || 'Stock Reconciliation',
+        createdBy,
+        createdAt: new Date().toISOString()
+      };
+
+      return {
+        ...state,
+        pantry: updatedPantry,
+        transactions: [tx, ...state.transactions]
+      };
+    }
+
     case 'ADD_RECIPE':
       return { ...state, recipes: [action.payload, ...state.recipes] };
 
@@ -337,13 +436,31 @@ function kitchenReducer(state: KitchenGlobalState, action: KitchenAction): Kitch
       return { ...state, activeCookingRecipe: action.payload, selectedRecipeId: action.payload.id };
 
     case 'FINISH_COOKING_DEDUCTION': {
-      const { recipe } = action.payload;
+      const { recipe, user } = action.payload;
+      const newTransactions: InventoryTransaction[] = [];
+
       const updatedPantry = state.pantry.map((pantryItem) => {
         const matchedReq = recipe.ingredients.find(
           (ing) => ing.name.toLowerCase() === pantryItem.name.toLowerCase()
         );
         if (matchedReq) {
           const remaining = Math.max(0, pantryItem.quantity - matchedReq.amount);
+          newTransactions.push({
+            id: `tx_cook_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+            restaurantId: pantryItem.restaurantId || 'rest_spice_garden',
+            inventoryItemId: pantryItem.id,
+            itemName: pantryItem.name,
+            type: 'USED_IN_COOKING',
+            quantity: matchedReq.amount,
+            unit: matchedReq.unit || pantryItem.unit,
+            previousQuantity: pantryItem.quantity,
+            newQuantity: remaining,
+            reason: `Used in cooking "${recipe.title}"`,
+            referenceId: recipe.id,
+            createdBy: user || 'Chef',
+            createdAt: new Date().toISOString()
+          });
+
           return {
             ...pantryItem,
             quantity: remaining,
@@ -355,17 +472,18 @@ function kitchenReducer(state: KitchenGlobalState, action: KitchenAction): Kitch
 
       return {
         ...state,
-        pantry: updatedPantry
+        pantry: updatedPantry,
+        transactions: [...newTransactions, ...state.transactions]
       };
     }
 
     case 'ADD_GROCERY_ITEM':
       return { ...state, groceryList: [action.payload, ...state.groceryList] };
 
-    case 'TOGGLE_GROCERY_ITEM':
+    case 'UPDATE_GROCERY_ITEM':
       return {
         ...state,
-        groceryList: state.groceryList.map((g) => (g.id === action.payload ? { ...g, bought: !g.bought } : g))
+        groceryList: state.groceryList.map((g) => (g.id === action.payload.id ? action.payload : g))
       };
 
     case 'DELETE_GROCERY_ITEM':
@@ -374,29 +492,92 @@ function kitchenReducer(state: KitchenGlobalState, action: KitchenAction): Kitch
         groceryList: state.groceryList.filter((g) => g.id !== action.payload)
       };
 
-    case 'TRANSFER_PURCHASED_TO_PANTRY': {
-      const purchased = state.groceryList.filter((g) => g.bought);
-      if (purchased.length === 0) return state;
+    case 'MARK_GROCERY_PURCHASED':
+      return {
+        ...state,
+        groceryList: state.groceryList.map((g) =>
+          g.id === action.payload ? { ...g, status: 'PURCHASED', updatedAt: new Date().toISOString() } : g
+        )
+      };
 
-      const colors = ['#ec4899', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#84cc16'];
-      const newPantryAdditions: Ingredient[] = purchased.map((g, idx) => ({
-        id: `ing_restock_${Date.now()}_${idx}`,
-        name: g.name,
-        category: (g.category?.toLowerCase().includes('dairy') ? 'dairy' : 'produce') as any,
-        quantity: g.quantity || 1,
-        unit: g.unit || 'pcs',
-        freshness: 'fresh' as FreshnessLevel,
-        colorCode: colors[idx % colors.length],
-        tags: ['restocked'],
+    case 'RECEIVE_GROCERY_DELIVERY': {
+      const { groceryId, receivedQuantity, user } = action.payload;
+      const targetGrocery = state.groceryList.find((g) => g.id === groceryId);
+      if (!targetGrocery) return state;
+
+      const restId = targetGrocery.restaurantId || 'rest_spice_garden';
+      const existingIng = state.pantry.find((p) => p.name.toLowerCase() === targetGrocery.name.toLowerCase());
+
+      let updatedPantry = [...state.pantry];
+      let prevQty = 0;
+      let newQty = receivedQuantity;
+
+      if (existingIng) {
+        prevQty = existingIng.quantity;
+        newQty = Math.round((existingIng.quantity + receivedQuantity) * 100) / 100;
+        updatedPantry = state.pantry.map((p) =>
+          p.id === existingIng.id ? { ...p, quantity: newQty, freshness: 'fresh', updatedAt: new Date().toISOString() } : p
+        );
+      } else {
+        const newIng: Ingredient = {
+          id: `ing_deliv_${Date.now()}`,
+          restaurantId: restId,
+          name: targetGrocery.name,
+          quantity: receivedQuantity,
+          unit: targetGrocery.unit,
+          category: (targetGrocery.category?.toLowerCase() as any) || 'produce',
+          freshness: 'fresh',
+          colorCode: '#10b981',
+          createdAt: new Date().toISOString(),
+          createdBy: user || 'Staff'
+        };
+        updatedPantry = [newIng, ...state.pantry];
+      }
+
+      const tx: InventoryTransaction = {
+        id: `tx_deliv_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        restaurantId: restId,
+        inventoryItemId: existingIng?.id,
+        itemName: targetGrocery.name,
+        type: 'RECEIVED',
+        quantity: receivedQuantity,
+        unit: targetGrocery.unit,
+        previousQuantity: prevQty,
+        newQuantity: newQty,
+        reason: `Delivery received from grocery item (Order #${groceryId.slice(0, 6)})`,
+        referenceId: groceryId,
+        createdBy: user || 'Staff',
         createdAt: new Date().toISOString()
-      }));
+      };
+
+      const isPartial = receivedQuantity < targetGrocery.quantity;
+      const updatedGroceryList = state.groceryList.map((g) => {
+        if (g.id === groceryId) {
+          if (isPartial) {
+            const remainingNeeded = Math.max(0, g.quantity - receivedQuantity);
+            return {
+              ...g,
+              quantity: remainingNeeded,
+              reason: `Partial delivery received (${receivedQuantity} ${g.unit} arrived). ${remainingNeeded} ${g.unit} remaining needed.`,
+              updatedAt: new Date().toISOString()
+            };
+          } else {
+            return { ...g, status: 'RECEIVED' as const, updatedAt: new Date().toISOString() };
+          }
+        }
+        return g;
+      });
 
       return {
         ...state,
-        pantry: [...newPantryAdditions, ...state.pantry],
-        groceryList: state.groceryList.filter((g) => !g.bought)
+        pantry: updatedPantry,
+        groceryList: updatedGroceryList,
+        transactions: [tx, ...state.transactions]
       };
     }
+
+    case 'SET_ALL_GROCERY_ITEMS':
+      return { ...state, groceryList: action.payload };
 
     case 'ADD_AI_RESPONSE':
       return { ...state, aiHistory: [action.payload, ...state.aiHistory] };
@@ -438,14 +619,20 @@ interface KitchenContextType {
   clearPantry: () => void;
   updateQuantity: (id: string, delta: number) => void;
   updateFreshness: (id: string, freshness: FreshnessLevel) => void;
+  logTransaction: (tx: InventoryTransaction) => void;
+  recordUsage: (itemId: string, quantity: number, unit: string, reason: string) => void;
+  recordWaste: (itemId: string, quantity: number, unit: string, reason: string) => void;
+  adjustStock: (itemId: string, actualQuantity: number, reason: string) => void;
   addRecipe: (recipe: Recipe) => void;
   setSelectedRecipe: (id: string | null) => void;
   startCooking: (recipe: Recipe) => void;
   finishCookingDeduction: (recipe: Recipe) => void;
-  addGroceryItem: (item: GroceryItem) => void;
-  toggleGroceryItem: (id: string) => void;
+  addGroceryItem: (item: SmartGroceryItem) => void;
+  updateGroceryItem: (item: SmartGroceryItem) => void;
   deleteGroceryItem: (id: string) => void;
-  transferPurchasedToPantry: () => void;
+  markGroceryPurchased: (id: string) => void;
+  receiveGroceryDelivery: (groceryId: string, receivedQuantity: number) => void;
+  setAllGroceryItems: (items: SmartGroceryItem[]) => void;
   addAIResponse: (response: AIResponsePayload) => void;
   updatePreferences: (prefs: Partial<UserPreferences>) => void;
 }
@@ -460,9 +647,15 @@ export const KitchenProvider: React.FC<{ children: ReactNode }> = ({ children })
   useEffect(() => {
     const restaurantPantry = loadPantryForRestaurant(restaurantId);
     dispatch({ type: 'SET_PANTRY_DATA', payload: restaurantPantry });
+
+    const restaurantTxs = InventoryTransactionService.loadTransactions(restaurantId);
+    dispatch({ type: 'SET_TRANSACTIONS_DATA', payload: restaurantTxs });
+
+    const restaurantGrocery = GroceryService.loadGrocery(restaurantId);
+    dispatch({ type: 'SET_GROCERY_DATA', payload: restaurantGrocery });
   }, [restaurantId]);
 
-  // Persist pantry data to restaurant-isolated localStorage key
+  // Persist pantry data
   useEffect(() => {
     const key = getPantryStorageKey(restaurantId);
     try {
@@ -471,6 +664,16 @@ export const KitchenProvider: React.FC<{ children: ReactNode }> = ({ children })
       console.warn(`Failed to save pantry for key ${key}`, e);
     }
   }, [state.pantry, restaurantId]);
+
+  // Persist transactions data
+  useEffect(() => {
+    InventoryTransactionService.saveTransactions(restaurantId, state.transactions);
+  }, [state.transactions, restaurantId]);
+
+  // Persist grocery data
+  useEffect(() => {
+    GroceryService.saveGrocery(restaurantId, state.groceryList);
+  }, [state.groceryList, restaurantId]);
 
   const setAIState = (aiState: AIBrainState) => {
     dispatch({ type: 'SET_AI_STATE', payload: aiState });
@@ -487,9 +690,27 @@ export const KitchenProvider: React.FC<{ children: ReactNode }> = ({ children })
       createdBy: ingredient.createdBy || user?.name || 'Staff Member'
     };
     dispatch({ type: 'ADD_INGREDIENT', payload: stamped });
+
+    // Log transaction
+    const tx = InventoryTransactionService.createTransaction({
+      restaurantId: stamped.restaurantId!,
+      inventoryItemId: stamped.id,
+      itemName: stamped.name,
+      type: stamped.notes?.includes('Camera') ? 'CAMERA_RECEIVED' : 'RECEIVED',
+      quantity: stamped.quantity,
+      unit: stamped.unit,
+      previousQuantity: 0,
+      newQuantity: stamped.quantity,
+      reason: stamped.notes || 'Added stock item to restaurant inventory',
+      createdBy: user?.name || 'Staff'
+    });
+    dispatch({ type: 'LOG_TRANSACTION', payload: tx });
   };
 
   const updateIngredient = (ingredient: Ingredient) => {
+    const prev = state.pantry.find((p) => p.id === ingredient.id);
+    const prevQty = prev ? prev.quantity : 0;
+
     const stamped: Ingredient = {
       ...ingredient,
       restaurantId: restaurantId || ingredient.restaurantId || 'rest_spice_garden',
@@ -497,6 +718,22 @@ export const KitchenProvider: React.FC<{ children: ReactNode }> = ({ children })
       updatedAt: new Date().toISOString()
     };
     dispatch({ type: 'UPDATE_INGREDIENT', payload: stamped });
+
+    if (prev && prev.quantity !== ingredient.quantity) {
+      const tx = InventoryTransactionService.createTransaction({
+        restaurantId: stamped.restaurantId!,
+        inventoryItemId: stamped.id,
+        itemName: stamped.name,
+        type: ingredient.quantity > prevQty ? (ingredient.notes?.includes('Camera') ? 'CAMERA_RECEIVED' : 'RECEIVED') : 'MANUAL_ADJUSTMENT',
+        quantity: Math.abs(ingredient.quantity - prevQty),
+        unit: ingredient.unit,
+        previousQuantity: prevQty,
+        newQuantity: ingredient.quantity,
+        reason: 'Stock updated by user',
+        createdBy: user?.name || 'Staff'
+      });
+      dispatch({ type: 'LOG_TRANSACTION', payload: tx });
+    }
   };
 
   const removeIngredient = (id: string) => {
@@ -508,11 +745,55 @@ export const KitchenProvider: React.FC<{ children: ReactNode }> = ({ children })
   };
 
   const updateQuantity = (id: string, delta: number) => {
-    dispatch({ type: 'UPDATE_INGREDIENT_QUANTITY', payload: { id, delta } });
+    const item = state.pantry.find((p) => p.id === id);
+    if (item) {
+      const prevQty = item.quantity;
+      const newQty = Math.max(0, item.quantity + delta);
+      dispatch({ type: 'UPDATE_INGREDIENT_QUANTITY', payload: { id, delta } });
+
+      const tx = InventoryTransactionService.createTransaction({
+        restaurantId: item.restaurantId || restaurantId || 'rest_spice_garden',
+        inventoryItemId: id,
+        itemName: item.name,
+        type: delta > 0 ? 'RECEIVED' : 'MANUAL_ADJUSTMENT',
+        quantity: Math.abs(delta),
+        unit: item.unit,
+        previousQuantity: prevQty,
+        newQuantity: newQty,
+        reason: 'Quick quantity delta adjustment',
+        createdBy: user?.name || 'Staff'
+      });
+      dispatch({ type: 'LOG_TRANSACTION', payload: tx });
+    }
   };
 
   const updateFreshness = (id: string, freshness: FreshnessLevel) => {
     dispatch({ type: 'UPDATE_FRESHNESS', payload: { id, freshness } });
+  };
+
+  const logTransaction = (tx: InventoryTransaction) => {
+    dispatch({ type: 'LOG_TRANSACTION', payload: tx });
+  };
+
+  const recordUsage = (itemId: string, quantity: number, unit: string, reason: string) => {
+    dispatch({
+      type: 'RECORD_USAGE',
+      payload: { itemId, quantity, unit, reason, createdBy: user?.name || 'Staff' }
+    });
+  };
+
+  const recordWaste = (itemId: string, quantity: number, unit: string, reason: string) => {
+    dispatch({
+      type: 'RECORD_WASTE',
+      payload: { itemId, quantity, unit, reason, createdBy: user?.name || 'Staff' }
+    });
+  };
+
+  const adjustStock = (itemId: string, actualQuantity: number, reason: string) => {
+    dispatch({
+      type: 'ADJUST_STOCK',
+      payload: { itemId, actualQuantity, reason, createdBy: user?.name || 'Staff' }
+    });
   };
 
   const addRecipe = (recipe: Recipe) => {
@@ -528,27 +809,39 @@ export const KitchenProvider: React.FC<{ children: ReactNode }> = ({ children })
   };
 
   const finishCookingDeduction = (recipe: Recipe) => {
-    dispatch({ type: 'FINISH_COOKING_DEDUCTION', payload: { recipe } });
+    dispatch({ type: 'FINISH_COOKING_DEDUCTION', payload: { recipe, user: user?.name || 'Chef' } });
   };
 
-  const addGroceryItem = (item: GroceryItem) => {
-    const stamped: GroceryItem = {
+  const addGroceryItem = (item: SmartGroceryItem) => {
+    const stamped: SmartGroceryItem = {
       ...item,
-      restaurantId: restaurantId || item.restaurantId || 'rest_spice_garden'
+      restaurantId: restaurantId || item.restaurantId || 'rest_spice_garden',
+      createdBy: user?.name || 'Staff'
     };
     dispatch({ type: 'ADD_GROCERY_ITEM', payload: stamped });
   };
 
-  const toggleGroceryItem = (id: string) => {
-    dispatch({ type: 'TOGGLE_GROCERY_ITEM', payload: id });
+  const updateGroceryItem = (item: SmartGroceryItem) => {
+    dispatch({ type: 'UPDATE_GROCERY_ITEM', payload: item });
   };
 
   const deleteGroceryItem = (id: string) => {
     dispatch({ type: 'DELETE_GROCERY_ITEM', payload: id });
   };
 
-  const transferPurchasedToPantry = () => {
-    dispatch({ type: 'TRANSFER_PURCHASED_TO_PANTRY' });
+  const markGroceryPurchased = (id: string) => {
+    dispatch({ type: 'MARK_GROCERY_PURCHASED', payload: id });
+  };
+
+  const receiveGroceryDelivery = (groceryId: string, receivedQuantity: number) => {
+    dispatch({
+      type: 'RECEIVE_GROCERY_DELIVERY',
+      payload: { groceryId, receivedQuantity, user: user?.name || 'Staff' }
+    });
+  };
+
+  const setAllGroceryItems = (items: SmartGroceryItem[]) => {
+    dispatch({ type: 'SET_ALL_GROCERY_ITEMS', payload: items });
   };
 
   const addAIResponse = (response: AIResponsePayload) => {
@@ -572,14 +865,20 @@ export const KitchenProvider: React.FC<{ children: ReactNode }> = ({ children })
         clearPantry,
         updateQuantity,
         updateFreshness,
+        logTransaction,
+        recordUsage,
+        recordWaste,
+        adjustStock,
         addRecipe,
         setSelectedRecipe,
         startCooking,
         finishCookingDeduction,
         addGroceryItem,
-        toggleGroceryItem,
+        updateGroceryItem,
         deleteGroceryItem,
-        transferPurchasedToPantry,
+        markGroceryPurchased,
+        receiveGroceryDelivery,
+        setAllGroceryItems,
         addAIResponse,
         updatePreferences
       }}

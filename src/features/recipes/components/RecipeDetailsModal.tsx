@@ -38,9 +38,9 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
           overflowY: 'auto',
           padding: '28px',
           borderRadius: '24px',
-          background: 'rgba(15, 23, 42, 0.95)',
-          border: '1.5px solid rgba(6, 182, 212, 0.4)',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7)',
+          background: '#ffffff',
+          border: '1.5px solid #cbd5e1',
+          boxShadow: '0 20px 50px rgba(15, 23, 42, 0.15)',
           display: 'flex',
           flexDirection: 'column',
           gap: '20px'

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Building2, User, Mail, Phone, Lock, MapPin, AlertCircle, ArrowRight } from 'lucide-react';
+import { Building2, User, Mail, Phone, Lock, MapPin, AlertCircle, ArrowRight, ArrowLeft } from 'lucide-react';
 
 const RESTAURANT_TYPES = [
   'Restaurant',
@@ -68,11 +68,12 @@ export const SignUpPage: React.FC = () => {
   return (
     <div
       style={{
-        minHeight: '85vh',
+        minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '32px 16px'
+        padding: '36px 16px',
+        background: '#090d16'
       }}
     >
       <div
@@ -80,22 +81,39 @@ export const SignUpPage: React.FC = () => {
         style={{
           width: '100%',
           maxWidth: '680px',
-          padding: '36px 36px',
+          padding: '40px 36px',
           borderRadius: '28px',
-          background: 'rgba(15, 23, 42, 0.88)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
-          backdropFilter: 'blur(20px)'
+          background: '#111827',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6)'
         }}
       >
+        {/* Back Link to Welcome */}
+        <div style={{ marginBottom: '16px' }}>
+          <Link
+            to="/welcome"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: '#38bdf8',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              textDecoration: 'none'
+            }}
+          >
+            <ArrowLeft size={16} /> Back to Welcome Home
+          </Link>
+        </div>
+
         {/* Title Header */}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <div
             style={{
-              width: 52,
-              height: 52,
+              width: 54,
+              height: 54,
               borderRadius: '16px',
-              background: 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)',
+              background: 'linear-gradient(135deg, #10b981 0%, #0284c7 100%)',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -110,13 +128,13 @@ export const SignUpPage: React.FC = () => {
               fontSize: '1.8rem',
               fontWeight: 800,
               fontFamily: 'var(--font-heading)',
-              color: 'var(--text-main)',
+              color: '#f9fafb',
               letterSpacing: '-0.02em'
             }}
           >
             Register Restaurant Workspace
           </h2>
-          <p style={{ fontSize: '0.88rem', color: 'var(--text-dim)', marginTop: '4px' }}>
+          <p style={{ fontSize: '0.88rem', color: '#9ca3af', marginTop: '4px' }}>
             Transform your business into an AI-Powered Intelligent Kitchen
           </p>
         </div>
@@ -125,19 +143,20 @@ export const SignUpPage: React.FC = () => {
         {error && (
           <div
             style={{
-              padding: '12px 16px',
+              padding: '14px 16px',
               borderRadius: '16px',
-              background: 'rgba(239, 68, 68, 0.15)',
-              border: '1px solid rgba(239, 68, 68, 0.4)',
+              background: 'rgba(239, 68, 68, 0.18)',
+              border: '1.5px solid #ef4444',
               color: '#fca5a5',
-              fontSize: '0.85rem',
+              fontSize: '0.88rem',
+              fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
               marginBottom: '24px'
             }}
           >
-            <AlertCircle size={18} />
+            <AlertCircle size={20} color="#ef4444" />
             <span>{error}</span>
           </div>
         )}
@@ -147,8 +166,8 @@ export const SignUpPage: React.FC = () => {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
             {/* Restaurant Name */}
             <div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                <Building2 size={14} /> Restaurant / Business Name *
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.88rem', fontWeight: 700, color: '#f9fafb', marginBottom: '6px' }}>
+                <Building2 size={15} color="#38bdf8" /> Restaurant / Business Name *
               </label>
               <input
                 type="text"
@@ -161,10 +180,10 @@ export const SignUpPage: React.FC = () => {
                   width: '100%',
                   padding: '12px 16px',
                   borderRadius: '14px',
-                  background: 'rgba(30, 41, 59, 0.6)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: 'var(--text-main)',
-                  fontSize: '0.9rem',
+                  background: '#1f2937',
+                  border: '1.5px solid #374151',
+                  color: '#f9fafb',
+                  fontSize: '0.92rem',
                   outline: 'none'
                 }}
               />
@@ -172,7 +191,7 @@ export const SignUpPage: React.FC = () => {
 
             {/* Restaurant Type */}
             <div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.88rem', fontWeight: 700, color: '#f9fafb', marginBottom: '6px' }}>
                 Restaurant Type *
               </label>
               <select
@@ -183,15 +202,15 @@ export const SignUpPage: React.FC = () => {
                   width: '100%',
                   padding: '12px 16px',
                   borderRadius: '14px',
-                  background: 'rgba(30, 41, 59, 0.8)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: 'var(--text-main)',
-                  fontSize: '0.9rem',
+                  background: '#1f2937',
+                  border: '1.5px solid #374151',
+                  color: '#f9fafb',
+                  fontSize: '0.92rem',
                   outline: 'none'
                 }}
               >
                 {RESTAURANT_TYPES.map((type) => (
-                  <option key={type} value={type} style={{ background: '#0f172a', color: '#fff' }}>
+                  <option key={type} value={type} style={{ background: '#111827', color: '#f9fafb' }}>
                     {type}
                   </option>
                 ))}
@@ -202,7 +221,7 @@ export const SignUpPage: React.FC = () => {
           {/* Custom Type field if 'Other' selected */}
           {formData.restaurantType === 'Other' && (
             <div>
-              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: 700, color: '#f9fafb', marginBottom: '6px' }}>
                 Specify Custom Restaurant Type *
               </label>
               <input
@@ -216,10 +235,10 @@ export const SignUpPage: React.FC = () => {
                   width: '100%',
                   padding: '12px 16px',
                   borderRadius: '14px',
-                  background: 'rgba(30, 41, 59, 0.6)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: 'var(--text-main)',
-                  fontSize: '0.9rem',
+                  background: '#1f2937',
+                  border: '1.5px solid #374151',
+                  color: '#f9fafb',
+                  fontSize: '0.92rem',
                   outline: 'none'
                 }}
               />
@@ -229,8 +248,8 @@ export const SignUpPage: React.FC = () => {
           {/* Two-Column Form Layout: Owner & Email */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
             <div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                <User size={14} /> Owner / Manager Full Name *
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.88rem', fontWeight: 700, color: '#f9fafb', marginBottom: '6px' }}>
+                <User size={15} color="#10b981" /> Owner / Manager Full Name *
               </label>
               <input
                 type="text"
@@ -243,18 +262,18 @@ export const SignUpPage: React.FC = () => {
                   width: '100%',
                   padding: '12px 16px',
                   borderRadius: '14px',
-                  background: 'rgba(30, 41, 59, 0.6)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: 'var(--text-main)',
-                  fontSize: '0.9rem',
+                  background: '#1f2937',
+                  border: '1.5px solid #374151',
+                  color: '#f9fafb',
+                  fontSize: '0.92rem',
                   outline: 'none'
                 }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                <Mail size={14} /> Email Address *
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.88rem', fontWeight: 700, color: '#f9fafb', marginBottom: '6px' }}>
+                <Mail size={15} color="#38bdf8" /> Email Address *
               </label>
               <input
                 type="email"
@@ -267,10 +286,10 @@ export const SignUpPage: React.FC = () => {
                   width: '100%',
                   padding: '12px 16px',
                   borderRadius: '14px',
-                  background: 'rgba(30, 41, 59, 0.6)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: 'var(--text-main)',
-                  fontSize: '0.9rem',
+                  background: '#1f2937',
+                  border: '1.5px solid #374151',
+                  color: '#f9fafb',
+                  fontSize: '0.92rem',
                   outline: 'none'
                 }}
               />
@@ -280,8 +299,8 @@ export const SignUpPage: React.FC = () => {
           {/* Phone & Address */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
             <div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                <Phone size={14} /> Phone Number *
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.88rem', fontWeight: 700, color: '#f9fafb', marginBottom: '6px' }}>
+                <Phone size={15} color="#f59e0b" /> Phone Number *
               </label>
               <input
                 type="tel"
@@ -294,18 +313,18 @@ export const SignUpPage: React.FC = () => {
                   width: '100%',
                   padding: '12px 16px',
                   borderRadius: '14px',
-                  background: 'rgba(30, 41, 59, 0.6)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: 'var(--text-main)',
-                  fontSize: '0.9rem',
+                  background: '#1f2937',
+                  border: '1.5px solid #374151',
+                  color: '#f9fafb',
+                  fontSize: '0.92rem',
                   outline: 'none'
                 }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                <MapPin size={14} /> Restaurant Address *
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.88rem', fontWeight: 700, color: '#f9fafb', marginBottom: '6px' }}>
+                <MapPin size={15} color="#a855f7" /> Restaurant Address *
               </label>
               <input
                 type="text"
@@ -318,10 +337,10 @@ export const SignUpPage: React.FC = () => {
                   width: '100%',
                   padding: '12px 16px',
                   borderRadius: '14px',
-                  background: 'rgba(30, 41, 59, 0.6)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: 'var(--text-main)',
-                  fontSize: '0.9rem',
+                  background: '#1f2937',
+                  border: '1.5px solid #374151',
+                  color: '#f9fafb',
+                  fontSize: '0.92rem',
                   outline: 'none'
                 }}
               />
@@ -331,8 +350,8 @@ export const SignUpPage: React.FC = () => {
           {/* Password & Confirm Password */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
             <div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                <Lock size={14} /> Password *
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.88rem', fontWeight: 700, color: '#f9fafb', marginBottom: '6px' }}>
+                <Lock size={15} color="#ef4444" /> Password *
               </label>
               <input
                 type="password"
@@ -345,18 +364,18 @@ export const SignUpPage: React.FC = () => {
                   width: '100%',
                   padding: '12px 16px',
                   borderRadius: '14px',
-                  background: 'rgba(30, 41, 59, 0.6)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: 'var(--text-main)',
-                  fontSize: '0.9rem',
+                  background: '#1f2937',
+                  border: '1.5px solid #374151',
+                  color: '#f9fafb',
+                  fontSize: '0.92rem',
                   outline: 'none'
                 }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                <Lock size={14} /> Confirm Password *
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.88rem', fontWeight: 700, color: '#f9fafb', marginBottom: '6px' }}>
+                <Lock size={15} color="#ef4444" /> Confirm Password *
               </label>
               <input
                 type="password"
@@ -369,10 +388,10 @@ export const SignUpPage: React.FC = () => {
                   width: '100%',
                   padding: '12px 16px',
                   borderRadius: '14px',
-                  background: 'rgba(30, 41, 59, 0.6)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: 'var(--text-main)',
-                  fontSize: '0.9rem',
+                  background: '#1f2937',
+                  border: '1.5px solid #374151',
+                  color: '#f9fafb',
+                  fontSize: '0.92rem',
                   outline: 'none'
                 }}
               />
@@ -383,30 +402,31 @@ export const SignUpPage: React.FC = () => {
             type="submit"
             disabled={loading}
             style={{
-              marginTop: '10px',
-              padding: '14px',
+              marginTop: '12px',
+              padding: '16px',
               borderRadius: '16px',
-              background: 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)',
-              color: '#000',
+              background: 'linear-gradient(135deg, #10b981 0%, #0284c7 100%)',
+              color: '#ffffff',
               fontWeight: 800,
-              fontSize: '0.98rem',
+              fontSize: '1rem',
+              fontFamily: 'var(--font-heading)',
               border: 'none',
               cursor: loading ? 'wait' : 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '8px',
-              boxShadow: '0 4px 20px rgba(16, 185, 129, 0.4)'
+              gap: '10px',
+              boxShadow: '0 6px 20px rgba(16, 185, 129, 0.35)'
             }}
           >
             <span>{loading ? 'Creating Workspace...' : 'Create Restaurant Workspace'}</span>
-            <ArrowRight size={18} />
+            <ArrowRight size={20} />
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '24px', fontSize: '0.85rem', color: 'var(--text-dim)' }}>
+        <div style={{ textAlign: 'center', marginTop: '28px', fontSize: '0.88rem', color: '#9ca3af' }}>
           Already registered?{' '}
-          <Link to="/signin" style={{ color: 'var(--primary-cyan)', fontWeight: 600, textDecoration: 'none' }}>
+          <Link to="/signin" style={{ color: '#38bdf8', fontWeight: 700, textDecoration: 'underline' }}>
             Sign In to Workspace
           </Link>
         </div>
