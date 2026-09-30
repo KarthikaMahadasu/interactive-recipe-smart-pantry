@@ -5,28 +5,49 @@ export const SPATIAL_ANCHORS: Record<SpatialAnchorId, SpatialAnchor> = {
   PantryAnchor: {
     id: 'PantryAnchor',
     name: 'Pantry Storage Anchor',
-    position: { x: 20, y: 30, z: 0 },
+    position: { x: 18, y: 22, z: 0 },
     zoneId: 'pantry',
     description: 'Spatial entry coordinate for pantry inventory'
   },
   AIAnchor: {
     id: 'AIAnchor',
     name: 'AI Brain Pedestal Anchor',
-    position: { x: 50, y: 30, z: 15 },
+    position: { x: 50, y: 22, z: 15 },
     zoneId: 'ai_workspace',
     description: 'Central AI Neural Brain spatial destination'
+  },
+  FridgeAnchor: {
+    id: 'FridgeAnchor',
+    name: 'Smart Refrigerator Anchor',
+    position: { x: 82, y: 22, z: 0 },
+    zoneId: 'refrigerator',
+    description: 'Fresh produce & cold storage coordinate'
+  },
+  PrepAnchor: {
+    id: 'PrepAnchor',
+    name: 'Preparation Deck Anchor',
+    position: { x: 18, y: 72, z: 0 },
+    zoneId: 'prep',
+    description: 'Prep and portioning station coordinate'
   },
   CookingAnchor: {
     id: 'CookingAnchor',
     name: 'Induction Cooking Hub Anchor',
-    position: { x: 80, y: 70, z: 0 },
+    position: { x: 50, y: 72, z: 0 },
     zoneId: 'cooking',
-    description: 'Spatial coordinate for prep and heat processing'
+    description: 'Thermal stove & cooking coordinate'
+  },
+  ServingAnchor: {
+    id: 'ServingAnchor',
+    name: 'Serving Counter Anchor',
+    position: { x: 82, y: 72, z: 0 },
+    zoneId: 'serving',
+    description: 'Plating and presentation deck coordinate'
   },
   GroceryAnchor: {
     id: 'GroceryAnchor',
     name: 'Grocery Logistics Anchor',
-    position: { x: 20, y: 85, z: -10 },
+    position: { x: 18, y: 90, z: -10 },
     zoneId: 'grocery',
     description: 'Future destination anchor for missing ingredient procurement'
   }

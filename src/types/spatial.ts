@@ -1,7 +1,10 @@
 export type SpatialAnchorId = 
   | 'PantryAnchor' 
   | 'AIAnchor' 
+  | 'FridgeAnchor'
+  | 'PrepAnchor'
   | 'CookingAnchor' 
+  | 'ServingAnchor'
   | 'GroceryAnchor';
 
 export interface SpatialVector3 {

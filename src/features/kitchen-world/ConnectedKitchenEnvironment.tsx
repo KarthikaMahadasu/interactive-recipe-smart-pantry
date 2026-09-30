@@ -190,17 +190,37 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
           }}
         >
           {/* Spatial Motion Trajectory Path overlay in 2.5D */}
+          {/* Pantry Storage → Central AI Workspace Flowing Conduit */}
           <SpatialMotionPath
             start="PantryAnchor"
             destination="AIAnchor"
-            active={activeZoneId === 'pantry' || activeZoneId === 'ai_workspace'}
+            active={activeZoneId === null || activeZoneId === 'pantry' || activeZoneId === 'ai_workspace'}
             color="var(--primary-cyan)"
+            pulseSpeed={2}
           />
+          {/* Central AI Workspace → Serving Counter Flowing Conduit */}
           <SpatialMotionPath
             start="AIAnchor"
+            destination="ServingAnchor"
+            active={activeZoneId === null || activeZoneId === 'pantry' || activeZoneId === 'ai_workspace' || activeZoneId === 'serving'}
+            color="var(--primary-cyan)"
+            pulseSpeed={2.4}
+          />
+          {/* Preparation Deck → Cooking Hub Flowing Conduit */}
+          <SpatialMotionPath
+            start="PrepAnchor"
             destination="CookingAnchor"
-            active={activeZoneId === 'cooking' || activeZoneId === 'ai_workspace'}
+            active={activeZoneId === 'prep' || activeZoneId === 'cooking'}
+            color="var(--accent-emerald)"
+            pulseSpeed={2.2}
+          />
+          {/* Cooking Hub → Serving Counter Flowing Conduit */}
+          <SpatialMotionPath
+            start="CookingAnchor"
+            destination="ServingAnchor"
+            active={activeZoneId === 'cooking' || activeZoneId === 'serving'}
             color="var(--accent-violet)"
+            pulseSpeed={2.2}
           />
 
           {/* Spatial Upper Deck: Pantry ── AI Workspace ── Refrigerator */}

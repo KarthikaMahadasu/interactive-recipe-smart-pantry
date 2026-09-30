@@ -206,6 +206,24 @@ h1, h2, h3, h4, h5, h6 {
   to { transform: rotate(360deg); }
 }
 
+@keyframes spatialPathPulse {
+  0% {
+    stroke-dashoffset: 24;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes spatialPathFlow {
+  0% {
+    stroke-dashoffset: -36;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
 .animate-float {
   animation: float 4s ease-in-out infinite;
 }

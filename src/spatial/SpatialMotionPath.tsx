@@ -21,18 +21,18 @@ export const SpatialMotionPath: React.FC<SpatialMotionPathProps> = ({
   destination,
   color = 'var(--primary-cyan)',
   active = true,
-  pulseSpeed = 3,
+  pulseSpeed = 2,
   label,
   style = {}
 }) => {
   const p1 = resolveSpatialPosition(start);
   const p2 = resolveSpatialPosition(destination);
 
-  // Calculate curve control points
+  // Calculate curve control points for smooth trajectory
   const dx = p2.x - p1.x;
   const dy = p2.y - p1.y;
   const cx = p1.x + dx * 0.5;
-  const cy = p1.y + dy * 0.2; // slight upward arch
+  const cy = p1.y + dy * 0.2; // natural curve
 
   const pathD = `M ${p1.x} ${p1.y} Q ${cx} ${cy}, ${p2.x} ${p2.y}`;
 
@@ -55,34 +55,60 @@ export const SpatialMotionPath: React.FC<SpatialMotionPathProps> = ({
       <path
         d={pathD}
         fill="none"
-        stroke="rgba(255, 255, 255, 0.12)"
+        stroke="rgba(255, 255, 255, 0.15)"
         strokeWidth="0.6"
-        strokeDasharray="1 1"
+        strokeDasharray="1.5 2.5"
       />
 
       {/* Active Flowing Energy Vector */}
       {active && (
-        <path
-          d={pathD}
-          fill="none"
-          stroke={color}
-          strokeWidth="0.8"
-          strokeOpacity="0.75"
-          strokeDasharray="2 4"
-          style={{
-            animation: `spatialPathPulse ${pulseSpeed}s linear infinite`,
-            filter: `drop-shadow(0 0 3px ${color})`
-          }}
-        />
+        <>
+          {/* Broad Ambient Glow Layer */}
+          <path
+            d={pathD}
+            fill="none"
+            stroke={color}
+            strokeWidth="1.6"
+            strokeOpacity="0.35"
+            strokeDasharray="4 8"
+            style={{
+              animation: `spatialPathFlow ${pulseSpeed * 1.5}s linear infinite`,
+              filter: `drop-shadow(0 0 8px ${color})`
+            }}
+          />
+
+          {/* Core Sharp Flowing Line */}
+          <path
+            d={pathD}
+            fill="none"
+            stroke={color}
+            strokeWidth="0.9"
+            strokeOpacity="0.95"
+            strokeDasharray="2 4"
+            style={{
+              animation: `spatialPathPulse ${pulseSpeed}s linear infinite`,
+              filter: `drop-shadow(0 0 4px ${color})`
+            }}
+          />
+
+          {/* Traveling Energy Light Pulse Node */}
+          <circle r="0.9" fill="#ffffff" style={{ filter: `drop-shadow(0 0 6px ${color})` }}>
+            <animateMotion
+              path={pathD}
+              dur={`${pulseSpeed}s`}
+              repeatCount="indefinite"
+            />
+          </circle>
+        </>
       )}
 
-      {/* Optional Trajectory Label */}
+      {/* Trajectory Label */}
       {label && (
         <text
           x={cx}
           y={cy - 2}
           fill="var(--text-dim)"
-          fontSize="2.5"
+          fontSize="2.2"
           textAnchor="middle"
           fontWeight="600"
         >
