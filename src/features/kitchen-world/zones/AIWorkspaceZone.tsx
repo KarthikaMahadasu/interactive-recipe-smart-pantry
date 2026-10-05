@@ -36,9 +36,9 @@ export const AIWorkspaceZone: React.FC<AIWorkspaceZoneProps> = ({ active, onHove
           width: '100%',
           height: '110px',
           borderRadius: '20px',
-          background: 'radial-gradient(circle at center, rgba(139, 92, 246, 0.3) 0%, rgba(15, 23, 42, 0.95) 80%)',
-          border: '1.5px solid rgba(139, 92, 246, 0.5)',
-          boxShadow: '0 0 24px rgba(139, 92, 246, 0.3)',
+          background: 'radial-gradient(circle at center, rgba(234, 88, 12, 0.15) 0%, rgba(248, 250, 252, 0.95) 80%)',
+          border: '1.5px solid rgba(234, 88, 12, 0.4)',
+          boxShadow: '0 4px 16px rgba(234, 88, 12, 0.15)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -48,16 +48,16 @@ export const AIWorkspaceZone: React.FC<AIWorkspaceZoneProps> = ({ active, onHove
         }}
       >
         {/* Floating Energy Particles */}
-        <FloatingElement color="#a78bfa" size={6} top="20%" left="15%" delay={0} />
-        <FloatingElement color="#06b6d4" size={5} top="65%" left="80%" delay={1} />
-        <FloatingElement color="#c084fc" size={7} top="30%" left="82%" delay={2} />
+        <FloatingElement color="#f97316" size={6} top="20%" left="15%" delay={0} />
+        <FloatingElement color="#ea580c" size={5} top="65%" left="80%" delay={1} />
+        <FloatingElement color="#fdba74" size={7} top="30%" left="82%" delay={2} />
 
         {/* Central Reusable AI Brain Orb Component */}
         <div style={{ transform: 'scale(0.72)', margin: '-16px 0' }}>
           <AIBrainOrb state={state.aiState} size={130} showStatusLabel={true} />
         </div>
 
-        <div style={{ position: 'absolute', top: 8, right: 12, color: '#a78bfa' }}>
+        <div style={{ position: 'absolute', top: 8, right: 12, color: '#ea580c' }}>
           <Sparkles size={18} />
         </div>
       </div>

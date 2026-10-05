@@ -64,8 +64,8 @@ export const CookingPage: React.FC = () => {
               width: 64,
               height: 64,
               borderRadius: '50%',
-              background: 'rgba(244, 63, 94, 0.15)',
-              color: 'var(--accent-rose)',
+              background: '#fff7ed',
+              color: '#ea580c',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
@@ -73,10 +73,10 @@ export const CookingPage: React.FC = () => {
           >
             <ChefHat size={32} />
           </div>
-          <h2 style={{ fontSize: '1.4rem', color: 'var(--text-main)' }}>
+          <h2 style={{ fontSize: '1.4rem', color: '#0f172a', fontWeight: 800 }}>
             No Recipe Selected
           </h2>
-          <p style={{ fontSize: '0.88rem', color: 'var(--text-dim)', maxWidth: '440px' }}>
+          <p style={{ fontSize: '0.88rem', color: '#64748b', maxWidth: '440px' }}>
             Please select a recipe from AI Recipe Discovery to start a guided interactive cooking session.
           </p>
           <button
@@ -84,13 +84,14 @@ export const CookingPage: React.FC = () => {
             style={{
               padding: '12px 24px',
               borderRadius: '16px',
-              background: 'linear-gradient(135deg, var(--primary-cyan) 0%, #0284c7 100%)',
-              color: '#000000',
+              background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
+              color: '#ffffff',
               fontWeight: 700,
               fontSize: '0.9rem',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
+              border: 'none',
               cursor: 'pointer'
             }}
           >
@@ -141,10 +142,11 @@ export const CookingPage: React.FC = () => {
             style={{
               padding: '20px',
               borderRadius: '20px',
-              background: 'rgba(15, 23, 42, 0.85)'
+              background: '#ffffff',
+              border: '1px solid #e2e8f0'
             }}
           >
-            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary-cyan)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ea580c', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Bot size={16} /> AI Cooking Voice & Command Assistant
             </div>
             <AICommandBar />
@@ -164,8 +166,8 @@ export const CookingPage: React.FC = () => {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '12px',
-              background: 'radial-gradient(circle at center, rgba(139, 92, 246, 0.15) 0%, rgba(15, 23, 42, 0.95) 80%)',
-              border: '1px solid rgba(139, 92, 246, 0.3)'
+              background: 'radial-gradient(circle at center, rgba(234, 88, 12, 0.08) 0%, #ffffff 80%)',
+              border: '1px solid #ffedd5'
             }}
           >
             <div style={{ transform: 'scale(0.85)' }}>
@@ -173,10 +175,10 @@ export const CookingPage: React.FC = () => {
             </div>
 
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a' }}>
                 {isCookingStarted ? `Cooking Step ${currentStepIndex + 1} Active` : 'AI Cooking Guide Standby'}
               </div>
-              <p style={{ fontSize: '0.74rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+              <p style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '2px' }}>
                 {isCookingStarted ? 'Monitoring heat levels & step progression.' : 'Review ingredient readiness to begin.'}
               </p>
             </div>
@@ -202,7 +204,7 @@ export const CookingPage: React.FC = () => {
                 gap: '8px'
               }}
             >
-              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
                 Quick Cooking Queries:
               </div>
               <button
@@ -210,17 +212,18 @@ export const CookingPage: React.FC = () => {
                 style={{
                   padding: '6px 10px',
                   borderRadius: '10px',
-                  background: 'rgba(30, 41, 59, 0.6)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  color: 'var(--text-main)',
+                  background: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  color: '#0f172a',
                   fontSize: '0.76rem',
+                  fontWeight: 600,
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
                   cursor: 'pointer'
                 }}
               >
-                <Volume2 size={14} color="var(--primary-cyan)" /> Repeat Current Instruction
+                <Volume2 size={14} color="#ea580c" /> Repeat Current Instruction
               </button>
             </div>
           )}

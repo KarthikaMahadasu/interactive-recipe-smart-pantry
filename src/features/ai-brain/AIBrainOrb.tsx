@@ -31,9 +31,9 @@ const STATE_CONFIGS: Record<
   }
 > = {
   idle: {
-    coreColor: '#06b6d4',
-    glowColor: 'rgba(6, 182, 212, 0.4)',
-    particleColor: '#38bdf8',
+    coreColor: '#ea580c',
+    glowColor: 'rgba(234, 88, 12, 0.4)',
+    particleColor: '#f97316',
     speed: 0.015,
     pulseFrequency: 0.003,
     particleCount: 24,
@@ -49,18 +49,18 @@ const STATE_CONFIGS: Record<
     ariaDescription: 'AI Kitchen Core is listening to input.'
   },
   thinking: {
-    coreColor: '#f59e0b',
-    glowColor: 'rgba(245, 158, 11, 0.65)',
-    particleColor: '#fbbf24',
+    coreColor: '#ea580c',
+    glowColor: 'rgba(234, 88, 12, 0.65)',
+    particleColor: '#fdba74',
     speed: 0.07,
     pulseFrequency: 0.012,
     particleCount: 45,
     ariaDescription: 'AI Kitchen Core is thinking and processing.'
   },
   working: {
-    coreColor: '#8b5cf6',
-    glowColor: 'rgba(139, 92, 246, 0.75)',
-    particleColor: '#c084fc',
+    coreColor: '#f97316',
+    glowColor: 'rgba(249, 115, 22, 0.75)',
+    particleColor: '#fb923c',
     speed: 0.09,
     pulseFrequency: 0.015,
     particleCount: 50,
@@ -76,9 +76,9 @@ const STATE_CONFIGS: Record<
     ariaDescription: 'AI Task completed successfully.'
   },
   error: {
-    coreColor: '#f43f5e',
-    glowColor: 'rgba(244, 63, 94, 0.75)',
-    particleColor: '#fda4af',
+    coreColor: '#ef4444',
+    glowColor: 'rgba(239, 68, 68, 0.75)',
+    particleColor: '#fca5a5',
     speed: 0.06,
     pulseFrequency: 0.018,
     particleCount: 30,
@@ -306,14 +306,13 @@ export const AIBrainOrb: React.FC<AIBrainOrbProps> = ({
               fontWeight: 700,
               letterSpacing: '0.04em',
               color: config.coreColor,
-              textShadow: `0 0 12px ${config.glowColor}`,
               whiteSpace: 'nowrap',
               pointerEvents: 'none',
-              background: 'rgba(8, 12, 20, 0.88)',
+              background: 'rgba(255, 255, 255, 0.95)',
               padding: '4px 14px',
               borderRadius: '14px',
               border: `1px solid ${config.glowColor}`,
-              boxShadow: `0 4px 16px ${config.glowColor}44`,
+              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.08)',
               transition: 'all 0.3s ease'
             }}
           >

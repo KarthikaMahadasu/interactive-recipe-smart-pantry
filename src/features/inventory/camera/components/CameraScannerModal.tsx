@@ -36,24 +36,41 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
   const [expiryDate, setExpiryDate] = useState('');
   const [notes, setNotes] = useState('');
 
-  // Start Camera Stream
+  // Start Camera Stream with progressive mobile constraint fallbacks
   const startCamera = async () => {
     setCameraError(null);
-    try {
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
-        });
-        setStream(mediaStream);
-        if (videoRef.current) {
-          videoRef.current.srcObject = mediaStream;
-        }
-      } else {
-        setCameraError('Camera API is not supported on this browser or device.');
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCameraError('Camera API is not supported on this browser. You can select an image file instead.');
+      return;
+    }
+
+    // Try environment-facing rear camera with fallback options for iOS/Android
+    const constraintAttempts: MediaStreamConstraints[] = [
+      { video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } },
+      { video: { facingMode: 'environment' } },
+      { video: true }
+    ];
+
+    let mediaStream: MediaStream | null = null;
+    let lastErr: any = null;
+
+    for (const constraints of constraintAttempts) {
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+        if (mediaStream) break;
+      } catch (err) {
+        lastErr = err;
       }
-    } catch (err: any) {
-      console.warn('Camera access error:', err);
-      setCameraError('Camera access was denied or unavailable. You can upload an image file instead.');
+    }
+
+    if (mediaStream) {
+      setStream(mediaStream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+      }
+    } else {
+      console.warn('Camera access error:', lastErr);
+      setCameraError('Camera access was denied, in use, or unavailable. You can upload an image file or take a photo with your device camera.');
     }
   };
 
@@ -222,9 +239,9 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
           maxWidth: '560px',
           padding: '28px',
           borderRadius: '28px',
-          background: '#ffffff',
-          border: '1.5px solid #cbd5e1',
-          boxShadow: '0 20px 50px rgba(15, 23, 42, 0.15)',
+          background: '#111827',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
           display: 'flex',
           flexDirection: 'column',
           gap: '20px',
@@ -357,7 +374,7 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
               >
                 <Upload size={18} />
                 <span>Upload Image</span>
-                <input type="file" accept="image/*" onChange={handleFileUpload} style={{ display: 'none' }} />
+                <input type="file" accept="image/*" capture="environment" onChange={handleFileUpload} style={{ display: 'none' }} />
               </label>
 
               <button

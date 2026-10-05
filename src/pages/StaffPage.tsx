@@ -64,8 +64,8 @@ export const StaffPage: React.FC = () => {
         style={{
           padding: '24px 28px',
           borderRadius: '24px',
-          background: 'rgba(15, 23, 42, 0.8)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -80,22 +80,22 @@ export const StaffPage: React.FC = () => {
                 width: 40,
                 height: 40,
                 borderRadius: '12px',
-                background: 'rgba(139, 92, 246, 0.2)',
-                border: '1px solid rgba(139, 92, 246, 0.4)',
+                background: '#fff7ed',
+                border: '1px solid #ffedd5',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#c084fc'
+                color: '#ea580c'
               }}
             >
               <Users size={22} />
             </div>
             <div>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-main)', fontFamily: 'var(--font-heading)' }}>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#ea580c', fontFamily: 'var(--font-heading)' }}>
                 Restaurant Staff Database
               </h2>
-              <p style={{ fontSize: '0.82rem', color: 'var(--text-dim)', marginTop: '2px' }}>
-                Shared Workspace: <span style={{ color: 'var(--primary-cyan)', fontWeight: 600 }}>{restaurant?.name}</span> (ID: {restaurant?.id})
+              <p style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '2px' }}>
+                Shared Workspace: <span style={{ color: '#ea580c', fontWeight: 700 }}>{restaurant?.name}</span> (ID: {restaurant?.id})
               </p>
             </div>
           </div>
@@ -111,7 +111,7 @@ export const StaffPage: React.FC = () => {
             style={{
               padding: '10px 20px',
               borderRadius: '14px',
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
+              background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
               color: '#fff',
               fontWeight: 700,
               fontSize: '0.88rem',
@@ -120,7 +120,7 @@ export const StaffPage: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              boxShadow: '0 4px 16px rgba(139, 92, 246, 0.4)'
+              boxShadow: '0 4px 16px rgba(234, 88, 12, 0.3)'
             }}
           >
             <UserPlus size={18} />
@@ -131,9 +131,9 @@ export const StaffPage: React.FC = () => {
             style={{
               padding: '8px 14px',
               borderRadius: '12px',
-              background: 'rgba(245, 158, 11, 0.12)',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
-              color: '#fcd34d',
+              background: '#fffbe8',
+              border: '1px solid #fde68a',
+              color: '#b45309',
               fontSize: '0.78rem',
               fontWeight: 600,
               display: 'flex',
@@ -152,10 +152,11 @@ export const StaffPage: React.FC = () => {
           style={{
             padding: '12px 16px',
             borderRadius: '16px',
-            background: 'rgba(16, 185, 129, 0.15)',
-            border: '1px solid rgba(16, 185, 129, 0.4)',
-            color: '#6ee7b7',
+            background: '#ecfdf5',
+            border: '1px solid #a7f3d0',
+            color: '#047857',
             fontSize: '0.85rem',
+            fontWeight: 600,
             display: 'flex',
             alignItems: 'center',
             gap: '10px'
@@ -172,10 +173,11 @@ export const StaffPage: React.FC = () => {
           style={{
             padding: '12px 16px',
             borderRadius: '16px',
-            background: 'rgba(239, 68, 68, 0.15)',
-            border: '1px solid rgba(239, 68, 68, 0.4)',
-            color: '#fca5a5',
+            background: '#fef2f2',
+            border: '1px solid #fecaca',
+            color: '#b91c1c',
             fontSize: '0.85rem',
+            fontWeight: 600,
             display: 'flex',
             alignItems: 'center',
             gap: '10px'
@@ -192,20 +194,21 @@ export const StaffPage: React.FC = () => {
         style={{
           padding: '24px',
           borderRadius: '24px',
-          background: 'rgba(15, 23, 42, 0.8)',
-          border: '1px solid rgba(255, 255, 255, 0.12)'
+          background: '#ffffff',
+          border: '1px solid #e2e8f0'
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ea580c' }}>
             Authorized Personnel ({staffList.length})
           </h3>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>
-            All personnel access the same <strong style={{ color: '#fff' }}>{restaurant?.name}</strong> inventory
+          <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+            All personnel access the same <strong style={{ color: '#0f172a' }}>{restaurant?.name}</strong> inventory
           </div>
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
+        {/* Desktop Table View */}
+        <div style={{ overflowX: 'auto' }} className="desktop-staff-table">
           <table
             style={{
               width: '100%',
@@ -215,7 +218,7 @@ export const StaffPage: React.FC = () => {
             }}
           >
             <thead>
-              <tr style={{ color: 'var(--text-dim)', textAlign: 'left', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <tr style={{ color: '#64748b', textAlign: 'left', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 <th style={{ padding: '8px 16px' }}>Staff Name</th>
                 <th style={{ padding: '8px 16px' }}>Role</th>
                 <th style={{ padding: '8px 16px' }}>Contact Info</th>
@@ -233,17 +236,17 @@ export const StaffPage: React.FC = () => {
                   <tr
                     key={member.id}
                     style={{
-                      background: isCurrentUser ? 'rgba(6, 182, 212, 0.08)' : 'rgba(30, 41, 59, 0.4)',
+                      background: isCurrentUser ? '#fff7ed' : '#f8fafc',
                       borderRadius: '14px',
                       transition: 'all 0.2s ease'
                     }}
                   >
                     {/* Name */}
-                    <td style={{ padding: '14px 16px', fontWeight: 600, color: 'var(--text-main)', borderTopLeftRadius: '14px', borderBottomLeftRadius: '14px' }}>
+                    <td style={{ padding: '14px 16px', fontWeight: 700, color: '#0f172a', borderTopLeftRadius: '14px', borderBottomLeftRadius: '14px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span>{member.name}</span>
                         {isCurrentUser && (
-                          <span style={{ fontSize: '0.68rem', padding: '2px 8px', borderRadius: '10px', background: 'rgba(6, 182, 212, 0.2)', color: 'var(--primary-cyan)', border: '1px solid rgba(6, 182, 212, 0.4)' }}>
+                          <span style={{ fontSize: '0.68rem', padding: '2px 8px', borderRadius: '10px', background: '#fff7ed', color: '#ea580c', border: '1px solid #ea580c', fontWeight: 700 }}>
                             You
                           </span>
                         )}
@@ -271,13 +274,13 @@ export const StaffPage: React.FC = () => {
                     </td>
 
                     {/* Contact */}
-                    <td style={{ padding: '14px 16px', color: 'var(--text-muted)' }}>
+                    <td style={{ padding: '14px 16px', color: '#64748b' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '0.8rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Mail size={12} color="var(--text-dim)" /> {member.email}
+                          <Mail size={12} color="#64748b" /> {member.email}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Phone size={12} color="var(--text-dim)" /> {member.phone}
+                          <Phone size={12} color="#64748b" /> {member.phone}
                         </div>
                       </div>
                     </td>
@@ -289,9 +292,9 @@ export const StaffPage: React.FC = () => {
                           padding: '3px 10px',
                           borderRadius: '12px',
                           fontSize: '0.72rem',
-                          fontWeight: 600,
-                          color: member.status === 'active' ? '#34d399' : '#94a3b8',
-                          background: member.status === 'active' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(148, 163, 184, 0.12)'
+                          fontWeight: 700,
+                          color: member.status === 'active' ? '#047857' : '#64748b',
+                          background: member.status === 'active' ? '#ecfdf5' : '#f1f5f9'
                         }}
                       >
                         ● {member.status.toUpperCase()}
@@ -299,7 +302,7 @@ export const StaffPage: React.FC = () => {
                     </td>
 
                     {/* Created At */}
-                    <td style={{ padding: '14px 16px', color: 'var(--text-dim)', fontSize: '0.8rem' }}>
+                    <td style={{ padding: '14px 16px', color: '#64748b', fontSize: '0.8rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Calendar size={13} /> {new Date(member.createdAt).toLocaleDateString()}
                       </div>
@@ -315,9 +318,10 @@ export const StaffPage: React.FC = () => {
                             style={{
                               padding: '6px 10px',
                               borderRadius: '10px',
-                              background: 'rgba(239, 68, 68, 0.12)',
-                              border: '1px solid rgba(239, 68, 68, 0.3)',
-                              color: '#fca5a5',
+                              background: '#fef2f2',
+                              border: '1px solid #fecaca',
+                              color: '#b91c1c',
+                              fontWeight: 700,
                               cursor: 'pointer',
                               display: 'inline-flex',
                               alignItems: 'center',
@@ -328,7 +332,7 @@ export const StaffPage: React.FC = () => {
                             <Trash2 size={14} /> Remove
                           </button>
                         ) : (
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Protected</span>
+                          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Protected</span>
                         )}
                       </td>
                     )}
@@ -338,6 +342,91 @@ export const StaffPage: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Mobile Stacked Card View */}
+        <div className="mobile-staff-cards" style={{ display: 'none', flexDirection: 'column', gap: '12px' }}>
+          {staffList.map((member) => {
+            const roleConfig = getRoleBadgeConfig(member.role);
+            const isCurrentUser = member.id === user?.id;
+
+            return (
+              <div
+                key={member.id}
+                style={{
+                  padding: '16px',
+                  borderRadius: '16px',
+                  background: isCurrentUser ? '#fff7ed' : '#ffffff',
+                  border: isCurrentUser ? '1.5px solid #ea580c' : '1px solid #e2e8f0',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ fontWeight: 700, fontSize: '1rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>{member.name}</span>
+                    {isCurrentUser && (
+                      <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: '8px', background: '#fff7ed', color: '#ea580c', fontWeight: 700 }}>You</span>
+                    )}
+                  </div>
+
+                  <span
+                    style={{
+                      padding: '3px 10px',
+                      borderRadius: '12px',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      color: roleConfig.color,
+                      background: roleConfig.bg,
+                      border: `1px solid ${roleConfig.border}`
+                    }}
+                  >
+                    {roleConfig.label}
+                  </span>
+                </div>
+
+                <div style={{ fontSize: '0.8rem', color: '#64748b', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Mail size={13} color="#64748b" /> {member.email}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={13} color="#64748b" /> {member.phone}</div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <Calendar size={12} /> Joined {new Date(member.createdAt).toLocaleDateString()}
+                  </span>
+
+                  {canManage && !isCurrentUser && member.role !== 'owner' && (
+                    <button
+                      onClick={() => handleDeleteStaff(member)}
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: '8px',
+                        background: '#fef2f2',
+                        border: '1px solid #fecaca',
+                        color: '#b91c1c',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <Trash2 size={12} /> Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <style>{`
+          @media (max-width: 768px) {
+            .desktop-staff-table { display: none !important; }
+            .mobile-staff-cards { display: flex !important; }
+          }
+        `}</style>
       </div>
 
       {/* Add Staff Modal */}
@@ -347,7 +436,7 @@ export const StaffPage: React.FC = () => {
             position: 'fixed',
             inset: 0,
             zIndex: 100,
-            background: 'rgba(8, 12, 20, 0.75)',
+            background: 'rgba(15, 23, 42, 0.4)',
             backdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
@@ -362,21 +451,21 @@ export const StaffPage: React.FC = () => {
               maxWidth: '500px',
               padding: '30px',
               borderRadius: '24px',
-              background: 'rgba(15, 23, 42, 0.95)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 20px 50px rgba(0,0,0,0.6)'
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.1)'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <UserPlus size={20} color="var(--primary-cyan)" />
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>
+                <UserPlus size={20} color="#ea580c" />
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ea580c' }}>
                   Add New Staff Member
                 </h3>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer' }}
+                style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer' }}
               >
                 <X size={20} />
               </button>
@@ -384,7 +473,7 @@ export const StaffPage: React.FC = () => {
 
             <form onSubmit={handleAddSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
                   Full Name *
                 </label>
                 <input
@@ -397,16 +486,16 @@ export const StaffPage: React.FC = () => {
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '12px',
-                    background: 'rgba(30, 41, 59, 0.6)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    background: '#ffffff',
+                    border: '1.5px solid #cbd5e1',
+                    color: '#0f172a',
                     outline: 'none'
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
                   Email Address *
                 </label>
                 <input
@@ -419,16 +508,16 @@ export const StaffPage: React.FC = () => {
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '12px',
-                    background: 'rgba(30, 41, 59, 0.6)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    background: '#ffffff',
+                    border: '1.5px solid #cbd5e1',
+                    color: '#0f172a',
                     outline: 'none'
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
                   Phone Number *
                 </label>
                 <input
@@ -441,16 +530,16 @@ export const StaffPage: React.FC = () => {
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '12px',
-                    background: 'rgba(30, 41, 59, 0.6)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    background: '#ffffff',
+                    border: '1.5px solid #cbd5e1',
+                    color: '#0f172a',
                     outline: 'none'
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
                   Staff Role *
                 </label>
                 <select
@@ -460,20 +549,20 @@ export const StaffPage: React.FC = () => {
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '12px',
-                    background: 'rgba(30, 41, 59, 0.9)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    background: '#ffffff',
+                    border: '1.5px solid #cbd5e1',
+                    color: '#0f172a',
                     outline: 'none'
                   }}
                 >
-                  <option value="manager">Manager (Full operational access)</option>
-                  <option value="chef">Chef (Kitchen, Cooking & AI access)</option>
-                  <option value="inventory_staff">Inventory Staff (Stock & AI access)</option>
+                  <option value="manager" style={{ background: '#ffffff', color: '#0f172a' }}>Manager (Full operational access)</option>
+                  <option value="chef" style={{ background: '#ffffff', color: '#0f172a' }}>Chef (Kitchen, Cooking & AI access)</option>
+                  <option value="inventory_staff" style={{ background: '#ffffff', color: '#0f172a' }}>Inventory Staff (Stock & AI access)</option>
                 </select>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
                   Initial Login Password *
                 </label>
                 <input
@@ -486,9 +575,9 @@ export const StaffPage: React.FC = () => {
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '12px',
-                    background: 'rgba(30, 41, 59, 0.6)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    background: '#ffffff',
+                    border: '1.5px solid #cbd5e1',
+                    color: '#0f172a',
                     outline: 'none'
                   }}
                 />
@@ -501,9 +590,10 @@ export const StaffPage: React.FC = () => {
                   style={{
                     padding: '8px 16px',
                     borderRadius: '10px',
-                    background: 'rgba(148, 163, 184, 0.15)',
-                    color: '#94a3b8',
+                    background: '#f1f5f9',
+                    color: '#64748b',
                     border: 'none',
+                    fontWeight: 600,
                     cursor: 'pointer'
                   }}
                 >
@@ -514,9 +604,9 @@ export const StaffPage: React.FC = () => {
                   style={{
                     padding: '8px 20px',
                     borderRadius: '10px',
-                    background: 'var(--primary-cyan)',
-                    color: '#000',
-                    fontWeight: 700,
+                    background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
+                    color: '#ffffff',
+                    fontWeight: 800,
                     border: 'none',
                     cursor: 'pointer'
                   }}

@@ -63,11 +63,12 @@ export const CookingTimer: React.FC<CookingTimerProps> = ({ durationMinutes, ste
         alignItems: 'center',
         justifyContent: 'center',
         gap: '14px',
-        background: 'rgba(15, 23, 42, 0.9)',
-        border: '1.5px solid rgba(244, 63, 94, 0.3)'
+        background: '#ffffff',
+        border: '1px solid #fed7aa',
+        boxShadow: '0 4px 20px rgba(234, 88, 12, 0.06)'
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-rose)', fontWeight: 700, fontSize: '0.85rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ea580c', fontWeight: 800, fontSize: '0.85rem' }}>
         <TimerIcon size={18} /> Step {stepNumber} Timer ({durationMinutes}m)
       </div>
 
@@ -76,7 +77,7 @@ export const CookingTimer: React.FC<CookingTimerProps> = ({ durationMinutes, ste
           fontSize: '2.8rem',
           fontWeight: 900,
           fontFamily: 'monospace',
-          color: timeLeft === 0 ? 'var(--accent-rose)' : 'var(--text-main)',
+          color: timeLeft === 0 ? '#dc2626' : '#0f172a',
           letterSpacing: '0.05em'
         }}
       >
@@ -89,14 +90,16 @@ export const CookingTimer: React.FC<CookingTimerProps> = ({ durationMinutes, ste
           style={{
             padding: '8px 18px',
             borderRadius: '12px',
-            background: isRunning ? 'rgba(244, 63, 94, 0.2)' : 'linear-gradient(135deg, var(--primary-cyan) 0%, #0284c7 100%)',
-            color: isRunning ? 'var(--accent-rose)' : '#000000',
+            background: isRunning ? '#fef2f2' : 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
+            border: isRunning ? '1px solid #fecaca' : 'none',
+            color: isRunning ? '#dc2626' : '#ffffff',
             fontWeight: 700,
             fontSize: '0.88rem',
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            boxShadow: isRunning ? 'none' : '0 4px 12px rgba(234, 88, 12, 0.25)'
           }}
         >
           {isRunning ? <Pause size={16} /> : <Play size={16} />}
@@ -112,9 +115,9 @@ export const CookingTimer: React.FC<CookingTimerProps> = ({ durationMinutes, ste
             width: 38,
             height: 38,
             borderRadius: '12px',
-            background: 'rgba(30, 41, 59, 0.8)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            color: 'var(--text-main)',
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            color: '#64748b',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

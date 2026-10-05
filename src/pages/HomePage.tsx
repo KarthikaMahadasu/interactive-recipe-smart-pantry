@@ -57,25 +57,25 @@ export const HomePage: React.FC = () => {
         style={{
           padding: '28px 32px',
           borderRadius: '28px',
-          background: 'rgba(15, 23, 42, 0.85)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4)',
+          background: 'rgba(255, 255, 255, 0.95)',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.05)',
           position: 'relative',
           overflow: 'hidden'
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px', zIndex: 2, position: 'relative' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--primary-cyan)', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#ea580c', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               <Building2 size={16} /> Intelligent Kitchen Workspace
             </div>
 
-            <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px', fontFamily: 'var(--font-heading)' }}>
+            <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#ea580c', marginTop: '4px', fontFamily: 'var(--font-heading)' }}>
               Welcome to {restaurant?.name || 'Your Kitchen'}
             </h1>
 
             <p style={{ fontSize: '0.92rem', color: 'var(--text-dim)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-              <span>Staff: <strong style={{ color: '#fff' }}>{user?.name}</strong></span>
+              <span>Staff: <strong style={{ color: '#0f172a' }}>{user?.name}</strong></span>
               <span>&bull;</span>
               {roleConfig && (
                 <span
@@ -93,7 +93,7 @@ export const HomePage: React.FC = () => {
                 </span>
               )}
               <span>&bull;</span>
-              <span>Type: <strong style={{ color: 'var(--primary-cyan)' }}>{restaurant?.type}</strong></span>
+              <span>Type: <strong style={{ color: '#ea580c' }}>{restaurant?.type}</strong></span>
             </p>
           </div>
 
@@ -105,7 +105,7 @@ export const HomePage: React.FC = () => {
                 style={{
                   padding: '10px 18px',
                   borderRadius: '14px',
-                  background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
+                  background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
                   color: '#fff',
                   fontWeight: 700,
                   fontSize: '0.85rem',
@@ -113,7 +113,7 @@ export const HomePage: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  boxShadow: '0 4px 16px rgba(139, 92, 246, 0.4)',
+                  boxShadow: '0 4px 16px rgba(234, 88, 12, 0.35)',
                   cursor: 'pointer'
                 }}
               >
@@ -126,7 +126,7 @@ export const HomePage: React.FC = () => {
               style={{
                 padding: '10px 18px',
                 borderRadius: '14px',
-                background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)',
+                background: 'linear-gradient(135deg, #f97316 0%, #c2410c 100%)',
                 color: '#fff',
                 fontWeight: 700,
                 fontSize: '0.85rem',
@@ -134,7 +134,7 @@ export const HomePage: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4)'
+                boxShadow: '0 4px 16px rgba(249, 115, 22, 0.35)'
               }}
             >
               <Sparkles size={16} /> AI Kitchen Core
@@ -145,9 +145,9 @@ export const HomePage: React.FC = () => {
               style={{
                 padding: '10px 18px',
                 borderRadius: '14px',
-                background: 'rgba(139, 92, 246, 0.15)',
-                border: '1px solid rgba(139, 92, 246, 0.3)',
-                color: '#c084fc',
+                background: 'rgba(234, 88, 12, 0.1)',
+                border: '1px solid rgba(234, 88, 12, 0.3)',
+                color: '#ea580c',
                 fontWeight: 700,
                 fontSize: '0.85rem',
                 textDecoration: 'none',
@@ -174,18 +174,18 @@ export const HomePage: React.FC = () => {
             style={{
               padding: '14px 18px',
               borderRadius: '18px',
-              background: 'rgba(30, 41, 59, 0.5)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
               display: 'flex',
               alignItems: 'center',
               gap: '14px'
             }}
           >
-            <div style={{ width: 42, height: 42, borderRadius: '12px', background: 'rgba(6, 182, 212, 0.15)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 42, height: 42, borderRadius: '12px', background: 'rgba(234, 88, 12, 0.12)', color: '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Package size={22} />
             </div>
             <div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
+              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 }}>
                 {state.pantry.length}
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '2px' }}>
@@ -198,18 +198,18 @@ export const HomePage: React.FC = () => {
             style={{
               padding: '14px 18px',
               borderRadius: '18px',
-              background: 'rgba(30, 41, 59, 0.5)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
               display: 'flex',
               alignItems: 'center',
               gap: '14px'
             }}
           >
-            <div style={{ width: 42, height: 42, borderRadius: '12px', background: expiringCount > 0 ? 'rgba(245, 158, 11, 0.15)' : 'rgba(16, 185, 129, 0.15)', color: expiringCount > 0 ? '#fcd34d' : '#34d399', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 42, height: 42, borderRadius: '12px', background: expiringCount > 0 ? 'rgba(245, 158, 11, 0.15)' : 'rgba(16, 185, 129, 0.15)', color: expiringCount > 0 ? '#d97706' : '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <AlertTriangle size={22} />
             </div>
             <div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
+              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 }}>
                 {expiringCount}
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '2px' }}>
@@ -222,18 +222,18 @@ export const HomePage: React.FC = () => {
             style={{
               padding: '14px 18px',
               borderRadius: '18px',
-              background: 'rgba(30, 41, 59, 0.5)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
               display: 'flex',
               alignItems: 'center',
               gap: '14px'
             }}
           >
-            <div style={{ width: 42, height: 42, borderRadius: '12px', background: 'rgba(139, 92, 246, 0.15)', color: '#c084fc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 42, height: 42, borderRadius: '12px', background: 'rgba(234, 88, 12, 0.12)', color: '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Utensils size={22} />
             </div>
             <div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
+              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 }}>
                 {state.recipes.length}
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '2px' }}>
@@ -256,6 +256,8 @@ export const HomePage: React.FC = () => {
         style={{
           padding: '24px 28px',
           borderRadius: '24px',
+          background: 'rgba(255, 255, 255, 0.95)',
+          border: '1px solid #e2e8f0',
           display: 'flex',
           flexDirection: 'column',
           gap: '20px'
@@ -263,10 +265,10 @@ export const HomePage: React.FC = () => {
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-emerald)', fontWeight: 600, fontSize: '0.88rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#ea580c', fontWeight: 700, fontSize: '0.88rem' }}>
               <Package size={18} /> Shared Restaurant Inventory ({restaurant?.name})
             </div>
-            <h3 style={{ fontSize: '1.25rem', color: 'var(--text-main)', marginTop: '2px' }}>
+            <h3 style={{ fontSize: '1.25rem', color: '#ea580c', marginTop: '2px' }}>
               Tracked Stock ({state.pantry.length} items)
             </h3>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginTop: '2px' }}>
@@ -281,9 +283,9 @@ export const HomePage: React.FC = () => {
                 style={{
                   padding: '8px 14px',
                   borderRadius: '14px',
-                  background: 'rgba(139, 92, 246, 0.15)',
-                  border: '1px solid rgba(139, 92, 246, 0.4)',
-                  color: '#c084fc',
+                  background: 'rgba(234, 88, 12, 0.1)',
+                  border: '1px solid rgba(234, 88, 12, 0.4)',
+                  color: '#ea580c',
                   fontWeight: 600,
                   fontSize: '0.82rem',
                   display: 'flex',
@@ -301,15 +303,16 @@ export const HomePage: React.FC = () => {
               style={{
                 padding: '8px 16px',
                 borderRadius: '14px',
-                background: 'rgba(16, 185, 129, 0.15)',
-                border: '1px solid rgba(16, 185, 129, 0.4)',
-                color: '#34d399',
-                fontWeight: 600,
+                background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
+                border: 'none',
+                color: '#ffffff',
+                fontWeight: 700,
                 fontSize: '0.82rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(234, 88, 12, 0.25)'
               }}
             >
               <Plus size={16} /> Add Dynamic Stock Item
@@ -325,9 +328,9 @@ export const HomePage: React.FC = () => {
               display: 'flex',
               gap: '10px',
               padding: '14px',
-              background: 'rgba(8, 12, 20, 0.6)',
+              background: '#f8fafc',
               borderRadius: '16px',
-              border: '1px solid rgba(16, 185, 129, 0.3)'
+              border: '1px solid #cbd5e1'
             }}
           >
             <input
@@ -337,23 +340,26 @@ export const HomePage: React.FC = () => {
               placeholder={`Add item to ${restaurant?.name} inventory (e.g. Rice, Paneer, Dragon Fruit...)`}
               style={{
                 flex: 1,
-                background: 'transparent',
-                border: 'none',
+                background: '#ffffff',
+                border: '1px solid #cbd5e1',
                 outline: 'none',
-                color: 'var(--text-main)',
-                fontSize: '0.9rem'
+                color: '#0f172a',
+                fontSize: '0.9rem',
+                padding: '10px 14px',
+                borderRadius: '12px'
               }}
             />
             <button
               type="submit"
               style={{
-                padding: '6px 16px',
+                padding: '8px 20px',
                 borderRadius: '12px',
-                background: 'var(--accent-emerald)',
-                color: '#000',
+                background: '#ea580c',
+                color: '#ffffff',
                 fontWeight: 700,
                 fontSize: '0.85rem',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                border: 'none'
               }}
             >
               Add to Shared Stock

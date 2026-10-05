@@ -38,12 +38,14 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
       style={{
         padding: compact ? '10px 14px' : '16px 20px',
         borderRadius: '18px',
-        borderLeft: `4px solid ${ingredient.colorCode || 'var(--primary-cyan)'}`,
+        borderLeft: `4px solid ${ingredient.colorCode || '#ea580c'}`,
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
         position: 'relative',
-        background: 'rgba(15, 23, 42, 0.85)',
+        background: '#ffffff',
+        border: '1px solid #e2e8f0',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
         transition: 'all 0.3s ease'
       }}
     >
@@ -55,11 +57,11 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
               width: 12,
               height: 12,
               borderRadius: '50%',
-              background: ingredient.colorCode || '#06b6d4',
-              boxShadow: `0 0 10px ${ingredient.colorCode || '#06b6d4'}`
+              background: ingredient.colorCode || '#ea580c',
+              boxShadow: `0 0 10px ${ingredient.colorCode || '#ea580c'}`
             }}
           />
-          <span style={{ fontWeight: 700, fontSize: compact ? '0.9rem' : '1.05rem', color: 'var(--text-main)' }}>
+          <span style={{ fontWeight: 800, fontSize: compact ? '0.9rem' : '1.05rem', color: '#0f172a' }}>
             {ingredient.name}
           </span>
         </div>
@@ -71,9 +73,9 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
               width: 26,
               height: 26,
               borderRadius: '8px',
-              background: 'rgba(30, 41, 59, 0.8)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: 'var(--text-main)',
+              background: '#f1f5f9',
+              border: '1px solid #cbd5e1',
+              color: '#0f172a',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -87,8 +89,8 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
             style={{
               fontSize: '0.88rem',
               fontWeight: 700,
-              color: ingredient.quantity === 0 ? 'var(--accent-rose)' : 'var(--primary-cyan)',
-              background: ingredient.quantity === 0 ? 'rgba(244, 63, 94, 0.15)' : 'rgba(6, 182, 212, 0.12)',
+              color: ingredient.quantity === 0 ? '#ef4444' : '#ea580c',
+              background: ingredient.quantity === 0 ? 'rgba(239, 68, 68, 0.12)' : 'rgba(234, 88, 12, 0.12)',
               padding: '2px 10px',
               borderRadius: '10px',
               minWidth: '50px',
@@ -103,9 +105,9 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
               width: 26,
               height: 26,
               borderRadius: '8px',
-              background: 'rgba(30, 41, 59, 0.8)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: 'var(--text-main)',
+              background: '#f1f5f9',
+              border: '1px solid #cbd5e1',
+              color: '#0f172a',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -160,9 +162,9 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
                 style={{
                   padding: '4px 10px',
                   borderRadius: '10px',
-                  background: 'rgba(139, 92, 246, 0.15)',
-                  border: '1px solid rgba(139, 92, 246, 0.3)',
-                  color: '#c084fc',
+                  background: 'rgba(234, 88, 12, 0.1)',
+                  border: '1px solid rgba(234, 88, 12, 0.3)',
+                  color: '#ea580c',
                   fontSize: '0.74rem',
                   fontWeight: 600,
                   display: 'flex',
@@ -184,9 +186,9 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
               style={{
                 padding: '4px 10px',
                 borderRadius: '10px',
-                background: 'rgba(244, 63, 94, 0.12)',
-                border: '1px solid rgba(244, 63, 94, 0.3)',
-                color: '#fda4af',
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#dc2626',
                 fontSize: '0.74rem',
                 fontWeight: 600,
                 display: 'flex',
@@ -204,16 +206,16 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
 
       {/* Expiry Date & Audit Information */}
       {!compact && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingTop: '4px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingTop: '4px', borderTop: '1px solid #e2e8f0' }}>
           {ingredient.expiresAt && (
             <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <Calendar size={12} color="var(--accent-amber)" /> Expiry Date: {ingredient.expiresAt}
+              <Calendar size={12} color="#d97706" /> Expiry Date: {ingredient.expiresAt}
             </div>
           )}
 
           {(ingredient.createdBy || ingredient.updatedBy) && (
             <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <User size={10} color="var(--primary-cyan)" />
+              <User size={10} color="#ea580c" />
               <span>
                 {ingredient.updatedBy
                   ? `Updated by ${ingredient.updatedBy}`
@@ -231,16 +233,16 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
             marginTop: '6px',
             padding: '10px 12px',
             borderRadius: '12px',
-            background: 'rgba(244, 63, 94, 0.2)',
-            border: '1px solid #f43f5e',
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid #ef4444',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: '8px'
           }}
         >
-          <span style={{ fontSize: '0.76rem', color: '#ffffff', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <AlertTriangle size={14} color="#f43f5e" /> Remove {ingredient.name}?
+          <span style={{ fontSize: '0.76rem', color: '#991b1b', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <AlertTriangle size={14} color="#ef4444" /> Remove {ingredient.name}?
           </span>
           <div style={{ display: 'flex', gap: '6px' }}>
             <button
@@ -251,8 +253,8 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
               style={{
                 padding: '3px 8px',
                 borderRadius: '8px',
-                background: 'rgba(30, 41, 59, 0.8)',
-                color: 'var(--text-main)',
+                background: '#f1f5f9',
+                color: '#334155',
                 fontSize: '0.7rem'
               }}
             >
@@ -263,7 +265,7 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
               style={{
                 padding: '3px 8px',
                 borderRadius: '8px',
-                background: '#f43f5e',
+                background: '#dc2626',
                 color: '#ffffff',
                 fontWeight: 700,
                 fontSize: '0.7rem'

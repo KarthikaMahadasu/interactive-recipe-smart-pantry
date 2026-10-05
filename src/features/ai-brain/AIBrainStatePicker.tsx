@@ -8,12 +8,12 @@ interface AIBrainStatePickerProps {
 }
 
 const STATES: { key: AIBrainState; label: string; badgeColor: string; description: string }[] = [
-  { key: 'idle', label: 'Idle', badgeColor: '#06b6d4', description: 'Calm breathing pulse (AI is ready)' },
+  { key: 'idle', label: 'Idle', badgeColor: '#ea580c', description: 'Calm breathing pulse (AI is ready)' },
   { key: 'listening', label: 'Listening', badgeColor: '#10b981', description: 'Soundwave ripples (Receiving input)' },
   { key: 'thinking', label: 'Thinking', badgeColor: '#f59e0b', description: 'Inward swirling energy (Processing)' },
-  { key: 'working', label: 'Working', badgeColor: '#8b5cf6', description: 'Directional orbital motion (Performing task)' },
+  { key: 'working', label: 'Working', badgeColor: '#f97316', description: 'Directional orbital motion (Performing task)' },
   { key: 'success', label: 'Success', badgeColor: '#10b981', description: 'Positive pulse (Task completed)' },
-  { key: 'error', label: 'Error', badgeColor: '#f43f5e', description: 'Warning pulse (Encountered error)' }
+  { key: 'error', label: 'Error', badgeColor: '#ef4444', description: 'Warning pulse (Encountered error)' }
 ];
 
 export const AIBrainStatePicker: React.FC<AIBrainStatePickerProps> = ({
@@ -62,29 +62,29 @@ export const AIBrainStatePicker: React.FC<AIBrainStatePickerProps> = ({
         style={{
           padding: '6px 14px',
           borderRadius: '16px',
-          background: 'rgba(15, 23, 42, 0.85)',
-          border: '1px solid rgba(139, 92, 246, 0.4)',
-          color: '#c084fc',
+          background: '#ffffff',
+          border: '1px solid #cbd5e1',
+          color: '#ea580c',
           fontSize: '0.78rem',
           fontWeight: 700,
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
           cursor: 'pointer',
-          boxShadow: '0 4px 12px rgba(139, 92, 246, 0.15)',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
           transition: 'all 0.2s ease'
         }}
         title="Toggle Development AI State Simulator"
       >
-        <FlaskConical size={14} />
+        <FlaskConical size={14} color="#ea580c" />
         <span>Dev AI State Testbed</span>
         <span
           style={{
             fontSize: '0.68rem',
             padding: '1px 6px',
             borderRadius: '8px',
-            background: 'rgba(139, 92, 246, 0.2)',
-            color: '#a78bfa',
+            background: 'rgba(234, 88, 12, 0.12)',
+            color: '#ea580c',
             textTransform: 'uppercase'
           }}
         >
@@ -101,9 +101,9 @@ export const AIBrainStatePicker: React.FC<AIBrainStatePickerProps> = ({
             marginTop: '10px',
             padding: '16px 20px',
             borderRadius: '20px',
-            background: 'rgba(15, 23, 42, 0.95)',
-            border: '1px solid rgba(139, 92, 246, 0.35)',
-            boxShadow: '0 12px 32px rgba(0, 0, 0, 0.5)',
+            background: '#ffffff',
+            border: '1px solid #cbd5e1',
+            boxShadow: '0 12px 32px rgba(0, 0, 0, 0.1)',
             width: '360px',
             zIndex: 40,
             display: 'flex',
@@ -112,7 +112,7 @@ export const AIBrainStatePicker: React.FC<AIBrainStatePickerProps> = ({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#c084fc', fontWeight: 700, fontSize: '0.8rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ea580c', fontWeight: 700, fontSize: '0.8rem' }}>
               <FlaskConical size={14} /> Development AI State Simulator
             </div>
           </div>
@@ -130,9 +130,9 @@ export const AIBrainStatePicker: React.FC<AIBrainStatePickerProps> = ({
                 flex: 1,
                 padding: '6px 10px',
                 borderRadius: '10px',
-                background: isRunningDemo ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.15)',
+                background: isRunningDemo ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)',
                 border: '1px solid rgba(16, 185, 129, 0.4)',
-                color: '#34d399',
+                color: '#059669',
                 fontSize: '0.72rem',
                 fontWeight: 700,
                 display: 'flex',
@@ -152,9 +152,9 @@ export const AIBrainStatePicker: React.FC<AIBrainStatePickerProps> = ({
                 flex: 1,
                 padding: '6px 10px',
                 borderRadius: '10px',
-                background: isRunningDemo ? 'rgba(244, 63, 94, 0.3)' : 'rgba(244, 63, 94, 0.15)',
-                border: '1px solid rgba(244, 63, 94, 0.4)',
-                color: '#fda4af',
+                background: isRunningDemo ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.4)',
+                color: '#dc2626',
                 fontSize: '0.72rem',
                 fontWeight: 700,
                 display: 'flex',
@@ -181,10 +181,10 @@ export const AIBrainStatePicker: React.FC<AIBrainStatePickerProps> = ({
                     borderRadius: '12px',
                     fontSize: '0.78rem',
                     fontWeight: 700,
-                    background: isActive ? s.badgeColor : 'rgba(30, 41, 59, 0.6)',
-                    color: isActive ? '#000000' : 'var(--text-main)',
-                    border: `1px solid ${isActive ? s.badgeColor : 'rgba(255, 255, 255, 0.1)'}`,
-                    boxShadow: isActive ? `0 0 12px ${s.badgeColor}66` : 'none',
+                    background: isActive ? s.badgeColor : '#f8fafc',
+                    color: isActive ? '#ffffff' : '#334155',
+                    border: `1px solid ${isActive ? s.badgeColor : '#e2e8f0'}`,
+                    boxShadow: isActive ? `0 0 12px ${s.badgeColor}44` : 'none',
                     transition: 'all 0.2s ease',
                     display: 'flex',
                     alignItems: 'center',
@@ -198,7 +198,7 @@ export const AIBrainStatePicker: React.FC<AIBrainStatePickerProps> = ({
                       width: 8,
                       height: 8,
                       borderRadius: '50%',
-                      background: isActive ? '#000' : s.badgeColor,
+                      background: isActive ? '#ffffff' : s.badgeColor,
                       display: 'inline-block'
                     }}
                   />

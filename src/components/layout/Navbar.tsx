@@ -64,19 +64,19 @@ export const Navbar: React.FC = () => {
               width: 38,
               height: 38,
               borderRadius: '12px',
-              background: 'linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%)',
+              background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 16px rgba(6, 182, 212, 0.5)'
+              boxShadow: '0 4px 16px rgba(234, 88, 12, 0.35)'
             }}
           >
             <Sparkles size={20} color="#fff" />
           </div>
           <div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.05rem', lineHeight: 1.1, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.05rem', lineHeight: 1.1, display: 'flex', alignItems: 'center', gap: '6px', color: '#ea580c' }}>
               <span>{restaurant?.name || 'Intelligent Kitchen'}</span>
-              <span style={{ fontSize: '0.68rem', padding: '2px 6px', borderRadius: '8px', background: 'rgba(6, 182, 212, 0.2)', color: 'var(--primary-cyan)', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
+              <span style={{ fontSize: '0.68rem', padding: '2px 6px', borderRadius: '8px', background: 'rgba(234, 88, 12, 0.12)', color: '#ea580c', border: '1px solid rgba(234, 88, 12, 0.3)' }}>
                 {restaurant?.type || 'Workspace'}
               </span>
             </div>
@@ -103,10 +103,10 @@ export const Navbar: React.FC = () => {
                   borderRadius: '14px',
                   textDecoration: 'none',
                   fontSize: '0.84rem',
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? 'var(--primary-cyan)' : 'var(--text-muted)',
-                  background: isActive ? 'rgba(6, 182, 212, 0.12)' : 'transparent',
-                  border: `1px solid ${isActive ? 'rgba(6, 182, 212, 0.3)' : 'transparent'}`,
+                  fontWeight: isActive ? 700 : 600,
+                  color: isActive ? '#ea580c' : '#334155',
+                  background: isActive ? 'rgba(234, 88, 12, 0.12)' : 'transparent',
+                  border: `1px solid ${isActive ? 'rgba(234, 88, 12, 0.3)' : 'transparent'}`,
                   transition: 'all 0.2s ease'
                 })}
               >
@@ -128,8 +128,9 @@ export const Navbar: React.FC = () => {
                 gap: '8px',
                 padding: '4px 10px',
                 borderRadius: '16px',
-                background: 'rgba(30, 41, 59, 0.6)',
-                border: '1px solid rgba(255, 255, 255, 0.08)'
+                background: 'rgba(255, 255, 255, 0.95)',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)'
               }}
             >
               <div style={{ textAlign: 'right', display: 'none' }} className="user-text-info">
@@ -172,7 +173,7 @@ export const Navbar: React.FC = () => {
                   alignItems: 'center'
                 }}
               >
-                <LogOut size={16} color="#fca5a5" />
+                <LogOut size={16} color="#ef4444" />
               </button>
             </div>
           )}
@@ -182,8 +183,9 @@ export const Navbar: React.FC = () => {
             style={{
               padding: '4px 10px',
               borderRadius: '16px',
-              background: 'rgba(30, 41, 59, 0.6)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              background: 'rgba(255, 255, 255, 0.95)',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)',
               fontSize: '0.72rem',
               fontWeight: 600,
               color: 'var(--text-muted)',
@@ -197,7 +199,7 @@ export const Navbar: React.FC = () => {
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
-                background: state.aiState === 'idle' ? '#06b6d4' : state.aiState === 'thinking' ? '#f59e0b' : '#10b981',
+                background: state.aiState === 'idle' ? '#ea580c' : state.aiState === 'thinking' ? '#f59e0b' : '#10b981',
                 boxShadow: '0 0 8px currentColor'
               }}
             />
@@ -210,7 +212,7 @@ export const Navbar: React.FC = () => {
             className="mobile-nav-toggle"
             style={{
               background: 'transparent',
-              color: 'var(--text-main)',
+              color: '#ea580c',
               padding: '6px',
               display: 'flex',
               alignItems: 'center'
@@ -232,9 +234,9 @@ export const Navbar: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             gap: '8px',
-            background: '#ffffff',
-            border: '1px solid #cbd5e1',
-            boxShadow: '0 10px 30px rgba(15, 23, 42, 0.1)'
+            background: 'rgba(255, 255, 255, 0.98)',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 12px 30px rgba(0, 0, 0, 0.1)'
           }}
         >
           {user && (
@@ -242,7 +244,8 @@ export const Navbar: React.FC = () => {
               style={{
                 padding: '10px 14px',
                 borderRadius: '12px',
-                background: 'rgba(30, 41, 59, 0.6)',
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -250,7 +253,7 @@ export const Navbar: React.FC = () => {
               }}
             >
               <div>
-                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#fff' }}>{user.name}</div>
+                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0f172a' }}>{user.name}</div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{user.email}</div>
               </div>
               <button
@@ -258,9 +261,9 @@ export const Navbar: React.FC = () => {
                 style={{
                   padding: '6px 12px',
                   borderRadius: '10px',
-                  background: 'rgba(239, 68, 68, 0.15)',
+                  background: 'rgba(239, 68, 68, 0.1)',
                   border: '1px solid rgba(239, 68, 68, 0.3)',
-                  color: '#fca5a5',
+                  color: '#dc2626',
                   fontSize: '0.78rem',
                   fontWeight: 600,
                   cursor: 'pointer'
@@ -281,14 +284,14 @@ export const Navbar: React.FC = () => {
                 style={({ isActive }) => ({
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '10px',
-                  padding: '10px 14px',
+                  gap: '12px',
+                  padding: '12px 14px',
                   borderRadius: '12px',
                   textDecoration: 'none',
-                  fontSize: '0.9rem',
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? 'var(--primary-cyan)' : 'var(--text-main)',
-                  background: isActive ? 'rgba(6, 182, 212, 0.15)' : 'rgba(30, 41, 59, 0.4)'
+                  fontSize: '0.92rem',
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#ea580c' : '#334155',
+                  background: isActive ? 'rgba(234, 88, 12, 0.12)' : 'rgba(241, 245, 249, 0.6)'
                 })}
               >
                 <Icon size={18} />
@@ -299,12 +302,64 @@ export const Navbar: React.FC = () => {
         </div>
       )}
 
+      {/* Floating Bottom Mobile Quick Navigation Bar */}
+      <nav
+        className="mobile-bottom-bar"
+        style={{
+          position: 'fixed',
+          bottom: 12,
+          left: 12,
+          right: 12,
+          zIndex: 90,
+          background: 'rgba(255, 255, 255, 0.96)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid #cbd5e1',
+          borderRadius: '20px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          padding: '8px 6px'
+        }}
+      >
+        {NAV_ITEMS.slice(0, 6).map((item) => {
+          const Icon = item.icon;
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              style={({ isActive }) => ({
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '2px',
+                padding: '6px 8px',
+                borderRadius: '12px',
+                textDecoration: 'none',
+                fontSize: '0.68rem',
+                fontWeight: isActive ? 700 : 500,
+                color: isActive ? '#ea580c' : '#64748b',
+                background: isActive ? 'rgba(234, 88, 12, 0.12)' : 'transparent',
+                transition: 'all 0.2s ease'
+              })}
+            >
+              <Icon size={18} />
+              <span>{item.label}</span>
+            </NavLink>
+          );
+        })}
+      </nav>
+
       {/* Responsive Inline CSS for Navbar */}
       <style>{`
         @media (min-width: 900px) {
           .desktop-nav-links { display: flex !important; }
           .mobile-nav-toggle { display: none !important; }
           .user-text-info { display: block !important; }
+          .mobile-bottom-bar { display: none !important; }
+        }
+        @media (max-width: 899px) {
+          .mobile-bottom-bar { display: flex !important; }
         }
       `}</style>
     </header>

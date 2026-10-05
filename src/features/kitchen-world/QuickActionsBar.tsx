@@ -13,10 +13,10 @@ export const QuickActionsBar: React.FC<QuickActionsBarProps> = ({ style = {} }) 
   const navigate = useNavigate();
 
   const ACTIONS = [
-    { label: 'Explore My Pantry', route: '/pantry', icon: Package, color: 'var(--primary-cyan)', bg: 'rgba(6, 182, 212, 0.12)', border: 'rgba(6, 182, 212, 0.3)' },
-    { label: 'Discover Recipes', route: '/recipes', icon: Utensils, color: 'var(--accent-amber)', bg: 'rgba(245, 158, 11, 0.12)', border: 'rgba(245, 158, 11, 0.3)' },
-    { label: 'Ask Pantry AI', route: '/ai', icon: Sparkles, color: '#a78bfa', bg: 'rgba(139, 92, 246, 0.12)', border: 'rgba(139, 92, 246, 0.3)' },
-    { label: 'Open Grocery', route: '/grocery', icon: ShoppingBag, color: 'var(--accent-emerald)', bg: 'rgba(16, 185, 129, 0.12)', border: 'rgba(16, 185, 129, 0.3)' }
+    { label: 'Explore My Pantry', route: '/pantry', icon: Package, color: '#ea580c', bg: 'rgba(234, 88, 12, 0.1)', border: 'rgba(234, 88, 12, 0.3)' },
+    { label: 'Discover Recipes', route: '/recipes', icon: Utensils, color: '#d97706', bg: 'rgba(245, 158, 11, 0.1)', border: 'rgba(245, 158, 11, 0.3)' },
+    { label: 'Ask Pantry AI', route: '/ai', icon: Sparkles, color: '#f97316', bg: 'rgba(249, 115, 22, 0.1)', border: 'rgba(249, 115, 22, 0.3)' },
+    { label: 'Open Grocery', route: '/grocery', icon: ShoppingBag, color: '#059669', bg: 'rgba(16, 185, 129, 0.1)', border: 'rgba(16, 185, 129, 0.3)' }
   ];
 
   return (
@@ -30,9 +30,9 @@ export const QuickActionsBar: React.FC<QuickActionsBarProps> = ({ style = {} }) 
         justifyContent: 'center',
         gap: '12px',
         flexWrap: 'wrap',
-        background: 'rgba(15, 23, 42, 0.85)',
-        border: '1px solid rgba(255, 255, 255, 0.12)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        background: 'rgba(255, 255, 255, 0.95)',
+        border: '1px solid #e2e8f0',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)',
         ...style
       }}
     >

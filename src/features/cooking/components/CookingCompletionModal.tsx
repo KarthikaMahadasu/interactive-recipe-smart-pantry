@@ -74,8 +74,8 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
         position: 'fixed',
         inset: 0,
         zIndex: 100,
-        background: 'rgba(8, 12, 20, 0.85)',
-        backdropFilter: 'blur(10px)',
+        background: 'rgba(15, 23, 42, 0.4)',
+        backdropFilter: 'blur(8px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -92,35 +92,35 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
           padding: '28px',
           borderRadius: '24px',
           background: '#ffffff',
-          border: '1.5px solid #cbd5e1',
-          boxShadow: '0 20px 50px rgba(15, 23, 42, 0.15)',
+          border: '1px solid #fed7aa',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)',
           display: 'flex',
           flexDirection: 'column',
           gap: '20px'
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h3 style={{ fontSize: '1.3rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h3 style={{ fontSize: '1.3rem', color: '#0f172a', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
             {hasInsufficient ? (
               <>
-                <AlertTriangle size={22} color="#f59e0b" /> Insufficient Stock Alert
+                <AlertTriangle size={22} color="#d97706" /> Insufficient Stock Alert
               </>
             ) : (
               <>
-                <CheckCircle2 size={22} color="#10b981" /> Confirm Cooking Completion
+                <CheckCircle2 size={22} color="#16a34a" /> Confirm Cooking Completion
               </>
             )}
           </h3>
           <button
             onClick={onClose}
-            style={{ background: 'transparent', color: 'var(--text-dim)', padding: 4, cursor: 'pointer', border: 'none' }}
+            style={{ background: 'transparent', color: '#64748b', padding: 4, cursor: 'pointer', border: 'none' }}
           >
             <X size={20} />
           </button>
         </div>
 
-        <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
-          You are finishing <strong>{recipe.title}</strong>. Confirming will deduct actual ingredients from your live restaurant inventory and record usage activity.
+        <p style={{ fontSize: '0.88rem', color: '#475569', lineHeight: 1.45 }}>
+          You are finishing <strong style={{ color: '#ea580c' }}>{recipe.title}</strong>. Confirming will deduct actual ingredients from your live restaurant inventory and record usage activity.
         </p>
 
         {/* Insufficient Stock Warning Card */}
@@ -129,17 +129,17 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
             style={{
               padding: '14px 18px',
               borderRadius: '16px',
-              background: 'rgba(245, 158, 11, 0.12)',
-              border: '1px solid rgba(245, 158, 11, 0.35)',
+              background: '#fffbe5',
+              border: '1px solid #fde68a',
               display: 'flex',
               flexDirection: 'column',
               gap: '8px'
             }}
           >
-            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#fcd34d', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <AlertTriangle size={16} /> Missing Ingredients Identified ({missingItems.length} items short)
+            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#92400e', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <AlertTriangle size={16} color="#d97706" /> Missing Ingredients Identified ({missingItems.length} items short)
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#fde68a', lineHeight: 1.4 }}>
+            <div style={{ fontSize: '0.78rem', color: '#78350f', lineHeight: 1.4 }}>
               {missingItems.map((m) => (
                 <div key={m.name}>
                   &bull; <strong>{m.name}</strong>: Required {m.required} {m.unit}, Available {m.currentQty} {m.unit} (Short by {m.missingAmount} {m.unit})
@@ -151,7 +151,7 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
 
         {/* Deductions Breakdown Table */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>
+          <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
             Pantry Ingredient Deductions:
           </div>
 
@@ -162,8 +162,8 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
                 style={{
                   padding: '10px 14px',
                   borderRadius: '12px',
-                  background: 'rgba(30, 41, 59, 0.5)',
-                  border: `1px solid ${d.isInsufficient ? 'rgba(245, 158, 11, 0.4)' : 'rgba(255, 255, 255, 0.08)'}`,
+                  background: '#f8fafc',
+                  border: `1px solid ${d.isInsufficient ? '#fde68a' : '#e2e8f0'}`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -171,14 +171,14 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
                 }}
               >
                 <div>
-                  <span style={{ fontWeight: 700, color: 'var(--text-main)' }}>{d.name}</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--accent-rose)', marginLeft: '8px' }}>
+                  <span style={{ fontWeight: 700, color: '#0f172a' }}>{d.name}</span>
+                  <span style={{ fontSize: '0.75rem', color: '#dc2626', marginLeft: '8px', fontWeight: 600 }}>
                     -{d.required} {d.unit}
                   </span>
                 </div>
 
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', textAlign: 'right' }}>
-                  <span>{d.currentQty} {d.unit}</span> &rarr; <strong style={{ color: d.isInsufficient ? '#fcd34d' : '#34d399' }}>{d.remainingQty} {d.unit}</strong>
+                <div style={{ fontSize: '0.78rem', color: '#64748b', textAlign: 'right' }}>
+                  <span>{d.currentQty} {d.unit}</span> &rarr; <strong style={{ color: d.isInsufficient ? '#d97706' : '#16a34a' }}>{d.remainingQty} {d.unit}</strong>
                 </div>
               </div>
             ))}
@@ -194,9 +194,9 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
                 width: '100%',
                 padding: '12px',
                 borderRadius: '14px',
-                background: 'rgba(139, 92, 246, 0.2)',
-                border: '1px solid rgba(139, 92, 246, 0.4)',
-                color: '#c084fc',
+                background: '#faf5ff',
+                border: '1px solid #e9d5ff',
+                color: '#9333ea',
                 fontWeight: 700,
                 fontSize: '0.85rem',
                 display: 'flex',
@@ -217,8 +217,9 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
                 flex: 1,
                 padding: '12px',
                 borderRadius: '14px',
-                background: 'rgba(30, 41, 59, 0.6)',
-                color: 'var(--text-muted)',
+                background: '#f1f5f9',
+                border: '1px solid #e2e8f0',
+                color: '#475569',
                 fontWeight: 600,
                 fontSize: '0.88rem',
                 cursor: 'pointer'
@@ -238,8 +239,8 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
                 flex: 2,
                 padding: '12px',
                 borderRadius: '14px',
-                background: hasInsufficient ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: '#000000',
+                background: hasInsufficient ? 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)' : 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
+                color: '#ffffff',
                 fontWeight: 800,
                 fontSize: '0.9rem',
                 border: 'none',
@@ -248,7 +249,7 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
                 justifyContent: 'center',
                 gap: '6px',
                 cursor: 'pointer',
-                boxShadow: '0 4px 18px rgba(16, 185, 129, 0.4)'
+                boxShadow: '0 4px 18px rgba(234, 88, 12, 0.25)'
               }}
             >
               Confirm & Deduct Stock <ArrowRight size={16} />

@@ -63,14 +63,14 @@ export const SpatialZone: React.FC<SpatialZoneProps> = ({
             padding: '20px 22px',
             borderRadius: '24px',
             background: active
-              ? `radial-gradient(circle at 50% 0%, ${zone.colorHex}25 0%, rgba(15, 23, 42, 0.95) 100%)`
-              : 'rgba(15, 23, 42, 0.8)',
+              ? `radial-gradient(circle at 50% 0%, ${zone.colorHex}18 0%, rgba(255, 255, 255, 0.98) 100%)`
+              : 'rgba(255, 255, 255, 0.94)',
             border: active
               ? `1.5px solid ${zone.colorHex}`
-              : '1px solid rgba(255, 255, 255, 0.1)',
+              : '1px solid #e2e8f0',
             boxShadow: active
-              ? `0 12px 32px ${zone.glowColor}, 0 0 20px ${zone.glowColor}`
-              : '0 4px 20px rgba(0, 0, 0, 0.3)',
+              ? `0 12px 32px ${zone.glowColor}, 0 0 16px ${zone.glowColor}`
+              : '0 4px 16px rgba(0, 0, 0, 0.04)',
             display: 'flex',
             flexDirection: 'column',
             gap: '12px',
@@ -97,8 +97,8 @@ export const SpatialZone: React.FC<SpatialZoneProps> = ({
             <h3
               style={{
                 fontSize: '1.1rem',
-                fontWeight: 700,
-                color: 'var(--text-main)',
+                fontWeight: 800,
+                color: '#ea580c',
                 marginTop: '2px'
               }}
             >

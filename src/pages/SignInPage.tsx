@@ -48,7 +48,7 @@ export const SignInPage: React.FC = () => {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '32px 16px',
-        background: '#090d16'
+        background: '#f8fafc'
       }}
     >
       <div
@@ -58,9 +58,9 @@ export const SignInPage: React.FC = () => {
           maxWidth: '480px',
           padding: '40px 32px',
           borderRadius: '28px',
-          background: '#111827',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6)'
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.06)'
         }}
       >
         {/* Back Link to Welcome */}
@@ -71,7 +71,7 @@ export const SignInPage: React.FC = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              color: '#38bdf8',
+              color: '#ea580c',
               fontSize: '0.85rem',
               fontWeight: 700,
               textDecoration: 'none'
@@ -88,11 +88,11 @@ export const SignInPage: React.FC = () => {
               width: 54,
               height: 54,
               borderRadius: '16px',
-              background: 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
+              background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 24px rgba(56, 189, 248, 0.4)',
+              boxShadow: '0 4px 20px rgba(234, 88, 12, 0.35)',
               marginBottom: '12px'
             }}
           >
@@ -103,13 +103,13 @@ export const SignInPage: React.FC = () => {
               fontSize: '1.8rem',
               fontWeight: 800,
               fontFamily: 'var(--font-heading)',
-              color: '#f9fafb',
+              color: '#ea580c',
               letterSpacing: '-0.02em'
             }}
           >
             Sign In to Workspace
           </h2>
-          <p style={{ fontSize: '0.88rem', color: '#9ca3af', marginTop: '4px' }}>
+          <p style={{ fontSize: '0.88rem', color: '#64748b', marginTop: '4px' }}>
             Access your shared Intelligent Kitchen Management System
           </p>
         </div>
@@ -120,9 +120,9 @@ export const SignInPage: React.FC = () => {
             style={{
               padding: '14px 16px',
               borderRadius: '16px',
-              background: 'rgba(239, 68, 68, 0.18)',
+              background: 'rgba(239, 68, 68, 0.1)',
               border: '1.5px solid #ef4444',
-              color: '#fca5a5',
+              color: '#dc2626',
               fontSize: '0.88rem',
               fontWeight: 600,
               display: 'flex',
@@ -139,7 +139,7 @@ export const SignInPage: React.FC = () => {
         {/* Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: 700, color: '#f9fafb', marginBottom: '6px' }}>
+            <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
               Email Address *
             </label>
             <input
@@ -152,9 +152,9 @@ export const SignInPage: React.FC = () => {
                 width: '100%',
                 padding: '14px 16px',
                 borderRadius: '14px',
-                background: '#1f2937',
-                border: '1.5px solid #374151',
-                color: '#f9fafb',
+                background: '#ffffff',
+                border: '1.5px solid #cbd5e1',
+                color: '#0f172a',
                 fontSize: '0.95rem',
                 outline: 'none'
               }}
@@ -162,7 +162,7 @@ export const SignInPage: React.FC = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: 700, color: '#f9fafb', marginBottom: '6px' }}>
+            <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
               Password *
             </label>
             <input
@@ -175,9 +175,9 @@ export const SignInPage: React.FC = () => {
                 width: '100%',
                 padding: '14px 16px',
                 borderRadius: '14px',
-                background: '#1f2937',
-                border: '1.5px solid #374151',
-                color: '#f9fafb',
+                background: '#ffffff',
+                border: '1.5px solid #cbd5e1',
+                color: '#0f172a',
                 fontSize: '0.95rem',
                 outline: 'none'
               }}
@@ -191,7 +191,7 @@ export const SignInPage: React.FC = () => {
               marginTop: '8px',
               padding: '16px',
               borderRadius: '16px',
-              background: 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
+              background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
               color: '#ffffff',
               fontWeight: 800,
               fontSize: '1rem',
@@ -202,7 +202,7 @@ export const SignInPage: React.FC = () => {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '10px',
-              boxShadow: '0 6px 20px rgba(56, 189, 248, 0.35)'
+              boxShadow: '0 6px 20px rgba(234, 88, 12, 0.3)'
             }}
           >
             <LogIn size={20} />
@@ -211,8 +211,8 @@ export const SignInPage: React.FC = () => {
         </form>
 
         {/* Quick Demo Logins */}
-        <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-          <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#38bdf8', textAlign: 'center', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #e2e8f0' }}>
+          <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#ea580c', textAlign: 'center', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Quick Demo Workspace Logins:
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
@@ -222,9 +222,9 @@ export const SignInPage: React.FC = () => {
               style={{
                 padding: '10px 12px',
                 borderRadius: '14px',
-                background: 'rgba(244, 63, 94, 0.15)',
-                border: '1px solid rgba(244, 63, 94, 0.4)',
-                color: '#fda4af',
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#dc2626',
                 fontSize: '0.82rem',
                 fontWeight: 700,
                 display: 'flex',
@@ -242,9 +242,9 @@ export const SignInPage: React.FC = () => {
               style={{
                 padding: '10px 12px',
                 borderRadius: '14px',
-                background: 'rgba(168, 85, 247, 0.15)',
-                border: '1px solid rgba(168, 85, 247, 0.4)',
-                color: '#e9d5ff',
+                background: 'rgba(234, 88, 12, 0.1)',
+                border: '1px solid rgba(234, 88, 12, 0.3)',
+                color: '#ea580c',
                 fontSize: '0.82rem',
                 fontWeight: 700,
                 display: 'flex',
@@ -262,9 +262,9 @@ export const SignInPage: React.FC = () => {
               style={{
                 padding: '10px 12px',
                 borderRadius: '14px',
-                background: 'rgba(245, 158, 11, 0.15)',
-                border: '1px solid rgba(245, 158, 11, 0.4)',
-                color: '#fef08a',
+                background: 'rgba(245, 158, 11, 0.1)',
+                border: '1px solid rgba(245, 158, 11, 0.3)',
+                color: '#d97706',
                 fontSize: '0.82rem',
                 fontWeight: 700,
                 display: 'flex',
@@ -282,9 +282,9 @@ export const SignInPage: React.FC = () => {
               style={{
                 padding: '10px 12px',
                 borderRadius: '14px',
-                background: 'rgba(16, 185, 129, 0.15)',
-                border: '1px solid rgba(16, 185, 129, 0.4)',
-                color: '#a7f3d0',
+                background: 'rgba(16, 185, 129, 0.1)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                color: '#059669',
                 fontSize: '0.82rem',
                 fontWeight: 700,
                 display: 'flex',
@@ -299,9 +299,9 @@ export const SignInPage: React.FC = () => {
         </div>
 
         {/* Footer Link */}
-        <div style={{ textAlign: 'center', marginTop: '28px', fontSize: '0.88rem', color: '#9ca3af' }}>
+        <div style={{ textAlign: 'center', marginTop: '28px', fontSize: '0.88rem', color: '#64748b' }}>
           Don't have a workspace?{' '}
-          <Link to="/signup" style={{ color: '#38bdf8', fontWeight: 700, textDecoration: 'underline' }}>
+          <Link to="/signup" style={{ color: '#ea580c', fontWeight: 700, textDecoration: 'underline' }}>
             Register Restaurant
           </Link>
         </div>

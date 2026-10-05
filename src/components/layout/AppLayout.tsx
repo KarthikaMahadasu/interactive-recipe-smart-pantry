@@ -23,7 +23,7 @@ export const AppLayout: React.FC = () => {
           textAlign: 'center',
           fontSize: '0.78rem',
           color: 'var(--text-dim)',
-          borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+          borderTop: '1px solid #e2e8f0',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

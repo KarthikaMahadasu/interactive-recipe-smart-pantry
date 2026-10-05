@@ -85,23 +85,23 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
           gap: '12px',
           padding: '10px 16px',
           borderRadius: '24px',
-          background: 'var(--glass-bg)',
+          background: 'rgba(255, 255, 255, 0.95)',
           border: isError
             ? '1.5px solid var(--accent-rose)'
             : isSubmitting
-            ? '1.5px solid var(--accent-violet)'
+            ? '1.5px solid #ea580c'
             : !isEmpty
-            ? '1.5px solid var(--primary-cyan)'
-            : '1px solid var(--glass-border)',
+            ? '1.5px solid #ea580c'
+            : '1px solid #e2e8f0',
           boxShadow: !isEmpty
-            ? '0 8px 24px rgba(2, 132, 199, 0.15)'
+            ? '0 8px 24px rgba(234, 88, 12, 0.15)'
             : 'var(--glass-shadow)',
           transition: 'all 0.3s ease'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', color: isError ? '#f43f5e' : 'var(--primary-cyan)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', color: isError ? '#ef4444' : '#ea580c' }}>
           {isSubmitting ? (
-            <Loader2 className="animate-spin" size={22} color="var(--accent-violet)" />
+            <Loader2 className="animate-spin" size={22} color="#ea580c" />
           ) : (
             <Sparkles size={22} />
           )}
@@ -120,7 +120,7 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
             background: 'transparent',
             border: 'none',
             outline: 'none',
-            color: 'var(--text-main)',
+            color: '#0f172a',
             fontSize: '0.95rem',
             fontFamily: 'inherit'
           }}
@@ -160,12 +160,12 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
             borderRadius: '50%',
             border: 'none',
             background: isEmpty || isSubmitting
-              ? 'rgba(30, 41, 59, 0.6)'
-              : 'linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%)',
-            color: isEmpty || isSubmitting ? 'var(--text-dim)' : '#ffffff',
+              ? '#e2e8f0'
+              : 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
+            color: isEmpty || isSubmitting ? '#94a3b8' : '#ffffff',
             cursor: isEmpty || isSubmitting ? 'not-allowed' : 'pointer',
-            opacity: isEmpty || isSubmitting ? 0.5 : 1,
-            boxShadow: isEmpty || isSubmitting ? 'none' : '0 4px 14px rgba(139, 92, 246, 0.4)',
+            opacity: isEmpty || isSubmitting ? 0.6 : 1,
+            boxShadow: isEmpty || isSubmitting ? 'none' : '0 4px 14px rgba(234, 88, 12, 0.35)',
             transition: 'all 0.2s ease'
           }}
         >
@@ -184,14 +184,15 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
             marginTop: '16px',
             padding: '16px 20px',
             borderRadius: '18px',
-            background: 'var(--bg-surface)',
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
             borderLeft: `4px solid ${getStatusBadge(lastResponse?.status || 'info').color}`,
-            boxShadow: 'var(--glass-shadow)',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)',
             transition: 'all 0.3s ease'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '6px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-cyan)', fontWeight: 700, fontSize: '0.88rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#ea580c', fontWeight: 700, fontSize: '0.88rem' }}>
               <Bot size={18} /> Kitchen AI Agent Response
             </div>
             <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>
@@ -199,7 +200,7 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
             </span>
           </div>
 
-          <p style={{ fontSize: '0.92rem', color: 'var(--text-main)', lineHeight: 1.5, margin: '6px 0', whiteSpace: 'pre-line' }}>
+          <p style={{ fontSize: '0.92rem', color: '#0f172a', lineHeight: 1.5, margin: '6px 0', whiteSpace: 'pre-line' }}>
             {currentRespMessage}
           </p>
 
@@ -207,20 +208,20 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
             style={{
               marginTop: '10px',
               paddingTop: '8px',
-              borderTop: '1px dashed rgba(255, 255, 255, 0.1)',
+              borderTop: '1px dashed #e2e8f0',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between'
             }}
           >
             <span style={{ fontSize: '0.73rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <Info size={14} color="var(--primary-cyan)" /> Module 5 NLP Agent Engine (Validated Action)
+              <Info size={14} color="#ea580c" /> Module 5 NLP Agent Engine (Validated Action)
             </span>
             <button
               onClick={() => setShowArchNote(!showArchNote)}
               style={{
                 fontSize: '0.73rem',
-                color: 'var(--primary-cyan)',
+                color: '#ea580c',
                 background: 'transparent',
                 border: 'none',
                 cursor: 'pointer',
@@ -237,30 +238,30 @@ export const AICommandBar: React.FC<AICommandBarProps> = ({ style = {} }) => {
               style={{
                 marginTop: '12px',
                 padding: '14px 16px',
-                background: 'rgba(8, 12, 20, 0.95)',
+                background: '#f8fafc',
                 borderRadius: '12px',
                 fontSize: '0.8rem',
-                color: '#e2e8f0',
+                color: '#0f172a',
                 fontFamily: 'monospace',
                 lineHeight: 1.6,
-                border: '1px solid rgba(6, 182, 212, 0.3)',
+                border: '1px solid #cbd5e1',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '4px'
               }}
             >
-              <div style={{ color: 'var(--accent-violet)', fontWeight: 700, marginBottom: '4px' }}>
+              <div style={{ color: '#ea580c', fontWeight: 700, marginBottom: '4px' }}>
                 === DEVELOPMENT NLP DEBUG PANEL ===
               </div>
               <div><strong>User Input:</strong> {lastResponse?.debugInfo?.userInput || 'N/A'}</div>
-              <div><strong>Intent:</strong> <span style={{ color: 'var(--primary-cyan)' }}>{lastResponse?.intent || 'UNKNOWN'}</span></div>
+              <div><strong>Intent:</strong> <span style={{ color: '#ea580c' }}>{lastResponse?.intent || 'UNKNOWN'}</span></div>
               <div>
                 <strong>Entities:</strong>{' '}
-                <span style={{ color: 'var(--accent-amber)' }}>
+                <span style={{ color: '#d97706' }}>
                   {JSON.stringify(lastResponse?.debugInfo?.entities || {})}
                 </span>
               </div>
-              <div><strong>Validation:</strong> <span style={{ color: lastResponse?.debugInfo?.validation.passed ? '#10b981' : '#f43f5e' }}>{lastResponse?.debugInfo?.validation.passed ? 'PASS' : `FAIL (${lastResponse?.debugInfo?.validation.reason})`}</span></div>
+              <div><strong>Validation:</strong> <span style={{ color: lastResponse?.debugInfo?.validation.passed ? '#10b981' : '#ef4444' }}>{lastResponse?.debugInfo?.validation.passed ? 'PASS' : `FAIL (${lastResponse?.debugInfo?.validation.reason})`}</span></div>
               <div><strong>Action:</strong> {lastResponse?.intent || 'NONE'}</div>
               <div><strong>Result:</strong> <span style={{ color: '#10b981' }}>{lastResponse?.status?.toUpperCase() || 'SUCCESS'}</span></div>
             </div>

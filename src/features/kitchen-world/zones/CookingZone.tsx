@@ -31,7 +31,7 @@ export const CookingZone: React.FC<CookingZoneProps> = ({ active, onHover, onCli
           width: '100%',
           height: '90px',
           borderRadius: '16px',
-          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(15, 23, 42, 0.95) 100%)',
+          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(248, 250, 252, 0.95) 100%)',
           border: '1px solid rgba(245, 158, 11, 0.35)',
           display: 'flex',
           alignItems: 'center',
@@ -48,13 +48,13 @@ export const CookingZone: React.FC<CookingZoneProps> = ({ active, onHover, onCli
             height: 44,
             borderRadius: '50%',
             border: '2px dashed #f59e0b',
-            boxShadow: 'inset 0 0 12px rgba(245, 158, 11, 0.4)',
+            boxShadow: 'inset 0 0 12px rgba(245, 158, 11, 0.2)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
           }}
         >
-          <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(245, 158, 11, 0.3)' }} />
+          <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(245, 158, 11, 0.25)' }} />
         </div>
 
         {/* Right Pan Silhouette */}
@@ -63,8 +63,8 @@ export const CookingZone: React.FC<CookingZoneProps> = ({ active, onHover, onCli
             width: 48,
             height: 44,
             borderRadius: '50%',
-            border: '2px solid #fbbf24',
-            background: 'radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, rgba(30, 41, 59, 0.8) 100%)',
+            border: '2px solid #d97706',
+            background: 'radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, rgba(248, 250, 252, 0.9) 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

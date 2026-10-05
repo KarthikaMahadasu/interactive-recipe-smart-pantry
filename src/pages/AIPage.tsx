@@ -40,21 +40,22 @@ export const AIPage: React.FC = () => {
               width: 40,
               height: 40,
               borderRadius: '50%',
-              background: 'rgba(30, 41, 59, 0.6)',
+              background: '#f1f5f9',
               color: 'var(--text-main)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              border: '1px solid #e2e8f0'
             }}
           >
             <ArrowLeft size={20} />
           </button>
           <div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--accent-violet)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ fontSize: '0.78rem', color: '#ea580c', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Building2 size={14} /> {restaurant?.name} &bull; Restaurant AI Agent
             </div>
-            <h1 style={{ fontSize: '1.6rem', color: 'var(--text-main)' }}>Central AI Workspace & Kitchen OS Agent</h1>
+            <h1 style={{ fontSize: '1.6rem', color: '#ea580c', fontWeight: 800 }}>Central AI Workspace & Kitchen OS Agent</h1>
           </div>
         </div>
 
@@ -72,19 +73,19 @@ export const AIPage: React.FC = () => {
           alignItems: 'center',
           justifyContent: 'center',
           gap: '24px',
-          background: 'radial-gradient(circle at center, rgba(109, 40, 217, 0.08) 0%, var(--bg-surface) 80%)',
-          border: '1px solid rgba(109, 40, 217, 0.2)',
-          boxShadow: '0 8px 30px rgba(109, 40, 217, 0.08)'
+          background: 'radial-gradient(circle at center, rgba(234, 88, 12, 0.06) 0%, #ffffff 80%)',
+          border: '1px solid #ffedd5',
+          boxShadow: '0 8px 30px rgba(234, 88, 12, 0.06)'
         }}
       >
         <AIBrainOrb state={state.aiState} size={200} />
 
         <div style={{ textAlign: 'center', maxWidth: '560px' }}>
-          <h2 style={{ fontSize: '1.4rem', color: 'var(--text-main)' }}>
+          <h2 style={{ fontSize: '1.4rem', color: '#ea580c', fontWeight: 800 }}>
             {restaurant?.name} Neural Kitchen Agent
           </h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-            Connected to shared restaurant inventory for <strong style={{ color: 'var(--text-main)' }}>{restaurant?.name}</strong>. Speak or type commands below.
+          <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px' }}>
+            Connected to shared restaurant inventory for <strong style={{ color: '#0f172a' }}>{restaurant?.name}</strong>. Speak or type commands below.
           </p>
         </div>
 
@@ -103,13 +104,15 @@ export const AIPage: React.FC = () => {
             alignItems: 'center',
             gap: '12px',
             textAlign: 'left',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            background: '#ffffff',
+            border: '1px solid #e2e8f0'
           }}
         >
-          <Utensils size={24} color="var(--primary-cyan)" />
+          <Utensils size={24} color="#ea580c" />
           <div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>Discover Cookable Recipes</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Check current restaurant stock matches</div>
+            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a' }}>Discover Cookable Recipes</div>
+            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Check current restaurant stock matches</div>
           </div>
         </button>
 
@@ -123,13 +126,15 @@ export const AIPage: React.FC = () => {
             alignItems: 'center',
             gap: '12px',
             textAlign: 'left',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            background: '#ffffff',
+            border: '1px solid #e2e8f0'
           }}
         >
-          <AlertTriangle size={24} color="var(--accent-amber)" />
+          <AlertTriangle size={24} color="#f59e0b" />
           <div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>Zero-Waste Scan</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Check expiring stock items</div>
+            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a' }}>Zero-Waste Scan</div>
+            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Check expiring stock items</div>
           </div>
         </button>
 
@@ -143,13 +148,15 @@ export const AIPage: React.FC = () => {
             alignItems: 'center',
             gap: '12px',
             textAlign: 'left',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            background: '#ffffff',
+            border: '1px solid #e2e8f0'
           }}
         >
-          <Sparkles size={24} color="var(--accent-violet)" />
+          <Sparkles size={24} color="#ea580c" />
           <div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>Ingredient Substitutions</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Smart culinary alternatives</div>
+            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a' }}>Ingredient Substitutions</div>
+            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Smart culinary alternatives</div>
           </div>
         </button>
       </div>
@@ -163,11 +170,13 @@ export const AIPage: React.FC = () => {
             borderRadius: '24px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '16px'
+            gap: '16px',
+            background: '#ffffff',
+            border: '1px solid #e2e8f0'
           }}
         >
-          <h3 style={{ fontSize: '1.1rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Clock size={18} color="var(--primary-cyan)" /> AI Agent Conversation History ({restaurant?.name})
+          <h3 style={{ fontSize: '1.1rem', color: '#ea580c', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Clock size={18} color="#ea580c" /> AI Agent Conversation History ({restaurant?.name})
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -177,20 +186,23 @@ export const AIPage: React.FC = () => {
                 style={{
                   padding: '14px 18px',
                   borderRadius: '16px',
-                  background: 'var(--bg-surface-elevated)',
-                  borderLeft: '4px solid var(--accent-violet)',
+                  background: '#f8fafc',
+                  borderLeft: '4px solid #ea580c',
+                  borderTop: '1px solid #e2e8f0',
+                  borderRight: '1px solid #e2e8f0',
+                  borderBottom: '1px solid #e2e8f0',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '6px'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-violet)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ea580c', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Bot size={16} /> Kitchen OS Response
                   </span>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>{item.timestamp}</span>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>{item.timestamp}</span>
                 </div>
-                <p style={{ fontSize: '0.88rem', color: 'var(--text-main)', lineHeight: 1.5, whiteSpace: 'pre-line' }}>
+                <p style={{ fontSize: '0.88rem', color: '#0f172a', lineHeight: 1.5, whiteSpace: 'pre-line' }}>
                   {item.message}
                 </p>
               </div>

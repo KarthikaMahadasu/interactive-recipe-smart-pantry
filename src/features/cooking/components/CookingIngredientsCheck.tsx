@@ -26,22 +26,23 @@ export const CookingIngredientsCheck: React.FC<CookingIngredientsCheckProps> = (
         display: 'flex',
         flexDirection: 'column',
         gap: '16px',
-        background: 'rgba(15, 23, 42, 0.85)',
-        border: '1px solid rgba(255, 255, 255, 0.12)'
+        background: '#ffffff',
+        border: '1px solid #fed7aa',
+        boxShadow: '0 4px 20px rgba(234, 88, 12, 0.06)'
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
-        <h3 style={{ fontSize: '1.1rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Sparkles size={18} color="var(--primary-cyan)" /> Recipe Ingredient Availability Checklist
+        <h3 style={{ fontSize: '1.1rem', color: '#0f172a', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Sparkles size={18} color="#ea580c" /> Recipe Ingredient Availability Checklist
         </h3>
 
         {/* Validation Status Badge */}
         {canCook ? (
-          <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#10b981', background: 'rgba(16, 185, 129, 0.15)', padding: '4px 14px', borderRadius: '14px', border: '1px solid rgba(16, 185, 129, 0.4)' }}>
+          <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#16a34a', background: '#f0fdf4', padding: '4px 14px', borderRadius: '14px', border: '1px solid #bbf7d0' }}>
             ✓ Ready to Cook (100% In Stock)
           </span>
         ) : (
-          <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#f43f5e', background: 'rgba(244, 63, 94, 0.15)', padding: '4px 14px', borderRadius: '14px', border: '1px solid rgba(244, 63, 94, 0.4)' }}>
+          <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#dc2626', background: '#fef2f2', padding: '4px 14px', borderRadius: '14px', border: '1px solid #fecaca' }}>
             ✕ Missing Ingredients ({missingCount + insufficientCount})
           </span>
         )}
@@ -59,8 +60,8 @@ export const CookingIngredientsCheck: React.FC<CookingIngredientsCheckProps> = (
               style={{
                 padding: '12px 14px',
                 borderRadius: '14px',
-                background: isOK ? 'rgba(16, 185, 129, 0.08)' : 'rgba(244, 63, 94, 0.08)',
-                border: `1px solid ${isOK ? 'rgba(16, 185, 129, 0.3)' : 'rgba(244, 63, 94, 0.3)'}`,
+                background: isOK ? '#f0fdf4' : '#fef2f2',
+                border: `1px solid ${isOK ? '#bbf7d0' : '#fecaca'}`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -68,16 +69,16 @@ export const CookingIngredientsCheck: React.FC<CookingIngredientsCheckProps> = (
               }}
             >
               <div>
-                <div style={{ fontWeight: 700, color: 'var(--text-main)' }}>{req.name}</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                <div style={{ fontWeight: 700, color: '#0f172a' }}>{req.name}</div>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
                   Required: {req.amount} {req.unit} | Available: {detail.availableAmount} {req.unit}
                 </div>
               </div>
 
               {isOK ? (
-                <CheckCircle2 size={18} color="#10b981" />
+                <CheckCircle2 size={18} color="#16a34a" />
               ) : (
-                <XCircle size={18} color="#f43f5e" />
+                <XCircle size={18} color="#dc2626" />
               )}
             </div>
           );
@@ -90,8 +91,8 @@ export const CookingIngredientsCheck: React.FC<CookingIngredientsCheckProps> = (
           style={{
             padding: '12px 16px',
             borderRadius: '14px',
-            background: 'rgba(245, 158, 11, 0.12)',
-            border: '1px solid rgba(245, 158, 11, 0.3)',
+            background: '#fffbe5',
+            border: '1px solid #fde68a',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -99,8 +100,8 @@ export const CookingIngredientsCheck: React.FC<CookingIngredientsCheckProps> = (
             gap: '10px'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: 'var(--accent-amber)' }}>
-            <AlertTriangle size={18} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#92400e', fontWeight: 600 }}>
+            <AlertTriangle size={18} color="#d97706" />
             <span>Some ingredients are missing or have insufficient stock.</span>
           </div>
 
@@ -109,9 +110,9 @@ export const CookingIngredientsCheck: React.FC<CookingIngredientsCheckProps> = (
             style={{
               padding: '6px 12px',
               borderRadius: '10px',
-              background: 'rgba(245, 158, 11, 0.2)',
-              border: '1px solid rgba(245, 158, 11, 0.4)',
-              color: 'var(--accent-amber)',
+              background: '#fef3c7',
+              border: '1px solid #fde68a',
+              color: '#b45309',
               fontSize: '0.78rem',
               fontWeight: 700,
               display: 'flex',
@@ -134,14 +135,14 @@ export const CookingIngredientsCheck: React.FC<CookingIngredientsCheckProps> = (
             padding: '14px',
             borderRadius: '16px',
             background: canCook
-              ? 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)'
-              : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-            color: '#000000',
+              ? 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)'
+              : 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
+            color: '#ffffff',
             fontWeight: 800,
             fontSize: '0.98rem',
             border: 'none',
             cursor: 'pointer',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+            boxShadow: '0 4px 16px rgba(234, 88, 12, 0.25)',
             transition: 'transform 0.2s ease'
           }}
         >

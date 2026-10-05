@@ -43,7 +43,7 @@ export const SpatialCanvas: React.FC<SpatialCanvasProps> = ({
       style={{
         position: 'relative',
         width: '100%',
-        minHeight: '480px',
+        minHeight: 'clamp(300px, 55vh, 480px)',
         borderRadius: '24px',
         overflow: 'hidden',
         background: 'rgba(8, 12, 20, 0.4)',

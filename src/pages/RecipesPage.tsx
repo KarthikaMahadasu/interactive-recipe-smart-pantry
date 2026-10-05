@@ -58,21 +58,22 @@ export const RecipesPage: React.FC = () => {
               width: 40,
               height: 40,
               borderRadius: '50%',
-              background: 'rgba(30, 41, 59, 0.6)',
+              background: '#f1f5f9',
               color: 'var(--text-main)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              border: '1px solid #e2e8f0'
             }}
           >
             <ArrowLeft size={20} />
           </button>
           <div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--accent-violet)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: '0.78rem', color: '#ea580c', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
               Module 3 &bull; AI Recipe Discovery
             </div>
-            <h1 style={{ fontSize: '1.6rem', color: 'var(--text-main)' }}>Dynamic Pantry-Matched Recipes</h1>
+            <h1 style={{ fontSize: '1.6rem', color: '#ea580c', fontWeight: 800 }}>Dynamic Pantry-Matched Recipes</h1>
           </div>
         </div>
 
@@ -81,7 +82,7 @@ export const RecipesPage: React.FC = () => {
           <div style={{ transform: 'scale(0.55)', margin: '-20px -30px' }}>
             <AIBrainOrb state={state.aiState} size={110} showStatusLabel={false} />
           </div>
-          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary-cyan)', background: 'rgba(6, 182, 212, 0.12)', padding: '4px 12px', borderRadius: '14px', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
+          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ea580c', background: '#fff7ed', padding: '6px 14px', borderRadius: '14px', border: '1.5px solid #ea580c' }}>
             Syncing with {pantryCount} Pantry Items
           </span>
         </div>
@@ -109,11 +110,11 @@ export const RecipesPage: React.FC = () => {
               gap: '10px',
               padding: '10px 16px',
               borderRadius: '14px',
-              background: 'rgba(15, 23, 42, 0.6)',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
+              background: '#ffffff',
+              border: '1.5px solid #cbd5e1'
             }}
           >
-            <Search size={18} color="var(--text-dim)" />
+            <Search size={18} color="#ea580c" />
             <input
               type="text"
               value={searchQuery}
@@ -123,7 +124,7 @@ export const RecipesPage: React.FC = () => {
                 background: 'transparent',
                 border: 'none',
                 outline: 'none',
-                color: 'var(--text-main)',
+                color: '#0f172a',
                 fontSize: '0.9rem',
                 width: '100%'
               }}
@@ -138,11 +139,11 @@ export const RecipesPage: React.FC = () => {
               gap: '8px',
               padding: '4px 12px',
               borderRadius: '14px',
-              background: 'rgba(15, 23, 42, 0.6)',
-              border: '1px solid rgba(255, 255, 255, 0.08)'
+              background: '#ffffff',
+              border: '1.5px solid #cbd5e1'
             }}
           >
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)', fontWeight: 600 }}>Min Match:</span>
+            <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>Min Match:</span>
             {[0, 50, 75].map((pct) => (
               <button
                 key={pct}
@@ -151,8 +152,8 @@ export const RecipesPage: React.FC = () => {
                   padding: '4px 10px',
                   borderRadius: '10px',
                   border: 'none',
-                  background: minMatchFilter === pct ? 'var(--primary-cyan)' : 'transparent',
-                  color: minMatchFilter === pct ? '#000' : 'var(--text-muted)',
+                  background: minMatchFilter === pct ? '#ea580c' : 'transparent',
+                  color: minMatchFilter === pct ? '#ffffff' : '#64748b',
                   fontSize: '0.76rem',
                   fontWeight: 700,
                   cursor: 'pointer'
@@ -167,7 +168,7 @@ export const RecipesPage: React.FC = () => {
         {/* Category & Difficulty Pills */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: '8px', overflowX: 'auto' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)', fontWeight: 600, alignSelf: 'center' }}>Category:</span>
+            <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, alignSelf: 'center' }}>Category:</span>
             {CATEGORY_OPTIONS.map((cat) => (
               <button
                 key={cat}
@@ -175,11 +176,11 @@ export const RecipesPage: React.FC = () => {
                 style={{
                   padding: '4px 12px',
                   borderRadius: '12px',
-                  border: categoryFilter === cat ? '1px solid var(--accent-violet)' : '1px solid rgba(255, 255, 255, 0.08)',
-                  background: categoryFilter === cat ? 'rgba(139, 92, 246, 0.2)' : 'rgba(30, 41, 59, 0.4)',
-                  color: categoryFilter === cat ? '#c084fc' : 'var(--text-muted)',
+                  border: categoryFilter === cat ? '1.5px solid #ea580c' : '1px solid #cbd5e1',
+                  background: categoryFilter === cat ? '#fff7ed' : '#ffffff',
+                  color: categoryFilter === cat ? '#ea580c' : '#64748b',
                   fontSize: '0.78rem',
-                  fontWeight: 600,
+                  fontWeight: 700,
                   cursor: 'pointer'
                 }}
               >
@@ -189,7 +190,7 @@ export const RecipesPage: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '8px' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)', fontWeight: 600, alignSelf: 'center' }}>Difficulty:</span>
+            <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, alignSelf: 'center' }}>Difficulty:</span>
             {DIFFICULTY_OPTIONS.map((dif) => (
               <button
                 key={dif}
@@ -197,11 +198,11 @@ export const RecipesPage: React.FC = () => {
                 style={{
                   padding: '4px 10px',
                   borderRadius: '10px',
-                  border: difficultyFilter === dif ? '1px solid var(--primary-cyan)' : '1px solid rgba(255, 255, 255, 0.08)',
-                  background: difficultyFilter === dif ? 'rgba(6, 182, 212, 0.15)' : 'transparent',
-                  color: difficultyFilter === dif ? 'var(--primary-cyan)' : 'var(--text-muted)',
+                  border: difficultyFilter === dif ? '1.5px solid #ea580c' : '1px solid #cbd5e1',
+                  background: difficultyFilter === dif ? '#fff7ed' : '#ffffff',
+                  color: difficultyFilter === dif ? '#ea580c' : '#64748b',
                   fontSize: '0.76rem',
-                  fontWeight: 600,
+                  fontWeight: 700,
                   cursor: 'pointer'
                 }}
               >
@@ -216,7 +217,7 @@ export const RecipesPage: React.FC = () => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))',
           gap: '20px'
         }}
       >
@@ -247,8 +248,8 @@ export const RecipesPage: React.FC = () => {
                 width: 60,
                 height: 60,
                 borderRadius: '50%',
-                background: 'rgba(139, 92, 246, 0.15)',
-                color: 'var(--accent-violet)',
+                background: '#fff7ed',
+                color: '#ea580c',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
@@ -256,10 +257,10 @@ export const RecipesPage: React.FC = () => {
             >
               <Utensils size={28} />
             </div>
-            <h3 style={{ fontSize: '1.2rem', color: 'var(--text-main)' }}>
+            <h3 style={{ fontSize: '1.2rem', color: '#0f172a', fontWeight: 700 }}>
               No matching recipes found.
             </h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', maxWidth: '440px' }}>
+            <p style={{ fontSize: '0.85rem', color: '#64748b', maxWidth: '440px' }}>
               {pantryCount === 0
                 ? 'Your pantry is currently empty. Add ingredients to your Smart Pantry to see automated recipe match calculations.'
                 : 'Try lowering the minimum match threshold or clearing search filters.'}
@@ -272,10 +273,11 @@ export const RecipesPage: React.FC = () => {
                   marginTop: '8px',
                   padding: '10px 20px',
                   borderRadius: '14px',
-                  background: 'linear-gradient(135deg, var(--primary-cyan) 0%, #0284c7 100%)',
-                  color: '#000',
+                  background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
+                  color: '#ffffff',
                   fontWeight: 700,
                   fontSize: '0.88rem',
+                  border: 'none',
                   cursor: 'pointer'
                 }}
               >

@@ -19,7 +19,7 @@ export const ZoneDetailModal: React.FC<ZoneDetailModalProps> = ({ zone, onClose 
         position: 'fixed',
         inset: 0,
         zIndex: 100,
-        background: 'rgba(8, 12, 20, 0.75)',
+        background: 'rgba(15, 23, 42, 0.4)',
         backdropFilter: 'blur(12px)',
         display: 'flex',
         alignItems: 'center',
@@ -35,9 +35,9 @@ export const ZoneDetailModal: React.FC<ZoneDetailModalProps> = ({ zone, onClose 
           maxWidth: '480px',
           padding: '28px',
           borderRadius: '24px',
-          background: 'rgba(15, 23, 42, 0.95)',
-          border: `1px solid ${zone.colorHex}66`,
-          boxShadow: `0 20px 50px ${zone.glowColor}`,
+          background: '#ffffff',
+          border: `1px solid ${zone.colorHex}`,
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)',
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
@@ -55,8 +55,8 @@ export const ZoneDetailModal: React.FC<ZoneDetailModalProps> = ({ zone, onClose 
             width: 32,
             height: 32,
             borderRadius: '50%',
-            background: 'rgba(30, 41, 59, 0.6)',
-            color: 'var(--text-muted)',
+            background: '#f1f5f9',
+            color: '#334155',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
@@ -76,7 +76,7 @@ export const ZoneDetailModal: React.FC<ZoneDetailModalProps> = ({ zone, onClose 
               boxShadow: `0 0 14px ${zone.colorHex}`
             }}
           />
-          <h2 style={{ fontSize: '1.3rem', color: 'var(--text-main)' }}>{zone.name}</h2>
+          <h2 style={{ fontSize: '1.3rem', color: '#ea580c' }}>{zone.name}</h2>
         </div>
 
         <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
@@ -87,8 +87,8 @@ export const ZoneDetailModal: React.FC<ZoneDetailModalProps> = ({ zone, onClose 
           style={{
             padding: '12px 16px',
             borderRadius: '12px',
-            background: 'rgba(30, 41, 59, 0.5)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -109,7 +109,7 @@ export const ZoneDetailModal: React.FC<ZoneDetailModalProps> = ({ zone, onClose 
             gap: '6px'
           }}
         >
-          <Sparkles size={14} color="var(--primary-cyan)" /> Module 1 Placeholder: Clicking enter loads module route shell.
+          <Sparkles size={14} color="#ea580c" /> Module 1 Placeholder: Clicking enter loads module route shell.
         </div>
 
         {/* Action Button */}
@@ -123,7 +123,7 @@ export const ZoneDetailModal: React.FC<ZoneDetailModalProps> = ({ zone, onClose 
             padding: '12px',
             borderRadius: '16px',
             background: zone.colorHex,
-            color: '#000000',
+            color: '#ffffff',
             fontWeight: 700,
             fontSize: '0.95rem',
             display: 'flex',
@@ -131,7 +131,7 @@ export const ZoneDetailModal: React.FC<ZoneDetailModalProps> = ({ zone, onClose 
             justifyContent: 'center',
             gap: '8px',
             cursor: 'pointer',
-            boxShadow: `0 4px 18px ${zone.colorHex}66`
+            boxShadow: `0 4px 18px ${zone.colorHex}44`
           }}
         >
           <span>Enter {zone.name}</span>

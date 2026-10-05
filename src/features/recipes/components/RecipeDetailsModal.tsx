@@ -19,7 +19,7 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
         position: 'fixed',
         inset: 0,
         zIndex: 100,
-        background: 'rgba(8, 12, 20, 0.85)',
+        background: 'rgba(15, 23, 42, 0.4)',
         backdropFilter: 'blur(10px)',
         display: 'flex',
         alignItems: 'center',
@@ -39,8 +39,8 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
           padding: '28px',
           borderRadius: '24px',
           background: '#ffffff',
-          border: '1.5px solid #cbd5e1',
-          boxShadow: '0 20px 50px rgba(15, 23, 42, 0.15)',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.1)',
           display: 'flex',
           flexDirection: 'column',
           gap: '20px'
@@ -56,8 +56,8 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
                   fontWeight: 700,
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
-                  color: 'var(--primary-cyan)',
-                  background: 'rgba(6, 182, 212, 0.15)',
+                  color: '#ea580c',
+                  background: '#fff7ed',
                   padding: '2px 10px',
                   borderRadius: '12px'
                 }}
@@ -68,8 +68,9 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
                 style={{
                   fontSize: '0.72rem',
                   fontWeight: 800,
-                  color: matchPercentage >= 80 ? '#10b981' : matchPercentage >= 50 ? '#f59e0b' : '#06b6d4',
-                  background: matchPercentage >= 80 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(6, 182, 212, 0.15)',
+                  color: matchPercentage >= 80 ? '#047857' : matchPercentage >= 50 ? '#b45309' : '#ea580c',
+                  background: matchPercentage >= 80 ? '#ecfdf5' : matchPercentage >= 50 ? '#fffbe8' : '#fff7ed',
+                  border: `1px solid ${matchPercentage >= 80 ? '#a7f3d0' : matchPercentage >= 50 ? '#fde68a' : '#ffedd5'}`,
                   padding: '2px 10px',
                   borderRadius: '12px'
                 }}
@@ -78,20 +79,20 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
               </span>
             </div>
 
-            <h2 style={{ fontSize: '1.5rem', color: 'var(--text-main)', marginTop: '6px' }}>
+            <h2 style={{ fontSize: '1.5rem', color: '#ea580c', fontWeight: 800, marginTop: '6px' }}>
               {recipe.title}
             </h2>
           </div>
 
           <button
             onClick={onClose}
-            style={{ background: 'transparent', color: 'var(--text-dim)', padding: 4, cursor: 'pointer' }}
+            style={{ background: 'transparent', color: '#64748b', border: 'none', padding: 4, cursor: 'pointer' }}
           >
             <X size={22} />
           </button>
         </div>
 
-        <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+        <p style={{ fontSize: '0.88rem', color: '#64748b', lineHeight: 1.45 }}>
           {recipe.description}
         </p>
 
@@ -103,20 +104,21 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
             flexWrap: 'wrap',
             padding: '12px 16px',
             borderRadius: '14px',
-            background: 'rgba(30, 41, 59, 0.5)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
             fontSize: '0.82rem',
-            color: 'var(--text-main)'
+            color: '#0f172a',
+            fontWeight: 600
           }}
         >
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Clock size={16} color="var(--primary-cyan)" /> Prep: {recipe.prepTime}m | Cook: {recipe.cookTime}m
+            <Clock size={16} color="#ea580c" /> Prep: {recipe.prepTime}m | Cook: {recipe.cookTime}m
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <ChefHat size={16} color="var(--accent-violet)" /> Difficulty: {recipe.difficulty}
+            <ChefHat size={16} color="#ea580c" /> Difficulty: {recipe.difficulty}
           </span>
           {recipe.nutrition && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto', color: 'var(--accent-emerald)', fontWeight: 600 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto', color: '#047857', fontWeight: 700 }}>
               {recipe.nutrition.calories} kcal | {recipe.nutrition.protein}g Protein
             </span>
           )}
@@ -129,14 +131,14 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
             style={{
               padding: '16px',
               borderRadius: '16px',
-              background: 'rgba(16, 185, 129, 0.08)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
+              background: '#ecfdf5',
+              border: '1px solid #a7f3d0',
               display: 'flex',
               flexDirection: 'column',
               gap: '10px'
             }}
           >
-            <h4 style={{ fontSize: '0.9rem', color: '#34d399', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <h4 style={{ fontSize: '0.9rem', color: '#047857', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
               <CheckCircle2 size={18} /> AVAILABLE IN PANTRY ({availableIngredients.length})
             </h4>
 
@@ -147,24 +149,25 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
                     key={idx}
                     style={{
                       fontSize: '0.82rem',
-                      color: 'var(--text-main)',
+                      color: '#0f172a',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       padding: '6px 10px',
                       borderRadius: '8px',
-                      background: 'rgba(15, 23, 42, 0.6)'
+                      background: '#ffffff',
+                      border: '1px solid #d1fae5'
                     }}
                   >
-                    <span style={{ fontWeight: 600 }}>✓ {item.recipeIngredient.name}</span>
-                    <span style={{ fontSize: '0.75rem', color: '#34d399' }}>
+                    <span style={{ fontWeight: 700 }}>✓ {item.recipeIngredient.name}</span>
+                    <span style={{ fontSize: '0.75rem', color: '#047857', fontWeight: 700 }}>
                       {item.pantryItem ? `${item.pantryItem.quantity} ${item.pantryItem.unit} in stock` : 'Available'}
                     </span>
                   </div>
                 ))}
               </div>
             ) : (
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>
+              <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
                 No required ingredients found in your pantry.
               </div>
             )}
@@ -175,14 +178,14 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
             style={{
               padding: '16px',
               borderRadius: '16px',
-              background: 'rgba(244, 63, 94, 0.08)',
-              border: '1px solid rgba(244, 63, 94, 0.3)',
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
               display: 'flex',
               flexDirection: 'column',
               gap: '10px'
             }}
           >
-            <h4 style={{ fontSize: '0.9rem', color: '#fda4af', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <h4 style={{ fontSize: '0.9rem', color: '#b91c1c', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Circle size={16} /> MISSING INGREDIENTS ({missingIngredients.length})
             </h4>
 
@@ -193,25 +196,26 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
                     key={idx}
                     style={{
                       fontSize: '0.82rem',
-                      color: 'var(--text-main)',
+                      color: '#0f172a',
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '4px',
                       padding: '6px 10px',
                       borderRadius: '8px',
-                      background: 'rgba(15, 23, 42, 0.6)'
+                      background: '#ffffff',
+                      border: '1px solid #fee2e2'
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span>○ {item.recipeIngredient.name}</span>
-                      <span style={{ fontSize: '0.75rem', color: '#fda4af' }}>
+                      <span style={{ fontWeight: 700 }}>○ {item.recipeIngredient.name}</span>
+                      <span style={{ fontSize: '0.75rem', color: '#b91c1c', fontWeight: 700 }}>
                         Required: {item.recipeIngredient.amount} {item.recipeIngredient.unit}
                       </span>
                     </div>
 
                     {/* Requirement 21: Data-driven substitution hint */}
                     {item.suggestedSubstitution && (
-                      <div style={{ fontSize: '0.72rem', color: 'var(--accent-amber)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <div style={{ fontSize: '0.72rem', color: '#b45309', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
                         <RefreshCw size={11} /> Possible substitution: <strong>{item.suggestedSubstitution}</strong> (in pantry)
                       </div>
                     )}
@@ -219,7 +223,7 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
                 ))}
               </div>
             ) : (
-              <div style={{ fontSize: '0.8rem', color: '#34d399', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div style={{ fontSize: '0.8rem', color: '#047857', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <CheckCircle2 size={16} /> You have 100% of required ingredients to prepare this dish!
               </div>
             )}
@@ -228,7 +232,7 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
 
         {/* Step by Step Cooking Instructions */}
         <div>
-          <h4 style={{ fontSize: '1.0rem', color: 'var(--text-main)', marginBottom: '10px' }}>
+          <h4 style={{ fontSize: '1.0rem', color: '#ea580c', fontWeight: 800, marginBottom: '10px' }}>
             Preparation Instructions
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -238,8 +242,8 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
                 style={{
                   padding: '10px 14px',
                   borderRadius: '12px',
-                  background: 'rgba(30, 41, 59, 0.4)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
                   display: 'flex',
                   gap: '12px',
                   alignItems: 'flex-start'
@@ -250,10 +254,11 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
                     width: 24,
                     height: 24,
                     borderRadius: '50%',
-                    background: 'rgba(6, 182, 212, 0.2)',
-                    color: 'var(--primary-cyan)',
-                    fontWeight: 700,
+                    background: '#fff7ed',
+                    color: '#ea580c',
+                    fontWeight: 800,
                     fontSize: '0.78rem',
+                    border: '1px solid #ffedd5',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -262,10 +267,10 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
                 >
                   {step.step}
                 </span>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-main)', lineHeight: 1.45 }}>
+                <div style={{ fontSize: '0.85rem', color: '#0f172a', lineHeight: 1.45 }}>
                   {step.text}
                   {step.tip && (
-                    <div style={{ marginTop: '4px', fontSize: '0.76rem', color: 'var(--accent-amber)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <div style={{ marginTop: '4px', fontSize: '0.76rem', color: '#b45309', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
                       <AlertCircle size={12} /> Tip: {step.tip}
                     </div>
                   )}
@@ -282,10 +287,11 @@ export const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ matchRes
             style={{
               padding: '10px 24px',
               borderRadius: '14px',
-              background: 'var(--primary-cyan)',
-              color: '#000000',
-              fontWeight: 700,
+              background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
+              color: '#ffffff',
+              fontWeight: 800,
               fontSize: '0.88rem',
+              border: 'none',
               cursor: 'pointer'
             }}
           >

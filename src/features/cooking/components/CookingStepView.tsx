@@ -38,9 +38,9 @@ export const CookingStepView: React.FC<CookingStepViewProps> = ({
         display: 'flex',
         flexDirection: 'column',
         gap: '20px',
-        background: 'rgba(15, 23, 42, 0.88)',
-        border: '1.5px solid rgba(244, 63, 94, 0.35)',
-        boxShadow: '0 8px 32px rgba(244, 63, 94, 0.15)'
+        background: '#ffffff',
+        border: '1px solid #fed7aa',
+        boxShadow: '0 4px 20px rgba(234, 88, 12, 0.06)'
       }}
     >
       {/* Top Bar: Progress Indicator & Voice Toggle */}
@@ -50,8 +50,9 @@ export const CookingStepView: React.FC<CookingStepViewProps> = ({
             style={{
               padding: '6px 14px',
               borderRadius: '12px',
-              background: 'rgba(244, 63, 94, 0.2)',
-              color: 'var(--accent-rose)',
+              background: '#fff7ed',
+              color: '#ea580c',
+              border: '1px solid #ffedd5',
               fontWeight: 800,
               fontSize: '0.88rem'
             }}
@@ -64,9 +65,9 @@ export const CookingStepView: React.FC<CookingStepViewProps> = ({
             style={{
               padding: '6px 12px',
               borderRadius: '12px',
-              background: voiceEnabled ? 'rgba(6, 182, 212, 0.15)' : 'rgba(30, 41, 59, 0.6)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: voiceEnabled ? 'var(--primary-cyan)' : 'var(--text-muted)',
+              background: voiceEnabled ? '#eff6ff' : '#f8fafc',
+              border: `1px solid ${voiceEnabled ? '#bfdbfe' : '#e2e8f0'}`,
+              color: voiceEnabled ? '#2563eb' : '#64748b',
               fontSize: '0.8rem',
               fontWeight: 600,
               display: 'flex',
@@ -85,28 +86,29 @@ export const CookingStepView: React.FC<CookingStepViewProps> = ({
           style={{
             padding: '6px 14px',
             borderRadius: '12px',
-            background: 'rgba(30, 41, 59, 0.8)',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
-            color: 'var(--text-main)',
+            background: '#ffffff',
+            border: '1px solid #fed7aa',
+            color: '#ea580c',
             fontSize: '0.8rem',
             fontWeight: 600,
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.03)'
           }}
         >
-          <Volume2 size={16} color="var(--primary-cyan)" /> Read Step Aloud
+          <Volume2 size={16} color="#ea580c" /> Read Step Aloud
         </button>
       </div>
 
       {/* Progress Bar Visual (Requirement 9: Step Progress) */}
-      <div style={{ width: '100%', height: 8, borderRadius: 4, background: 'rgba(30, 41, 59, 0.8)', overflow: 'hidden' }}>
+      <div style={{ width: '100%', height: 8, borderRadius: 4, background: '#f1f5f9', overflow: 'hidden' }}>
         <div
           style={{
             width: `${progressPercentage}%`,
             height: '100%',
-            background: 'linear-gradient(90deg, #f43f5e 0%, #10b981 100%)',
+            background: 'linear-gradient(90deg, #ea580c 0%, #f97316 100%)',
             transition: 'width 0.4s ease'
           }}
         />
@@ -117,11 +119,11 @@ export const CookingStepView: React.FC<CookingStepViewProps> = ({
         style={{
           padding: '24px',
           borderRadius: '20px',
-          background: 'rgba(30, 41, 59, 0.5)',
-          border: '1px solid rgba(255, 255, 255, 0.08)'
+          background: '#fff7ed',
+          border: '1px solid #ffedd5'
         }}
       >
-        <h2 style={{ fontSize: '1.35rem', color: 'var(--text-main)', lineHeight: 1.45 }}>
+        <h2 style={{ fontSize: '1.35rem', color: '#0f172a', fontWeight: 800, lineHeight: 1.45 }}>
           {currentStep.text}
         </h2>
 
@@ -131,13 +133,13 @@ export const CookingStepView: React.FC<CookingStepViewProps> = ({
               marginTop: '16px',
               padding: '12px 16px',
               borderRadius: '14px',
-              background: 'rgba(245, 158, 11, 0.12)',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
-              color: 'var(--accent-amber)',
+              background: '#fffbe5',
+              border: '1px solid #fde68a',
+              color: '#92400e',
               fontSize: '0.85rem'
             }}
           >
-            <AlertCircle size={14} style={{ display: 'inline', marginRight: 6 }} />
+            <AlertCircle size={14} style={{ display: 'inline', marginRight: 6 }} color="#d97706" />
             <strong>Chef Tip:</strong> {currentStep.tip}
           </div>
         )}
@@ -151,9 +153,9 @@ export const CookingStepView: React.FC<CookingStepViewProps> = ({
           style={{
             padding: '10px 20px',
             borderRadius: '14px',
-            background: 'rgba(30, 41, 59, 0.8)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            color: currentStepIndex === 0 ? 'var(--text-dim)' : 'var(--text-main)',
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            color: currentStepIndex === 0 ? '#94a3b8' : '#334155',
             fontWeight: 600,
             fontSize: '0.9rem',
             display: 'flex',
@@ -171,7 +173,7 @@ export const CookingStepView: React.FC<CookingStepViewProps> = ({
             style={{
               padding: '10px 24px',
               borderRadius: '14px',
-              background: 'linear-gradient(135deg, var(--accent-rose) 0%, #e11d48 100%)',
+              background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
               color: '#ffffff',
               fontWeight: 700,
               fontSize: '0.9rem',
@@ -180,7 +182,7 @@ export const CookingStepView: React.FC<CookingStepViewProps> = ({
               alignItems: 'center',
               gap: '6px',
               cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(244, 63, 94, 0.3)'
+              boxShadow: '0 4px 16px rgba(234, 88, 12, 0.25)'
             }}
           >
             Next Step <ChevronRight size={18} />
@@ -191,8 +193,8 @@ export const CookingStepView: React.FC<CookingStepViewProps> = ({
             style={{
               padding: '12px 26px',
               borderRadius: '16px',
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              color: '#000000',
+              background: 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)',
+              color: '#ffffff',
               fontWeight: 800,
               fontSize: '0.95rem',
               border: 'none',
@@ -200,7 +202,7 @@ export const CookingStepView: React.FC<CookingStepViewProps> = ({
               alignItems: 'center',
               gap: '8px',
               cursor: 'pointer',
-              boxShadow: '0 4px 20px rgba(16, 185, 129, 0.4)'
+              boxShadow: '0 4px 16px rgba(22, 163, 74, 0.25)'
             }}
           >
             <CheckCircle size={18} /> Complete Cooking & Deduct Pantry

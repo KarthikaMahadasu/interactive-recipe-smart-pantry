@@ -100,21 +100,22 @@ export const GroceryPage: React.FC = () => {
               width: 40,
               height: 40,
               borderRadius: '50%',
-              background: 'rgba(30, 41, 59, 0.6)',
+              background: '#f1f5f9',
               color: 'var(--text-main)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              border: '1px solid #e2e8f0'
             }}
           >
             <ArrowLeft size={20} />
           </button>
           <div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--accent-emerald)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: '0.78rem', color: '#ea580c', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
               Module 6 &bull; Smart Grocery Workspace &bull; {restaurant?.name}
             </div>
-            <h1 style={{ fontSize: '1.6rem', color: 'var(--text-main)' }}>Smart Grocery & Restock Management</h1>
+            <h1 style={{ fontSize: '1.6rem', color: '#ea580c', fontWeight: 800 }}>Smart Grocery & Restock Management</h1>
           </div>
         </div>
 
@@ -124,7 +125,7 @@ export const GroceryPage: React.FC = () => {
             style={{
               padding: '10px 18px',
               borderRadius: '16px',
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
+              background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
               color: '#fff',
               fontWeight: 700,
               fontSize: '0.88rem',
@@ -133,7 +134,7 @@ export const GroceryPage: React.FC = () => {
               alignItems: 'center',
               gap: '8px',
               cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(139, 92, 246, 0.4)'
+              boxShadow: '0 4px 16px rgba(234, 88, 12, 0.3)'
             }}
           >
             <Sparkles size={18} /> Auto-Generate List
@@ -144,9 +145,9 @@ export const GroceryPage: React.FC = () => {
             style={{
               padding: '10px 16px',
               borderRadius: '16px',
-              background: 'rgba(30, 41, 59, 0.8)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: 'var(--text-main)',
+              background: '#ffffff',
+              border: '1.5px solid #cbd5e1',
+              color: '#0f172a',
               fontSize: '0.85rem',
               fontWeight: 600,
               display: 'flex',
@@ -155,7 +156,7 @@ export const GroceryPage: React.FC = () => {
               cursor: 'pointer'
             }}
           >
-            {copied ? <Check size={16} color="var(--accent-emerald)" /> : <Copy size={16} />}
+            {copied ? <Check size={16} color="#10b981" /> : <Copy size={16} />}
             {copied ? 'Copied List' : 'Copy List'}
           </button>
         </div>
@@ -163,27 +164,27 @@ export const GroceryPage: React.FC = () => {
 
       {/* Summary Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-        <div className="glass-panel" style={{ padding: '16px 20px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <ShoppingBag size={28} color="#f43f5e" />
+        <div className="glass-panel" style={{ padding: '16px 20px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
+          <ShoppingBag size={28} color="#ea580c" />
           <div>
-            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f43f5e' }}>{neededCount}</div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Needed Items</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#ea580c' }}>{neededCount}</div>
+            <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Needed Items</div>
           </div>
         </div>
 
-        <div className="glass-panel" style={{ padding: '16px 20px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <CheckCircle size={28} color="#38bdf8" />
+        <div className="glass-panel" style={{ padding: '16px 20px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
+          <CheckCircle size={28} color="#0284c7" />
           <div>
-            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#38bdf8' }}>{purchasedCount}</div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Purchased / In-Transit</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0284c7' }}>{purchasedCount}</div>
+            <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Purchased / In-Transit</div>
           </div>
         </div>
 
-        <div className="glass-panel" style={{ padding: '16px 20px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <Truck size={28} color="#34d399" />
+        <div className="glass-panel" style={{ padding: '16px 20px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
+          <Truck size={28} color="#10b981" />
           <div>
-            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#34d399' }}>{receivedCount}</div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Received Deliveries</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#10b981' }}>{receivedCount}</div>
+            <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Received Deliveries</div>
           </div>
         </div>
       </div>
@@ -198,7 +199,9 @@ export const GroceryPage: React.FC = () => {
           display: 'flex',
           gap: '12px',
           flexWrap: 'wrap',
-          alignItems: 'center'
+          alignItems: 'center',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0'
         }}
       >
         <input
@@ -212,9 +215,9 @@ export const GroceryPage: React.FC = () => {
             minWidth: '200px',
             padding: '10px 14px',
             borderRadius: '12px',
-            background: 'rgba(15, 23, 42, 0.6)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            color: 'var(--text-main)',
+            background: '#ffffff',
+            border: '1.5px solid #cbd5e1',
+            color: '#0f172a',
             fontSize: '0.9rem',
             outline: 'none'
           }}
@@ -231,9 +234,9 @@ export const GroceryPage: React.FC = () => {
             width: '80px',
             padding: '10px 14px',
             borderRadius: '12px',
-            background: 'rgba(15, 23, 42, 0.6)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            color: 'var(--text-main)',
+            background: '#ffffff',
+            border: '1.5px solid #cbd5e1',
+            color: '#0f172a',
             fontSize: '0.9rem',
             outline: 'none'
           }}
@@ -245,20 +248,20 @@ export const GroceryPage: React.FC = () => {
           style={{
             padding: '10px 14px',
             borderRadius: '12px',
-            background: 'rgba(15, 23, 42, 0.9)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            color: 'var(--text-main)',
+            background: '#ffffff',
+            border: '1.5px solid #cbd5e1',
+            color: '#0f172a',
             fontSize: '0.88rem',
             outline: 'none'
           }}
         >
-          <option value="kg">kg</option>
-          <option value="g">g</option>
-          <option value="L">L</option>
-          <option value="ml">ml</option>
-          <option value="pcs">pcs</option>
-          <option value="pack">pack</option>
-          <option value="bottle">bottle</option>
+          <option value="kg" style={{ background: '#ffffff', color: '#0f172a' }}>kg</option>
+          <option value="g" style={{ background: '#ffffff', color: '#0f172a' }}>g</option>
+          <option value="L" style={{ background: '#ffffff', color: '#0f172a' }}>L</option>
+          <option value="ml" style={{ background: '#ffffff', color: '#0f172a' }}>ml</option>
+          <option value="pcs" style={{ background: '#ffffff', color: '#0f172a' }}>pcs</option>
+          <option value="pack" style={{ background: '#ffffff', color: '#0f172a' }}>pack</option>
+          <option value="bottle" style={{ background: '#ffffff', color: '#0f172a' }}>bottle</option>
         </select>
 
         <select
@@ -267,16 +270,16 @@ export const GroceryPage: React.FC = () => {
           style={{
             padding: '10px 14px',
             borderRadius: '12px',
-            background: 'rgba(15, 23, 42, 0.9)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            color: '#fff',
+            background: '#ffffff',
+            border: '1.5px solid #cbd5e1',
+            color: '#0f172a',
             fontSize: '0.88rem',
             outline: 'none'
           }}
         >
-          <option value="HIGH">🔴 High Priority</option>
-          <option value="MEDIUM">🟡 Medium Priority</option>
-          <option value="LOW">🟢 Low Priority</option>
+          <option value="HIGH" style={{ background: '#ffffff', color: '#0f172a' }}>🔴 High Priority</option>
+          <option value="MEDIUM" style={{ background: '#ffffff', color: '#0f172a' }}>🟡 Medium Priority</option>
+          <option value="LOW" style={{ background: '#ffffff', color: '#0f172a' }}>🟢 Low Priority</option>
         </select>
 
         <button
@@ -284,9 +287,9 @@ export const GroceryPage: React.FC = () => {
           style={{
             padding: '10px 20px',
             borderRadius: '12px',
-            background: 'var(--accent-emerald)',
-            color: '#000',
-            fontWeight: 700,
+            background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
+            color: '#ffffff',
+            fontWeight: 800,
             fontSize: '0.88rem',
             border: 'none',
             display: 'flex',
@@ -308,9 +311,9 @@ export const GroceryPage: React.FC = () => {
             style={{
               padding: '8px 16px',
               borderRadius: '14px',
-              background: statusTab === tab ? 'rgba(16, 185, 129, 0.2)' : 'rgba(30, 41, 59, 0.4)',
-              border: statusTab === tab ? '1px solid #10b981' : '1px solid rgba(255, 255, 255, 0.08)',
-              color: statusTab === tab ? '#34d399' : 'var(--text-muted)',
+              background: statusTab === tab ? '#fff7ed' : '#ffffff',
+              border: statusTab === tab ? '1.5px solid #ea580c' : '1px solid #cbd5e1',
+              color: statusTab === tab ? '#ea580c' : '#64748b',
               fontWeight: 700,
               fontSize: '0.82rem',
               cursor: 'pointer'
@@ -326,7 +329,7 @@ export const GroceryPage: React.FC = () => {
         {/* HIGH PRIORITY */}
         {highPriorityItems.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <h3 style={{ fontSize: '1rem', color: '#fda4af', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 style={{ fontSize: '1rem', color: '#b91c1c', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
               🔴 HIGH PRIORITY ({highPriorityItems.length})
             </h3>
             {highPriorityItems.map((item) => renderGroceryCard(item))}
@@ -336,7 +339,7 @@ export const GroceryPage: React.FC = () => {
         {/* MEDIUM PRIORITY */}
         {mediumPriorityItems.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <h3 style={{ fontSize: '1rem', color: '#fcd34d', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 style={{ fontSize: '1rem', color: '#b45309', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
               🟡 MEDIUM PRIORITY ({mediumPriorityItems.length})
             </h3>
             {mediumPriorityItems.map((item) => renderGroceryCard(item))}
@@ -346,7 +349,7 @@ export const GroceryPage: React.FC = () => {
         {/* LOW PRIORITY */}
         {lowPriorityItems.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <h3 style={{ fontSize: '1rem', color: '#6ee7b7', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 style={{ fontSize: '1rem', color: '#047857', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
               🟢 LOW PRIORITY ({lowPriorityItems.length})
             </h3>
             {lowPriorityItems.map((item) => renderGroceryCard(item))}
@@ -354,7 +357,7 @@ export const GroceryPage: React.FC = () => {
         )}
 
         {filteredList.length === 0 && (
-          <div className="glass-panel" style={{ padding: '36px', textAlign: 'center', color: 'var(--text-muted)', borderRadius: '20px' }}>
+          <div className="glass-panel" style={{ padding: '36px', textAlign: 'center', color: '#64748b', borderRadius: '20px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
             No grocery items matching current status filter. Click "Auto-Generate List" or "Add Grocery Item" above!
           </div>
         )}
@@ -382,12 +385,15 @@ export const GroceryPage: React.FC = () => {
         style={{
           padding: '16px 20px',
           borderRadius: '18px',
-          borderLeft: `4px solid ${item.priority === 'HIGH' ? '#f43f5e' : item.priority === 'MEDIUM' ? '#f59e0b' : '#10b981'}`,
+          borderLeft: `4px solid ${item.priority === 'HIGH' ? '#ef4444' : item.priority === 'MEDIUM' ? '#f59e0b' : '#10b981'}`,
+          borderTop: '1px solid #e2e8f0',
+          borderRight: '1px solid #e2e8f0',
+          borderBottom: '1px solid #e2e8f0',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           cursor: 'pointer',
-          background: item.status === 'PURCHASED' ? 'rgba(56, 189, 248, 0.08)' : item.status === 'RECEIVED' ? 'rgba(16, 185, 129, 0.08)' : 'rgba(15, 23, 42, 0.85)'
+          background: item.status === 'PURCHASED' ? '#f0f9ff' : item.status === 'RECEIVED' ? '#ecfdf5' : '#ffffff'
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -396,14 +402,14 @@ export const GroceryPage: React.FC = () => {
               width: 14,
               height: 14,
               borderRadius: '50%',
-              background: item.priority === 'HIGH' ? '#f43f5e' : item.priority === 'MEDIUM' ? '#f59e0b' : '#10b981'
+              background: item.priority === 'HIGH' ? '#ef4444' : item.priority === 'MEDIUM' ? '#f59e0b' : '#10b981'
             }}
           />
           <div>
-            <div style={{ fontWeight: 700, fontSize: '1.02rem', color: 'var(--text-main)' }}>
+            <div style={{ fontWeight: 700, fontSize: '1.02rem', color: '#0f172a' }}>
               {item.name}
             </div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span>Reason: {item.reason}</span>
               <span>&bull; Source: {item.source}</span>
             </div>
@@ -412,14 +418,14 @@ export const GroceryPage: React.FC = () => {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--primary-cyan)' }}>
+            <div style={{ fontSize: '1rem', fontWeight: 800, color: '#ea580c' }}>
               {item.quantity} {item.unit}
             </div>
             <span
               style={{
                 fontSize: '0.7rem',
                 fontWeight: 700,
-                color: item.status === 'RECEIVED' ? '#34d399' : item.status === 'PURCHASED' ? '#38bdf8' : '#fcd34d'
+                color: item.status === 'RECEIVED' ? '#047857' : item.status === 'PURCHASED' ? '#0284c7' : '#b45309'
               }}
             >
               {item.status}
@@ -431,7 +437,7 @@ export const GroceryPage: React.FC = () => {
               e.stopPropagation();
               deleteGroceryItem(item.id);
             }}
-            style={{ background: 'none', border: 'none', color: 'var(--accent-rose)', cursor: 'pointer', padding: 4 }}
+            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: 4 }}
           >
             <Trash2 size={16} />
           </button>

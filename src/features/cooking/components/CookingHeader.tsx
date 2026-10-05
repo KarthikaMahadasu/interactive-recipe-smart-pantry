@@ -23,7 +23,10 @@ export const CookingHeader: React.FC<CookingHeaderProps> = ({ recipe, onRecipeCh
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '16px'
+        gap: '16px',
+        background: '#ffffff',
+        border: '1px solid #fed7aa',
+        boxShadow: '0 4px 20px rgba(234, 88, 12, 0.06)'
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -33,8 +36,9 @@ export const CookingHeader: React.FC<CookingHeaderProps> = ({ recipe, onRecipeCh
             width: 40,
             height: 40,
             borderRadius: '50%',
-            background: 'rgba(30, 41, 59, 0.6)',
-            color: 'var(--text-main)',
+            background: '#fff7ed',
+            border: '1px solid #ffedd5',
+            color: '#ea580c',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -45,10 +49,10 @@ export const CookingHeader: React.FC<CookingHeaderProps> = ({ recipe, onRecipeCh
           <ArrowLeft size={20} />
         </button>
         <div>
-          <div style={{ fontSize: '0.78rem', color: 'var(--accent-rose)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          <div style={{ fontSize: '0.78rem', color: '#ea580c', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             Module 4 &bull; Interactive AI Cooking Studio
           </div>
-          <h1 style={{ fontSize: '1.6rem', color: 'var(--text-main)' }}>
+          <h1 style={{ fontSize: '1.6rem', color: '#0f172a', fontWeight: 800 }}>
             {recipe ? recipe.title : 'Interactive Cooking Studio'}
           </h1>
         </div>
@@ -65,12 +69,13 @@ export const CookingHeader: React.FC<CookingHeaderProps> = ({ recipe, onRecipeCh
           style={{
             padding: '8px 14px',
             borderRadius: '14px',
-            background: 'rgba(30, 41, 59, 0.9)',
-            border: '1px solid rgba(244, 63, 94, 0.4)',
-            color: 'var(--text-main)',
+            background: '#ffffff',
+            border: '1px solid #fed7aa',
+            color: '#0f172a',
             fontSize: '0.88rem',
             fontWeight: 600,
-            outline: 'none'
+            outline: 'none',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
           }}
         >
           {state.recipes.map((r) => (
@@ -86,26 +91,26 @@ export const CookingHeader: React.FC<CookingHeaderProps> = ({ recipe, onRecipeCh
           style={{
             width: '100%',
             paddingTop: '12px',
-            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            borderTop: '1px solid #ffedd5',
             display: 'flex',
             alignItems: 'center',
             gap: '20px',
             flexWrap: 'wrap',
             fontSize: '0.82rem',
-            color: 'var(--text-dim)'
+            color: '#64748b'
           }}
         >
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Clock size={15} color="var(--primary-cyan)" /> Total: {recipe.prepTime + recipe.cookTime} mins (Prep {recipe.prepTime}m + Cook {recipe.cookTime}m)
+            <Clock size={15} color="#ea580c" /> Total: {recipe.prepTime + recipe.cookTime} mins (Prep {recipe.prepTime}m + Cook {recipe.cookTime}m)
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <ChefHat size={15} color="var(--accent-violet)" /> Difficulty: {recipe.difficulty}
+            <ChefHat size={15} color="#ea580c" /> Difficulty: {recipe.difficulty}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Utensils size={15} color="var(--accent-emerald)" /> Servings: {recipe.servings}
+            <Utensils size={15} color="#ea580c" /> Servings: {recipe.servings}
           </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}>
-            <Award size={15} color="var(--accent-amber)" /> {recipe.ingredients.length} Required Ingredients
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto', fontWeight: 600, color: '#d97706' }}>
+            <Award size={15} color="#d97706" /> {recipe.ingredients.length} Required Ingredients
           </span>
         </div>
       )}

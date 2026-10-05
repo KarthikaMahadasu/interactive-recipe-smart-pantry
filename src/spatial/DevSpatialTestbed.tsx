@@ -75,21 +75,21 @@ export const DevSpatialTestbed: React.FC = () => {
         style={{
           padding: '6px 14px',
           borderRadius: '16px',
-          background: 'rgba(15, 23, 42, 0.85)',
-          border: '1px solid rgba(6, 182, 212, 0.4)',
-          color: 'var(--primary-cyan)',
+          background: '#ffffff',
+          border: '1px solid #cbd5e1',
+          color: '#ea580c',
           fontSize: '0.78rem',
           fontWeight: 700,
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
           cursor: 'pointer',
-          boxShadow: '0 4px 12px rgba(6, 182, 212, 0.15)',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
           transition: 'all 0.2s ease'
         }}
         title="Toggle Spatial Engine Developer Testbed"
       >
-        <Compass size={14} />
+        <Compass size={14} color="#ea580c" />
         <span>Spatial Engine Testbed</span>
         {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
       </button>
@@ -102,9 +102,9 @@ export const DevSpatialTestbed: React.FC = () => {
             marginTop: '10px',
             padding: '18px 22px',
             borderRadius: '20px',
-            background: 'rgba(15, 23, 42, 0.95)',
-            border: '1px solid rgba(6, 182, 212, 0.35)',
-            boxShadow: '0 12px 32px rgba(0, 0, 0, 0.5)',
+            background: '#ffffff',
+            border: '1px solid #cbd5e1',
+            boxShadow: '0 12px 32px rgba(0, 0, 0, 0.1)',
             width: '380px',
             display: 'flex',
             flexDirection: 'column',
@@ -112,7 +112,7 @@ export const DevSpatialTestbed: React.FC = () => {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary-cyan)', fontWeight: 700, fontSize: '0.82rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ea580c', fontWeight: 700, fontSize: '0.82rem' }}>
               <Compass size={16} /> Spatial Anchors & Motion Foundation
             </div>
             <span
@@ -120,8 +120,8 @@ export const DevSpatialTestbed: React.FC = () => {
                 fontSize: '0.65rem',
                 padding: '2px 8px',
                 borderRadius: '8px',
-                background: 'rgba(6, 182, 212, 0.2)',
-                color: '#38bdf8',
+                background: 'rgba(234, 88, 12, 0.12)',
+                color: '#ea580c',
                 fontWeight: 700,
                 textTransform: 'uppercase'
               }}
@@ -136,8 +136,8 @@ export const DevSpatialTestbed: React.FC = () => {
 
           {/* Spatial Anchor Picker */}
           <div>
-            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <MapPin size={12} color="var(--primary-cyan)" /> Spatial Anchors
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#0f172a', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <MapPin size={12} color="#ea580c" /> Spatial Anchors
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '6px' }}>
               {Object.keys(SPATIAL_ANCHORS).map((key) => {
@@ -152,9 +152,9 @@ export const DevSpatialTestbed: React.FC = () => {
                       borderRadius: '10px',
                       fontSize: '0.74rem',
                       fontWeight: 600,
-                      background: isSel ? 'rgba(6, 182, 212, 0.25)' : 'rgba(30, 41, 59, 0.5)',
-                      color: isSel ? 'var(--primary-cyan)' : 'var(--text-dim)',
-                      border: `1px solid ${isSel ? 'var(--primary-cyan)' : 'rgba(255, 255, 255, 0.08)'}`,
+                      background: isSel ? 'rgba(234, 88, 12, 0.15)' : '#f8fafc',
+                      color: isSel ? '#ea580c' : '#475569',
+                      border: `1px solid ${isSel ? '#ea580c' : '#e2e8f0'}`,
                       cursor: 'pointer',
                       textAlign: 'left'
                     }}
@@ -168,8 +168,8 @@ export const DevSpatialTestbed: React.FC = () => {
 
           {/* Test Motion Trajectory Buttons */}
           <div>
-            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <Play size={12} color="var(--accent-emerald)" /> Motion Path Trajectories
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#0f172a', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Play size={12} color="#10b981" /> Motion Path Trajectories
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <button
@@ -179,9 +179,9 @@ export const DevSpatialTestbed: React.FC = () => {
                   borderRadius: '10px',
                   fontSize: '0.74rem',
                   fontWeight: 600,
-                  background: 'rgba(30, 41, 59, 0.6)',
-                  color: 'var(--text-main)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: '#f8fafc',
+                  color: '#0f172a',
+                  border: '1px solid #e2e8f0',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -189,7 +189,7 @@ export const DevSpatialTestbed: React.FC = () => {
                 }}
               >
                 <span>PantryAnchor &rarr; AIAnchor</span>
-                <span style={{ fontSize: '0.65rem', color: '#38bdf8' }}>Simulate</span>
+                <span style={{ fontSize: '0.65rem', color: '#ea580c' }}>Simulate</span>
               </button>
 
               <button
@@ -199,9 +199,9 @@ export const DevSpatialTestbed: React.FC = () => {
                   borderRadius: '10px',
                   fontSize: '0.74rem',
                   fontWeight: 600,
-                  background: 'rgba(30, 41, 59, 0.6)',
-                  color: 'var(--text-main)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: '#f8fafc',
+                  color: '#0f172a',
+                  border: '1px solid #e2e8f0',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -209,7 +209,7 @@ export const DevSpatialTestbed: React.FC = () => {
                 }}
               >
                 <span>AIAnchor &rarr; CookingAnchor</span>
-                <span style={{ fontSize: '0.65rem', color: '#38bdf8' }}>Simulate</span>
+                <span style={{ fontSize: '0.65rem', color: '#ea580c' }}>Simulate</span>
               </button>
 
               <button
@@ -219,9 +219,9 @@ export const DevSpatialTestbed: React.FC = () => {
                   borderRadius: '10px',
                   fontSize: '0.74rem',
                   fontWeight: 600,
-                  background: 'rgba(30, 41, 59, 0.6)',
-                  color: 'var(--text-main)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: '#f8fafc',
+                  color: '#0f172a',
+                  border: '1px solid #e2e8f0',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -229,7 +229,7 @@ export const DevSpatialTestbed: React.FC = () => {
                 }}
               >
                 <span>AIAnchor &rarr; GroceryAnchor</span>
-                <span style={{ fontSize: '0.65rem', color: '#f59e0b' }}>Future Anchor</span>
+                <span style={{ fontSize: '0.65rem', color: '#d97706' }}>Future Anchor</span>
               </button>
             </div>
 
@@ -239,10 +239,10 @@ export const DevSpatialTestbed: React.FC = () => {
                   marginTop: '8px',
                   padding: '6px 10px',
                   borderRadius: '8px',
-                  background: 'rgba(6, 182, 212, 0.15)',
-                  border: '1px solid rgba(6, 182, 212, 0.3)',
+                  background: 'rgba(234, 88, 12, 0.12)',
+                  border: '1px solid rgba(234, 88, 12, 0.3)',
                   fontSize: '0.7rem',
-                  color: 'var(--primary-cyan)',
+                  color: '#ea580c',
                   fontWeight: 600
                 }}
               >
@@ -253,8 +253,8 @@ export const DevSpatialTestbed: React.FC = () => {
 
           {/* Dynamic Ingredient Test visuals */}
           <div>
-            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <Layers size={12} color="var(--accent-violet)" /> Dynamic Test Ingredients
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#0f172a', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Layers size={12} color="#ea580c" /> Dynamic Test Ingredients
             </div>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               {DEMO_TEST_INGREDIENTS.map((ing) => (

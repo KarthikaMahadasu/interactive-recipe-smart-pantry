@@ -12,8 +12,8 @@ export const KITCHEN_ZONES: KitchenZone[] = [
     description: 'Smart inventory for grains, spices, canned goods, and long-term pantry storage.',
     route: '/pantry',
     icon: 'Package',
-    colorHex: '#06b6d4',
-    glowColor: 'rgba(6, 182, 212, 0.5)',
+    colorHex: '#f97316',
+    glowColor: 'rgba(249, 115, 22, 0.5)',
     itemCountLabel: '6 Items Stored',
     position3D: [-3.2, 0.8, -1.2]
   },
@@ -24,8 +24,8 @@ export const KITCHEN_ZONES: KitchenZone[] = [
     description: 'Temperature-controlled fresh storage for dairy, fruits, proteins, and greens.',
     route: '/pantry',
     icon: 'ThermometerSnowflake',
-    colorHex: '#3b82f6',
-    glowColor: 'rgba(59, 130, 246, 0.5)',
+    colorHex: '#ea580c',
+    glowColor: 'rgba(234, 88, 12, 0.5)',
     itemCountLabel: '3 Fresh Items',
     position3D: [-1.8, 1.2, -2.8]
   },
@@ -36,8 +36,8 @@ export const KITCHEN_ZONES: KitchenZone[] = [
     description: 'Neural engine analyzing flavor profiles, recipe synthesis, and pantry optimization.',
     route: '/ai',
     icon: 'Brain',
-    colorHex: '#8b5cf6',
-    glowColor: 'rgba(139, 92, 246, 0.7)',
+    colorHex: '#ea580c',
+    glowColor: 'rgba(234, 88, 12, 0.7)',
     itemCountLabel: 'AI Core Online',
     position3D: [0, 1.5, -0.5]
   },
@@ -72,8 +72,8 @@ export const KITCHEN_ZONES: KitchenZone[] = [
     description: 'Final presentation counter for completed culinary creations and nutritional logs.',
     route: '/recipes',
     icon: 'Award',
-    colorHex: '#ec4899',
-    glowColor: 'rgba(236, 72, 153, 0.5)',
+    colorHex: '#c2410c',
+    glowColor: 'rgba(194, 65, 12, 0.5)',
     itemCountLabel: 'Ready to Serve',
     position3D: [0, 0.6, 1.5]
   }
@@ -126,7 +126,7 @@ const ZoneMesh: React.FC<{
             roughness={0.2}
             metalness={0.6}
             emissive={zone.colorHex}
-            emissiveIntensity={isHovered ? 0.8 : 0.3}
+            emissiveIntensity={isHovered ? 0.9 : 0.4}
             wireframe={isHovered && zone.id === 'ai_workspace'}
           />
         </mesh>
@@ -136,7 +136,7 @@ const ZoneMesh: React.FC<{
       <Text
         position={[0, 1.2, 0]}
         fontSize={0.28}
-        color={isHovered ? '#ffffff' : zone.colorHex}
+        color={isHovered ? '#ea580c' : zone.colorHex}
         anchorX="center"
         anchorY="middle"
       >
@@ -146,17 +146,17 @@ const ZoneMesh: React.FC<{
   );
 };
 
-// Countertop Base Surface
+// Countertop Base Surface (Crisp White + Orange Ambient Grid)
 const KitchenCounterBase: React.FC = () => {
   return (
     <group position={[0, -0.2, 0]}>
       {/* Main Countertop Deck */}
       <RoundedBox args={[9.5, 0.3, 7.0]} radius={0.1} position={[0, 0, -0.5]}>
-        <meshStandardMaterial color="#0f172a" roughness={0.3} metalness={0.8} />
+        <meshStandardMaterial color="#f8fafc" roughness={0.2} metalness={0.2} />
       </RoundedBox>
 
       {/* Subtle Grid Lines Overlay */}
-      <gridHelper args={[10, 20, '#06b6d4', '#1e293b']} position={[0, 0.16, -0.5]} />
+      <gridHelper args={[10, 20, '#ea580c', '#cbd5e1']} position={[0, 0.16, -0.5]} />
     </group>
   );
 };
@@ -180,9 +180,9 @@ export const SpatialKitchenScene: React.FC<SpatialKitchenSceneProps> = ({
         gl={{ antialias: true, alpha: true }}
       >
         {/* Ambient & Directional Lights */}
-        <ambientLight intensity={0.6} />
-        <pointLight position={[0, 6, 0]} intensity={1.5} color="#06b6d4" />
-        <directionalLight position={[5, 8, 5]} intensity={1.0} />
+        <ambientLight intensity={0.9} />
+        <pointLight position={[0, 6, 0]} intensity={1.8} color="#f97316" />
+        <directionalLight position={[5, 8, 5]} intensity={1.2} />
 
         {/* Counter Surface */}
         <KitchenCounterBase />

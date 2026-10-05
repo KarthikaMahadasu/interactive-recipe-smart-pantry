@@ -62,8 +62,9 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
         style={{
           padding: '24px 28px',
           borderRadius: '28px',
-          background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
+          background: 'rgba(255, 255, 255, 0.95)',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.05)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -77,7 +78,7 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              color: 'var(--primary-cyan)',
+              color: '#ea580c',
               fontWeight: 700,
               fontSize: '0.85rem',
               letterSpacing: '0.06em',
@@ -86,7 +87,7 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
           >
             <Sparkles size={16} /> Intelligent Digital Kitchen World
           </div>
-          <h1 style={{ fontSize: '1.8rem', color: 'var(--text-main)', marginTop: '4px' }}>
+          <h1 style={{ fontSize: '1.8rem', color: '#ea580c', marginTop: '4px' }}>
             {entranceStep < 3 ? 'Welcome to your AI Kitchen' : 'What would you like to do?'}
           </h1>
           <p style={{ fontSize: '0.88rem', color: 'var(--text-dim)', marginTop: '2px' }}>
@@ -107,10 +108,10 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
             style={{
               display: 'flex',
               gap: '6px',
-              background: 'rgba(15, 23, 42, 0.7)',
+              background: '#f1f5f9',
               padding: '4px',
               borderRadius: '16px',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
+              border: '1px solid #cbd5e1'
             }}
           >
             <button
@@ -119,8 +120,8 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
                 padding: '6px 14px',
                 borderRadius: '12px',
                 border: 'none',
-                background: renderMode === 'spatial2d' ? 'var(--primary-cyan)' : 'transparent',
-                color: renderMode === 'spatial2d' ? '#000' : 'var(--text-muted)',
+                background: renderMode === 'spatial2d' ? '#ea580c' : 'transparent',
+                color: renderMode === 'spatial2d' ? '#ffffff' : '#475569',
                 fontWeight: 700,
                 fontSize: '0.8rem',
                 display: 'flex',
@@ -137,8 +138,8 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
                 padding: '6px 14px',
                 borderRadius: '12px',
                 border: 'none',
-                background: renderMode === 'spatial3d' ? 'var(--primary-cyan)' : 'transparent',
-                color: renderMode === 'spatial3d' ? '#000' : 'var(--text-muted)',
+                background: renderMode === 'spatial3d' ? '#ea580c' : 'transparent',
+                color: renderMode === 'spatial3d' ? '#ffffff' : '#475569',
                 fontWeight: 700,
                 fontSize: '0.8rem',
                 display: 'flex',
@@ -163,7 +164,9 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
           style={{
             padding: '24px',
             borderRadius: '28px',
-            background: 'rgba(15, 23, 42, 0.85)',
+            background: 'rgba(255, 255, 255, 0.95)',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.05)',
             minHeight: '480px'
           }}
         >
@@ -179,8 +182,9 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
           style={{
             padding: '32px 24px',
             borderRadius: '28px',
-            background: 'radial-gradient(ellipse at center, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.95) 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
+            background: 'radial-gradient(ellipse at center, rgba(255, 247, 237, 0.8) 0%, rgba(248, 250, 252, 0.95) 100%)',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.05)',
             display: 'flex',
             flexDirection: 'column',
             gap: '32px',
@@ -195,7 +199,7 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
             start="PantryAnchor"
             destination="AIAnchor"
             active={activeZoneId === null || activeZoneId === 'pantry' || activeZoneId === 'ai_workspace'}
-            color="var(--primary-cyan)"
+            color="#ea580c"
             pulseSpeed={2}
           />
           {/* Central AI Workspace → Serving Counter Flowing Conduit */}
@@ -203,7 +207,7 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
             start="AIAnchor"
             destination="ServingAnchor"
             active={activeZoneId === null || activeZoneId === 'pantry' || activeZoneId === 'ai_workspace' || activeZoneId === 'serving'}
-            color="var(--primary-cyan)"
+            color="#ea580c"
             pulseSpeed={2.4}
           />
           {/* Preparation Deck → Cooking Hub Flowing Conduit */}
@@ -211,7 +215,7 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
             start="PrepAnchor"
             destination="CookingAnchor"
             active={activeZoneId === 'prep' || activeZoneId === 'cooking'}
-            color="var(--accent-emerald)"
+            color="#10b981"
             pulseSpeed={2.2}
           />
           {/* Cooking Hub → Serving Counter Flowing Conduit */}
@@ -219,7 +223,7 @@ export const ConnectedKitchenEnvironment: React.FC<ConnectedKitchenEnvironmentPr
             start="CookingAnchor"
             destination="ServingAnchor"
             active={activeZoneId === 'cooking' || activeZoneId === 'serving'}
-            color="var(--accent-violet)"
+            color="#f97316"
             pulseSpeed={2.2}
           />
 

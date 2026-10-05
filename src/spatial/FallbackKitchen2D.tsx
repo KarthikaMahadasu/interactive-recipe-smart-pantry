@@ -62,14 +62,14 @@ export const FallbackKitchen2D: React.FC<FallbackKitchen2DProps> = ({
                 borderRadius: '20px',
                 cursor: 'pointer',
                 background: isHovered
-                  ? `linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, ${zone.glowColor} 100%)`
+                  ? 'rgba(255, 255, 255, 1)'
                   : isAI
-                  ? 'rgba(30, 27, 75, 0.7)'
-                  : 'rgba(15, 23, 42, 0.7)',
-                borderColor: isHovered ? zone.colorHex : isAI ? 'var(--accent-violet)' : 'rgba(255, 255, 255, 0.1)',
+                  ? 'rgba(255, 247, 237, 0.95)'
+                  : 'rgba(255, 255, 255, 0.92)',
+                borderColor: isHovered ? zone.colorHex : isAI ? '#ea580c' : '#e2e8f0',
                 boxShadow: isHovered
                   ? `0 12px 30px ${zone.glowColor}`
-                  : '0 8px 24px rgba(0,0,0,0.3)',
+                  : '0 4px 16px rgba(0,0,0,0.05)',
                 transform: isHovered ? 'translateY(-6px) scale(1.02)' : 'none',
                 transition: 'all 0.3s ease',
                 display: 'flex',
@@ -83,12 +83,12 @@ export const FallbackKitchen2D: React.FC<FallbackKitchen2DProps> = ({
                     width: 48,
                     height: 48,
                     borderRadius: '16px',
-                    background: `${zone.colorHex}22`,
+                    background: `${zone.colorHex}18`,
                     color: zone.colorHex,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    border: `1px solid ${zone.colorHex}55`
+                    border: `1px solid ${zone.colorHex}44`
                   }}
                 >
                   {ICON_MAP[zone.icon] || <Brain size={28} />}
@@ -98,7 +98,7 @@ export const FallbackKitchen2D: React.FC<FallbackKitchen2DProps> = ({
                     fontSize: '0.75rem',
                     fontWeight: 600,
                     color: zone.colorHex,
-                    background: `${zone.colorHex}15`,
+                    background: `${zone.colorHex}12`,
                     padding: '3px 10px',
                     borderRadius: '12px',
                     border: `1px solid ${zone.colorHex}33`
@@ -109,7 +109,7 @@ export const FallbackKitchen2D: React.FC<FallbackKitchen2DProps> = ({
               </div>
 
               <div>
-                <h3 style={{ fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '4px' }}>
+                <h3 style={{ fontSize: '1.05rem', color: '#ea580c', marginBottom: '4px' }}>
                   {zone.name}
                 </h3>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>

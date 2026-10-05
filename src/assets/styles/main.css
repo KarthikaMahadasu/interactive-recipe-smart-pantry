@@ -4,29 +4,33 @@
   --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* Consistent High-Contrast Slate & Sky Cyan Kitchen OS Theme System */
-  --bg-dark: #090d16;          /* Deep Slate Canvas Background */
-  --bg-surface: #111827;       /* Card Surface - Dark Gray/Slate 900 */
-  --bg-surface-elevated: #1f2937; /* Elevated Surface / Inset Panel - Slate 800 */
-  --bg-input: #1f2937;         /* Form Input Field Background */
-  --border-input: #374151;      /* Input Field Border */
-  --border-input-focus: #38bdf8;/* Input Field Focus Border */
+  /* White + Orange Professional Restaurant Intelligent Kitchen OS Theme System */
+  --bg-dark: #f8fafc;          /* Canvas Background - Light Slate/Off-white */
+  --bg-surface: #ffffff;       /* Card Surface - Pure White */
+  --bg-surface-elevated: #f1f5f9; /* Elevated Surface / Inset Panel - Light Slate 100 */
+  --bg-input: #ffffff;         /* Form Input Field Background */
+  --border-input: #cbd5e1;      /* Input Field Border */
+  --border-input-focus: #ea580c;/* Input Field Focus Border - Orange */
   
-  --primary-cyan: #38bdf8;      /* Vibrant Sky Cyan Accent */
-  --primary-cyan-hover: #0284c7;
-  --accent-emerald: #10b981;    /* Vibrant Emerald Green */
-  --accent-violet: #a855f7;     /* Vibrant Purple Accent */
-  --accent-amber: #f59e0b;      /* Warm Warning Amber */
-  --accent-rose: #f43f5e;       /* Crisp Red/Rose Error */
-  
-  --text-main: #f9fafb;         /* Primary Text - Pure Bright White (100% Contrast) */
-  --text-muted: #d1d5db;        /* Secondary Text - Light Gray */
-  --text-dim: #9ca3af;          /* Dim Subtitle Text - Mid Gray */
+  --primary-orange: #ea580c;    /* Crisp Professional Orange */
+  --primary-orange-hover: #c2410c;
+  --primary-cyan: #ea580c;      /* Mapped to orange for legacy compatibility */
+  --primary-cyan-hover: #c2410c;
 
-  --glass-bg: rgba(17, 24, 39, 0.88);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-border-hover: rgba(56, 189, 248, 0.5);
-  --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --accent-orange: #f97316;     /* Bright Orange Accent */
+  --accent-amber: #f59e0b;      /* Warm Warning Amber */
+  --accent-emerald: #10b981;    /* Success Green */
+  --accent-rose: #ef4444;       /* Error Red */
+  --accent-violet: #ea580c;     /* Mapped to orange accent */
+  
+  --text-main: #0f172a;         /* Primary Text - Dark Slate (100% Contrast & Legibility) */
+  --text-muted: #334155;        /* Secondary Text - Slate 700 */
+  --text-dim: #64748b;          /* Dim Subtitle Text - Slate 500 */
+
+  --glass-bg: rgba(255, 255, 255, 0.94);
+  --glass-border: rgba(226, 232, 240, 0.9);
+  --glass-border-hover: rgba(249, 115, 22, 0.4);
+  --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(0, 0, 0, 0.02);
 
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -54,18 +58,19 @@ html, body, #root {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Global Form Input & Field High Contrast Enforcement */
+/* Global Form Input & Field High Contrast Enforcement (White + Orange Theme) */
 input[type="text"],
 input[type="email"],
 input[type="password"],
 input[type="number"],
 input[type="tel"],
 input[type="search"],
+input[type="date"],
 select,
 textarea {
-  background-color: #1f2937 !important;
-  color: #f9fafb !important;
-  border: 1.5px solid #374151 !important;
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1.5px solid #cbd5e1 !important;
   border-radius: 14px;
   padding: 12px 16px;
   font-size: 0.95rem;
@@ -76,25 +81,25 @@ textarea {
 
 input::placeholder,
 textarea::placeholder {
-  color: #9ca3af !important;
+  color: #64748b !important;
   opacity: 1;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: #38bdf8 !important;
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25) !important;
-  background-color: #111827 !important;
+  border-color: #ea580c !important;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.2) !important;
+  background-color: #ffffff !important;
 }
 
 select option {
-  background-color: #111827 !important;
-  color: #f9fafb !important;
+  background-color: #ffffff !important;
+  color: #0f172a !important;
 }
 
 label {
-  color: #f3f4f6 !important;
+  color: #1e293b !important;
   font-weight: 700;
   font-size: 0.88rem;
   margin-bottom: 6px;
@@ -103,25 +108,25 @@ label {
 
 /* Accessible Focus States */
 :focus-visible {
-  outline: 2px solid var(--primary-cyan);
+  outline: 2px solid var(--primary-orange);
   outline-offset: 3px;
   border-radius: var(--radius-sm);
 }
 
-/* Background Ambient Glows */
+/* Background Ambient Glows (Warm White & Subtle Orange Identity) */
 .kitchen-ambient-bg {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
   background: 
-    radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
-    radial-gradient(circle at 85% 75%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
-    radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 50% 10%, rgba(249, 115, 22, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 85% 75%, rgba(245, 158, 11, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 15% 50%, rgba(234, 88, 12, 0.05) 0%, transparent 50%),
     var(--bg-dark);
 }
 
-/* Glassmorphism / High-Contrast Card Classes */
+/* Glassmorphism / Clean White Card Classes */
 .glass-panel {
   background: var(--glass-bg);
   backdrop-filter: blur(16px);
@@ -134,7 +139,7 @@ label {
 
 .glass-panel-hover:hover {
   border-color: var(--glass-border-hover);
-  box-shadow: 0 10px 30px rgba(56, 189, 248, 0.15);
+  box-shadow: 0 12px 32px rgba(234, 88, 12, 0.12);
   transform: translateY(-2px);
 }
 
@@ -147,22 +152,22 @@ label {
   color: var(--text-main);
 }
 
-/* Typography */
+/* Typography & Headings */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: 800;
-  color: var(--text-main);
+  color: #ea580c;
   letter-spacing: -0.02em;
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #38bdf8 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gradient-text-emerald {
-  background: linear-gradient(135deg, #10b981 0%, #38bdf8 100%);
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -182,12 +187,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.3);
+  background: rgba(234, 88, 12, 0.3);
   border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-cyan);
+  background: var(--primary-orange);
 }
 
 /* Animations */
@@ -243,6 +248,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   flex-direction: column;
   z-index: 1;
+  background-color: var(--bg-dark);
 }
 
 .main-content {
@@ -275,9 +281,47 @@ button {
   }
 }
 
-/* Responsive breakpoints */
+/* Responsive breakpoints & mobile optimization */
 @media (max-width: 768px) {
   .glass-panel {
     border-radius: var(--radius-md);
   }
+
+  /* Prevent iOS Safari from auto-zooming in on input focus by using minimum 16px font-size */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="search"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Ensure button touch targets are comfortably sized for mobile thumbs */
+  button, a {
+    min-height: 44px;
+  }
 }
+
+/* Safe area inset support for modern smartphones (iPhone notch / Android gesture bar) */
+.main-content {
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 16px));
+}
+
+/* Responsive Grid Utility Classes */
+.responsive-grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 480px) {
+  .responsive-grid-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+

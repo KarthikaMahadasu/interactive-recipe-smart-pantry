@@ -93,21 +93,22 @@ export const PantryPage: React.FC = () => {
               width: 40,
               height: 40,
               borderRadius: '50%',
-              background: 'rgba(30, 41, 59, 0.6)',
+              background: '#f1f5f9',
               color: 'var(--text-main)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              border: '1px solid #e2e8f0'
             }}
           >
             <ArrowLeft size={20} />
           </button>
           <div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--primary-cyan)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ fontSize: '0.78rem', color: '#ea580c', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Building2 size={14} /> Shared Workspace Inventory &bull; {restaurant?.name}
             </div>
-            <h1 style={{ fontSize: '1.6rem', color: 'var(--text-main)' }}>Restaurant Inventory</h1>
+            <h1 style={{ fontSize: '1.6rem', color: '#ea580c', fontWeight: 800 }}>Restaurant Inventory</h1>
           </div>
         </div>
 
@@ -134,10 +135,10 @@ export const PantryPage: React.FC = () => {
             style={{
               padding: '8px 14px',
               borderRadius: '14px',
-              background: 'rgba(245, 158, 11, 0.15)',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
-              color: '#fcd34d',
-              fontWeight: 600,
+              background: '#fffbebf0',
+              border: '1px solid #fde68a',
+              color: '#b45309',
+              fontWeight: 700,
               fontSize: '0.82rem',
               display: 'flex',
               alignItems: 'center',
@@ -153,10 +154,10 @@ export const PantryPage: React.FC = () => {
             style={{
               padding: '8px 14px',
               borderRadius: '14px',
-              background: 'rgba(244, 63, 94, 0.15)',
-              border: '1px solid rgba(244, 63, 94, 0.3)',
-              color: '#fda4af',
-              fontWeight: 600,
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
+              color: '#b91c1c',
+              fontWeight: 700,
               fontSize: '0.82rem',
               display: 'flex',
               alignItems: 'center',
@@ -173,10 +174,10 @@ export const PantryPage: React.FC = () => {
               style={{
                 padding: '8px 14px',
                 borderRadius: '14px',
-                background: 'rgba(139, 92, 246, 0.15)',
-                border: '1px solid rgba(139, 92, 246, 0.3)',
-                color: '#c084fc',
-                fontWeight: 600,
+                background: '#fff7ed',
+                border: '1px solid #ffedd5',
+                color: '#ea580c',
+                fontWeight: 700,
                 fontSize: '0.82rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -195,15 +196,15 @@ export const PantryPage: React.FC = () => {
               style={{
                 padding: '10px 18px',
                 borderRadius: '16px',
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
-                color: '#fff',
+                background: '#ffffff',
+                border: '1.5px solid #ea580c',
+                color: '#ea580c',
                 fontWeight: 700,
                 fontSize: '0.88rem',
-                border: 'none',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                boxShadow: '0 4px 16px rgba(139, 92, 246, 0.4)',
+                boxShadow: '0 2px 8px rgba(234, 88, 12, 0.1)',
                 cursor: 'pointer'
               }}
             >
@@ -218,14 +219,15 @@ export const PantryPage: React.FC = () => {
               style={{
                 padding: '10px 18px',
                 borderRadius: '16px',
-                background: 'linear-gradient(135deg, var(--primary-cyan) 0%, #0284c7 100%)',
-                color: '#000000',
+                background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
+                color: '#ffffff',
                 fontWeight: 700,
                 fontSize: '0.88rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                boxShadow: '0 4px 16px rgba(6, 182, 212, 0.3)',
+                boxShadow: '0 4px 16px rgba(234, 88, 12, 0.3)',
+                border: 'none',
                 cursor: 'pointer'
               }}
             >
@@ -238,9 +240,9 @@ export const PantryPage: React.FC = () => {
               style={{
                 padding: '8px 14px',
                 borderRadius: '12px',
-                background: 'rgba(245, 158, 11, 0.12)',
-                border: '1px solid rgba(245, 158, 11, 0.3)',
-                color: '#fcd34d',
+                background: '#fffbe8',
+                border: '1px solid #fde68a',
+                color: '#b45309',
                 fontSize: '0.78rem',
                 fontWeight: 600,
                 display: 'flex',
@@ -261,15 +263,16 @@ export const PantryPage: React.FC = () => {
           style={{
             padding: '10px 20px',
             borderRadius: '16px',
-            background: activeTab === 'inventory' ? 'rgba(6, 182, 212, 0.2)' : 'rgba(30, 41, 59, 0.4)',
-            border: activeTab === 'inventory' ? '1px solid var(--primary-cyan)' : '1px solid rgba(255, 255, 255, 0.08)',
-            color: activeTab === 'inventory' ? 'var(--primary-cyan)' : 'var(--text-muted)',
+            background: activeTab === 'inventory' ? 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)' : '#ffffff',
+            border: activeTab === 'inventory' ? 'none' : '1px solid #cbd5e1',
+            color: activeTab === 'inventory' ? '#ffffff' : '#64748b',
             fontWeight: 700,
             fontSize: '0.88rem',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px'
+            gap: '8px',
+            boxShadow: activeTab === 'inventory' ? '0 4px 15px rgba(234, 88, 12, 0.25)' : 'none'
           }}
         >
           <PackageCheck size={18} /> Stock Room View
@@ -280,15 +283,16 @@ export const PantryPage: React.FC = () => {
           style={{
             padding: '10px 20px',
             borderRadius: '16px',
-            background: activeTab === 'history' ? 'rgba(139, 92, 246, 0.2)' : 'rgba(30, 41, 59, 0.4)',
-            border: activeTab === 'history' ? '1px solid #8b5cf6' : '1px solid rgba(255, 255, 255, 0.08)',
-            color: activeTab === 'history' ? '#c084fc' : 'var(--text-muted)',
+            background: activeTab === 'history' ? 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)' : '#ffffff',
+            border: activeTab === 'history' ? 'none' : '1px solid #cbd5e1',
+            color: activeTab === 'history' ? '#ffffff' : '#64748b',
             fontWeight: 700,
             fontSize: '0.88rem',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px'
+            gap: '8px',
+            boxShadow: activeTab === 'history' ? '0 4px 15px rgba(234, 88, 12, 0.25)' : 'none'
           }}
         >
           <History size={18} /> Activity Log & Audit History
@@ -316,12 +320,12 @@ export const PantryPage: React.FC = () => {
                 gap: '14px'
               }}
             >
-              <PackageCheck size={28} color="var(--primary-cyan)" />
+              <PackageCheck size={28} color="#ea580c" />
               <div>
-                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>
                   {totalCount}
                 </div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Total Tracked Stock</div>
+                <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Total Tracked Stock</div>
               </div>
             </div>
 
@@ -341,15 +345,15 @@ export const PantryPage: React.FC = () => {
                   width: 14,
                   height: 14,
                   borderRadius: '50%',
-                  background: '#34d399',
-                  boxShadow: '0 0 10px #34d399'
+                  background: '#10b981',
+                  boxShadow: '0 0 10px rgba(16, 185, 129, 0.4)'
                 }}
               />
               <div>
-                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#34d399' }}>
+                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#10b981' }}>
                   {inStockCount}
                 </div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Healthy In-Stock</div>
+                <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Healthy In-Stock</div>
               </div>
             </div>
 
@@ -362,15 +366,15 @@ export const PantryPage: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '14px',
-                borderLeft: lowStockCount > 0 ? '4px solid #fcd34d' : undefined
+                borderLeft: lowStockCount > 0 ? '4px solid #f59e0b' : undefined
               }}
             >
-              <AlertTriangle size={26} color="#fcd34d" />
+              <AlertTriangle size={26} color="#f59e0b" />
               <div>
-                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fcd34d' }}>
+                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f59e0b' }}>
                   {lowStockCount}
                 </div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Low Stock Threshold</div>
+                <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Low Stock Threshold</div>
               </div>
             </div>
 
@@ -383,15 +387,15 @@ export const PantryPage: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '14px',
-                borderLeft: expiringSoonCount > 0 ? '4px solid #fb923c' : undefined
+                borderLeft: expiringSoonCount > 0 ? '4px solid #ea580c' : undefined
               }}
             >
-              <AlertTriangle size={26} color="#fb923c" />
+              <AlertTriangle size={26} color="#ea580c" />
               <div>
-                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fb923c' }}>
+                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#ea580c' }}>
                   {expiringSoonCount}
                 </div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Expiring Soon</div>
+                <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Expiring Soon</div>
               </div>
             </div>
 
@@ -406,12 +410,12 @@ export const PantryPage: React.FC = () => {
                 gap: '14px'
               }}
             >
-              <PackageX size={26} color="#94a3b8" />
+              <PackageX size={26} color="#64748b" />
               <div>
-                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#94a3b8' }}>
+                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#64748b' }}>
                   {outOfStockCount}
                 </div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Out of Stock</div>
+                <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Out of Stock</div>
               </div>
             </div>
           </div>
@@ -437,11 +441,11 @@ export const PantryPage: React.FC = () => {
                   gap: '10px',
                   padding: '10px 16px',
                   borderRadius: '14px',
-                  background: 'rgba(15, 23, 42, 0.6)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)'
+                  background: '#ffffff',
+                  border: '1.5px solid #cbd5e1'
                 }}
               >
-                <Search size={18} color="var(--text-dim)" />
+                <Search size={18} color="#ea580c" />
                 <input
                   type="text"
                   value={searchQuery}
@@ -451,33 +455,33 @@ export const PantryPage: React.FC = () => {
                     background: 'transparent',
                     border: 'none',
                     outline: 'none',
-                    color: 'var(--text-main)',
+                    color: '#0f172a',
                     fontSize: '0.9rem',
                     width: '100%'
                   }}
                 />
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(15, 23, 42, 0.6)', padding: '6px 12px', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                <ArrowUpDown size={14} color="var(--primary-cyan)" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#ffffff', padding: '6px 12px', borderRadius: '14px', border: '1.5px solid #cbd5e1' }}>
+                <ArrowUpDown size={14} color="#ea580c" />
                 <select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value as InventorySortOption)}
                   style={{
                     background: 'transparent',
                     border: 'none',
-                    color: 'var(--text-main)',
+                    color: '#0f172a',
                     fontSize: '0.82rem',
                     fontWeight: 600,
                     outline: 'none'
                   }}
                 >
-                  <option value="updated_desc" style={{ background: '#0f172a' }}>Recently Updated</option>
-                  <option value="name_asc" style={{ background: '#0f172a' }}>Name (A to Z)</option>
-                  <option value="name_desc" style={{ background: '#0f172a' }}>Name (Z to A)</option>
-                  <option value="qty_desc" style={{ background: '#0f172a' }}>Quantity (High to Low)</option>
-                  <option value="qty_asc" style={{ background: '#0f172a' }}>Quantity (Low to High)</option>
-                  <option value="expiry_asc" style={{ background: '#0f172a' }}>Expiry Date (Earliest)</option>
+                  <option value="updated_desc" style={{ background: '#ffffff', color: '#0f172a' }}>Recently Updated</option>
+                  <option value="name_asc" style={{ background: '#ffffff', color: '#0f172a' }}>Name (A to Z)</option>
+                  <option value="name_desc" style={{ background: '#ffffff', color: '#0f172a' }}>Name (Z to A)</option>
+                  <option value="qty_desc" style={{ background: '#ffffff', color: '#0f172a' }}>Quantity (High to Low)</option>
+                  <option value="qty_asc" style={{ background: '#ffffff', color: '#0f172a' }}>Quantity (Low to High)</option>
+                  <option value="expiry_asc" style={{ background: '#ffffff', color: '#0f172a' }}>Expiry Date (Earliest)</option>
                 </select>
               </div>
             </div>
@@ -493,10 +497,10 @@ export const PantryPage: React.FC = () => {
                     style={{
                       padding: '6px 14px',
                       borderRadius: '12px',
-                      border: isActive ? '1px solid var(--primary-cyan)' : '1px solid rgba(255, 255, 255, 0.08)',
-                      background: isActive ? 'rgba(6, 182, 212, 0.18)' : 'rgba(30, 41, 59, 0.4)',
-                      color: isActive ? 'var(--primary-cyan)' : 'var(--text-muted)',
-                      fontWeight: 600,
+                      border: isActive ? '1.5px solid #ea580c' : '1px solid #cbd5e1',
+                      background: isActive ? '#fff7ed' : '#ffffff',
+                      color: isActive ? '#ea580c' : '#64748b',
+                      fontWeight: 700,
                       fontSize: '0.8rem',
                       whiteSpace: 'nowrap',
                       cursor: 'pointer'
@@ -517,10 +521,10 @@ export const PantryPage: React.FC = () => {
                   style={{
                     padding: '6px 14px',
                     borderRadius: '12px',
-                    border: selectedCategory === cat.value ? '1px solid #8b5cf6' : '1px solid rgba(255, 255, 255, 0.08)',
-                    background: selectedCategory === cat.value ? 'rgba(139, 92, 246, 0.18)' : 'rgba(30, 41, 59, 0.4)',
-                    color: selectedCategory === cat.value ? '#c084fc' : 'var(--text-muted)',
-                    fontWeight: 600,
+                    border: selectedCategory === cat.value ? '1.5px solid #ea580c' : '1px solid #cbd5e1',
+                    background: selectedCategory === cat.value ? '#fff7ed' : '#ffffff',
+                    color: selectedCategory === cat.value ? '#ea580c' : '#64748b',
+                    fontWeight: 700,
                     fontSize: '0.8rem',
                     whiteSpace: 'nowrap',
                     cursor: 'pointer'

@@ -10,8 +10,8 @@ export const PANTRY_ZONE_DATA: KitchenZone = {
   description: 'Smart storage containers for grains, spices, canned goods, and long-term ingredients.',
   route: '/pantry',
   icon: 'Package',
-  colorHex: '#06b6d4',
-  glowColor: 'rgba(6, 182, 212, 0.4)',
+  colorHex: '#f97316',
+  glowColor: 'rgba(249, 115, 22, 0.4)',
   itemCountLabel: 'Dynamic Storage',
   position3D: [-3, 0.8, -1]
 };
@@ -31,8 +31,8 @@ export const PantryZone: React.FC<PantryZoneProps> = ({ active, onHover, onClick
           width: '100%',
           height: '90px',
           borderRadius: '16px',
-          background: 'linear-gradient(180deg, rgba(6, 182, 212, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%)',
-          border: '1px solid rgba(6, 182, 212, 0.3)',
+          background: 'linear-gradient(180deg, rgba(249, 115, 22, 0.12) 0%, rgba(248, 250, 252, 0.95) 100%)',
+          border: '1px solid rgba(249, 115, 22, 0.3)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-around',
@@ -43,22 +43,22 @@ export const PantryZone: React.FC<PantryZoneProps> = ({ active, onHover, onClick
       >
         {/* Top Shelf */}
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <div style={{ width: 14, height: 20, borderRadius: 4, background: '#06b6d4', opacity: 0.8 }} />
-          <div style={{ width: 18, height: 24, borderRadius: 4, background: '#38bdf8', opacity: 0.9 }} />
-          <div style={{ width: 12, height: 18, borderRadius: 4, background: '#818cf8', opacity: 0.7 }} />
+          <div style={{ width: 14, height: 20, borderRadius: 4, background: '#f97316', opacity: 0.8 }} />
+          <div style={{ width: 18, height: 24, borderRadius: 4, background: '#ea580c', opacity: 0.9 }} />
+          <div style={{ width: 12, height: 18, borderRadius: 4, background: '#fb923c', opacity: 0.7 }} />
         </div>
 
         {/* Shelf Line */}
-        <div style={{ width: '100%', height: 2, background: 'rgba(6, 182, 212, 0.4)', borderRadius: 2 }} />
+        <div style={{ width: '100%', height: 2, background: 'rgba(249, 115, 22, 0.4)', borderRadius: 2 }} />
 
         {/* Bottom Shelf */}
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <div style={{ width: 22, height: 22, borderRadius: '50%', border: '2px solid #06b6d4', opacity: 0.8 }} />
-          <div style={{ width: 16, height: 20, borderRadius: 4, background: '#06b6d4', opacity: 0.9 }} />
-          <div style={{ width: 20, height: 16, borderRadius: 4, background: '#a5f3fc', opacity: 0.7 }} />
+          <div style={{ width: 22, height: 22, borderRadius: '50%', border: '2px solid #f97316', opacity: 0.8 }} />
+          <div style={{ width: 16, height: 20, borderRadius: 4, background: '#ea580c', opacity: 0.9 }} />
+          <div style={{ width: 20, height: 16, borderRadius: 4, background: '#fdba74', opacity: 0.7 }} />
         </div>
 
-        <div style={{ position: 'absolute', top: 8, right: 10, color: '#06b6d4' }}>
+        <div style={{ position: 'absolute', top: 8, right: 10, color: '#f97316' }}>
           <Package size={20} />
         </div>
       </div>
