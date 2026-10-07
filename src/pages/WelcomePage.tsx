@@ -6,7 +6,7 @@ export const WelcomePage: React.FC = () => {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Animated AI Restaurant Garden Courtyard canvas background
+  // High-performance 3D Reference-to-Life Canvas Layer Engine
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -15,6 +15,13 @@ export const WelcomePage: React.FC = () => {
 
     let animFrameId: number;
     let time = 0;
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetMouseX = 0;
+    let targetMouseY = 0;
+
+    const isMobile = window.innerWidth < 768;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -23,229 +30,224 @@ export const WelcomePage: React.FC = () => {
     resize();
     window.addEventListener('resize', resize);
 
-    // Floating AI energy particles
-    const aiParticles = Array.from({ length: 35 }, () => ({
+    const handleMouseMove = (e: MouseEvent) => {
+      if (prefersReducedMotion) return;
+      targetMouseX = (e.clientX / window.innerWidth - 0.5) * 40;
+      targetMouseY = (e.clientY / window.innerHeight - 0.5) * 25;
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+
+    // Floating Orange Energy Particles
+    const particleCount = isMobile ? 16 : 32;
+    const particles = Array.from({ length: particleCount }, (_, i) => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
       radius: Math.random() * 2.5 + 1,
-      speedX: (Math.random() - 0.5) * 0.5,
-      speedY: -Math.random() * 0.6 - 0.2,
+      speedY: Math.random() * 0.4 + 0.2,
+      phase: i * 0.5,
       opacity: Math.random() * 0.5 + 0.3
     }));
 
-    // Creative Orange Butterflies fluttering in the courtyard
-    const butterflies = Array.from({ length: 6 }, (_, i) => ({
-      x: (i + 1) * (canvas.width / 7),
-      y: canvas.height * (0.35 + Math.random() * 0.35),
-      baseX: (i + 1) * (canvas.width / 7),
-      baseY: canvas.height * 0.5,
-      size: Math.random() * 5 + 8,
-      speed: 0.005 + Math.random() * 0.005,
-      phase: i * (Math.PI / 3),
-      wingAngle: 0
-    }));
-
     const render = () => {
-      time += 0.008;
+      time += prefersReducedMotion ? 0.001 : 0.006;
+      mouseX += (targetMouseX - mouseX) * 0.04;
+      mouseY += (targetMouseY - mouseY) * 0.04;
+
       const w = canvas.width;
       const h = canvas.height;
 
       ctx.clearRect(0, 0, w, h);
 
-      // 1. Sky & Canvas Atmosphere (Clean White + Warm Sunlit Orange Tint)
+      // ==========================================
+      // LAYER 1: Soft Cream / White Atmosphere & Pulsing Radial Glow
+      // ==========================================
       const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
-      skyGrad.addColorStop(0, '#fff7ed');
-      skyGrad.addColorStop(0.35, '#ffedd5');
-      skyGrad.addColorStop(0.75, '#f1f5f9');
+      skyGrad.addColorStop(0, '#ffffff');
+      skyGrad.addColorStop(0.25, '#fff7ed');
+      skyGrad.addColorStop(0.65, '#ffedd5');
       skyGrad.addColorStop(1, '#f8fafc');
       ctx.fillStyle = skyGrad;
       ctx.fillRect(0, 0, w, h);
 
-      // 2. Central AI Core Warm Radial Light Glow
-      const aiGlow = ctx.createRadialGradient(w * 0.5, h * 0.38, 10, w * 0.5, h * 0.38, w * 0.4);
-      aiGlow.addColorStop(0, 'rgba(234, 88, 12, 0.16)');
-      aiGlow.addColorStop(0.5, 'rgba(249, 115, 22, 0.06)');
-      aiGlow.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      ctx.fillStyle = aiGlow;
-      ctx.fillRect(0, 0, w, h);
+      // Soft Breathing Orange Radial Glow behind heading
+      const glowX = w * 0.5 + mouseX * 0.2;
+      const glowY = h * 0.24 + mouseY * 0.2;
+      const pulseRadius = (w * (isMobile ? 0.45 : 0.32)) + Math.sin(time * 1.5) * 15;
 
-      // 3. Restaurant Courtyard Perspective Terrace & Tile Floor Grid
-      const horizonY = h * 0.58;
-      ctx.strokeStyle = 'rgba(234, 88, 12, 0.08)';
-      ctx.lineWidth = 1;
-
-      // Courtyard Perspective Lines
-      for (let x = -w * 0.5; x <= w * 1.5; x += w * 0.12) {
-        ctx.beginPath();
-        ctx.moveTo(w * 0.5, horizonY * 0.9);
-        ctx.lineTo(x, h);
-        ctx.stroke();
-      }
-
-      // Courtyard Horizontal Tile Lines
-      for (let y = horizonY; y <= h; y += (h - horizonY) / 7) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
-        ctx.stroke();
-      }
-
-      // Courtyard Terrace Base Line
-      ctx.fillStyle = 'rgba(254, 215, 170, 0.4)';
-      ctx.fillRect(0, horizonY, w, 2);
-
-      // 4. Restaurant Courtyard Pergola / Archway Structure Silhouettes
-      ctx.strokeStyle = 'rgba(234, 88, 12, 0.15)';
-      ctx.lineWidth = 2;
+      const headingGlow = ctx.createRadialGradient(glowX, glowY, 10, glowX, glowY, pulseRadius);
+      headingGlow.addColorStop(0, 'rgba(234, 88, 12, 0.18)');
+      headingGlow.addColorStop(0.5, 'rgba(249, 115, 22, 0.08)');
+      headingGlow.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.fillStyle = headingGlow;
       ctx.beginPath();
-      // Left Archway Pillar
-      ctx.moveTo(w * 0.1, h);
-      ctx.lineTo(w * 0.1, horizonY * 0.6);
-      ctx.bezierCurveTo(w * 0.1, horizonY * 0.3, w * 0.3, horizonY * 0.3, w * 0.3, horizonY * 0.6);
-      ctx.lineTo(w * 0.3, h);
+      ctx.arc(glowX, glowY, pulseRadius, 0, Math.PI * 2);
+      ctx.fill();
 
-      // Right Archway Pillar
-      ctx.moveTo(w * 0.7, h);
-      ctx.lineTo(w * 0.7, horizonY * 0.6);
-      ctx.bezierCurveTo(w * 0.7, horizonY * 0.3, w * 0.9, horizonY * 0.3, w * 0.9, horizonY * 0.6);
-      ctx.lineTo(w * 0.9, h);
+      // ==========================================
+      // LAYER 2: Large Flowing 3D Orange Wave (Behind Action Buttons)
+      // ==========================================
+      ctx.save();
+      ctx.translate(mouseX * 0.5, mouseY * 0.5);
+
+      const waveBaseY = h * 0.48;
+      const waveGrad = ctx.createLinearGradient(0, waveBaseY - 40, w, waveBaseY + 120);
+      waveGrad.addColorStop(0, '#f97316');
+      waveGrad.addColorStop(0.5, '#ea580c');
+      waveGrad.addColorStop(1, '#c2410c');
+
+      ctx.fillStyle = waveGrad;
+      ctx.beginPath();
+      ctx.moveTo(-50, h + 50);
+      ctx.lineTo(-50, waveBaseY);
+
+      for (let x = -50; x <= w + 50; x += 30) {
+        const sine1 = Math.sin(x * 0.0025 + time * 1.2) * 45;
+        const sine2 = Math.cos(x * 0.005 - time * 0.7) * 20;
+        const y = waveBaseY + sine1 + sine2;
+        ctx.lineTo(x, y);
+      }
+
+      ctx.lineTo(w + 50, h + 50);
+      ctx.closePath();
+
+      ctx.shadowColor = 'rgba(234, 88, 12, 0.25)';
+      ctx.shadowBlur = 30;
+      ctx.shadowOffsetY = 10;
+      ctx.fill();
+      ctx.shadowColor = 'transparent';
+
+      // 3D Highlight Sheen Overlay on Top Edge of Wave
+      ctx.strokeStyle = 'rgba(254, 215, 170, 0.6)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (let x = -50; x <= w + 50; x += 30) {
+        const sine1 = Math.sin(x * 0.0025 + time * 1.2) * 45;
+        const sine2 = Math.cos(x * 0.005 - time * 0.7) * 20;
+        const y = waveBaseY + sine1 + sine2;
+        if (x === -50) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
       ctx.stroke();
 
-      // 5. Warm Restaurant Hanging Pendant Lights
-      const pendantPositions = [w * 0.2, w * 0.35, w * 0.65, w * 0.8];
-      pendantPositions.forEach((px) => {
-        const py = horizonY * 0.45;
-        // Cord
-        ctx.strokeStyle = 'rgba(234, 88, 12, 0.2)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(px, 0);
-        ctx.lineTo(px, py);
-        ctx.stroke();
+      ctx.restore();
 
-        // Lamp Shade
-        ctx.fillStyle = '#ea580c';
+      // ==========================================
+      // LAYER 3: 3D Layered Geometric Landscape Prisms (Near Bottom Horizon)
+      // ==========================================
+      ctx.save();
+      ctx.translate(mouseX * 0.8, mouseY * 0.8);
+
+      const landscapeBaseY = h * 0.72;
+
+      const drawPrism = (apexX: number, height: number, width: number, swayOffset: number) => {
+        const currX = apexX + Math.sin(time + swayOffset) * 8;
+        const topY = landscapeBaseY - height;
+        const leftX = currX - width * 0.5;
+        const rightX = currX + width * 0.5;
+        const midX = currX + width * 0.08;
+
+        // Shadow Under Prism
+        ctx.fillStyle = 'rgba(194, 65, 12, 0.2)';
         ctx.beginPath();
-        ctx.arc(px, py, 6, 0, Math.PI, true);
+        ctx.ellipse(currX, landscapeBaseY + 10, width * 0.45, 8, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Soft Warm Glow Halo
-        const glow = ctx.createRadialGradient(px, py + 4, 2, px, py + 4, 35);
-        glow.addColorStop(0, 'rgba(249, 115, 22, 0.25)');
-        glow.addColorStop(1, 'rgba(255, 255, 255, 0)');
-        ctx.fillStyle = glow;
+        // Left Lit Face (Lighter Orange)
+        ctx.fillStyle = '#fb923c';
         ctx.beginPath();
-        ctx.arc(px, py + 4, 35, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // 6. Courtyard Dining Tables & Smart Kitchen Counter Silhouettes
-      const drawTable = (tx: number, ty: number, scale: number) => {
-        ctx.fillStyle = 'rgba(234, 88, 12, 0.12)';
-        ctx.strokeStyle = 'rgba(234, 88, 12, 0.25)';
-        ctx.lineWidth = 1.5;
-
-        // Tabletop
-        ctx.beginPath();
-        ctx.ellipse(tx, ty, 32 * scale, 12 * scale, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-
-        // Table Stand
-        ctx.beginPath();
-        ctx.moveTo(tx, ty + 12 * scale);
-        ctx.lineTo(tx, ty + 36 * scale);
-        ctx.stroke();
-
-        // Plates & Wine Glass Silhouettes
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-        ctx.beginPath();
-        ctx.arc(tx - 10 * scale, ty - 2 * scale, 5 * scale, 0, Math.PI * 2);
-        ctx.arc(tx + 10 * scale, ty - 2 * scale, 5 * scale, 0, Math.PI * 2);
-        ctx.fill();
-      };
-
-      drawTable(w * 0.18, horizonY + 50, 0.85);
-      drawTable(w * 0.82, horizonY + 50, 0.85);
-      drawTable(w * 0.32, horizonY + 110, 1.1);
-      drawTable(w * 0.68, horizonY + 110, 1.1);
-
-      // 7. Subtle Decorative Courtyard Potted Plants
-      const drawPottedPlant = (px: number, py: number, pScale: number) => {
-        // Pot
-        ctx.fillStyle = '#fdba74';
-        ctx.beginPath();
-        ctx.moveTo(px - 10 * pScale, py);
-        ctx.lineTo(px + 10 * pScale, py);
-        ctx.lineTo(px + 7 * pScale, py + 20 * pScale);
-        ctx.lineTo(px - 7 * pScale, py + 20 * pScale);
+        ctx.moveTo(currX, topY);
+        ctx.lineTo(leftX, landscapeBaseY);
+        ctx.lineTo(midX, landscapeBaseY);
         ctx.closePath();
         ctx.fill();
 
-        // Leaves
-        ctx.fillStyle = 'rgba(234, 88, 12, 0.35)';
-        for (let a = -0.8; a <= 0.8; a += 0.4) {
-          ctx.beginPath();
-          ctx.ellipse(px + Math.sin(a) * 12 * pScale, py - 10 * pScale - Math.cos(a) * 8 * pScale, 6 * pScale, 14 * pScale, a, 0, Math.PI * 2);
-          ctx.fill();
-        }
+        // Right Shaded Face (Deeper Orange)
+        ctx.fillStyle = '#ea580c';
+        ctx.beginPath();
+        ctx.moveTo(currX, topY);
+        ctx.lineTo(midX, landscapeBaseY);
+        ctx.lineTo(rightX, landscapeBaseY);
+        ctx.closePath();
+        ctx.fill();
+
+        // Edge Highlight Line
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(currX, topY);
+        ctx.lineTo(midX, landscapeBaseY);
+        ctx.stroke();
       };
 
-      drawPottedPlant(w * 0.06, horizonY + 30, 0.9);
-      drawPottedPlant(w * 0.94, horizonY + 30, 0.9);
-      drawPottedPlant(w * 0.24, horizonY + 130, 1.1);
-      drawPottedPlant(w * 0.76, horizonY + 130, 1.1);
+      if (!isMobile) {
+        drawPrism(w * 0.12, 110, 140, 0);
+        drawPrism(w * 0.28, 150, 180, 1.2);
+        drawPrism(w * 0.72, 140, 170, 2.4);
+        drawPrism(w * 0.88, 100, 130, 3.6);
+      } else {
+        drawPrism(w * 0.2, 80, 100, 0);
+        drawPrism(w * 0.8, 80, 100, 2);
+      }
 
-      // 8. Elegant Animated Orange Butterflies
-      butterflies.forEach((b) => {
-        const flowTime = time * 0.8 + b.phase;
-        b.x = b.baseX + Math.sin(flowTime * 1.2) * 90 + Math.cos(flowTime * 0.5) * 40;
-        b.y = b.baseY + Math.cos(flowTime * 0.9) * 45 + Math.sin(flowTime * 1.5) * 20;
-        b.wingAngle = Math.sin(time * 16 + b.phase) * 0.8;
+      ctx.restore();
 
-        ctx.save();
-        ctx.translate(b.x, b.y);
+      // ==========================================
+      // LAYER 4: 3D Horizontal Orange Trajectory Lines (Near Bottom)
+      // ==========================================
+      ctx.save();
+      ctx.translate(mouseX * 1.2, mouseY * 1.2);
 
-        // Butterfly Wings (Orange + Light Amber)
-        ctx.fillStyle = 'rgba(234, 88, 12, 0.75)';
-        const wingW = b.size * Math.cos(b.wingAngle);
+      ctx.strokeStyle = 'rgba(234, 88, 12, 0.2)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([12, 16]);
 
-        // Left Wing
-        ctx.beginPath();
-        ctx.ellipse(-wingW * 0.6, -b.size * 0.4, Math.max(1, Math.abs(wingW)), b.size * 0.7, -0.3, 0, Math.PI * 2);
-        ctx.fill();
+      const lineY1 = h * 0.76;
+      const lineY2 = h * 0.84;
+      const lineY3 = h * 0.92;
 
-        // Right Wing
-        ctx.beginPath();
-        ctx.ellipse(wingW * 0.6, -b.size * 0.4, Math.max(1, Math.abs(wingW)), b.size * 0.7, 0.3, 0, Math.PI * 2);
-        ctx.fill();
+      ctx.lineDashOffset = -time * 30;
+      ctx.beginPath();
+      ctx.moveTo(-50, lineY1);
+      ctx.lineTo(w + 50, lineY1);
+      ctx.stroke();
 
-        // Butterfly Body
-        ctx.fillStyle = '#c2410c';
-        ctx.beginPath();
-        ctx.ellipse(0, 0, 1.5, b.size * 0.5, 0, 0, Math.PI * 2);
-        ctx.fill();
+      ctx.lineDashOffset = time * 25;
+      ctx.beginPath();
+      ctx.moveTo(-50, lineY2);
+      ctx.lineTo(w + 50, lineY2);
+      ctx.stroke();
 
-        ctx.restore();
-      });
+      ctx.lineDashOffset = -time * 40;
+      ctx.beginPath();
+      ctx.moveTo(-50, lineY3);
+      ctx.lineTo(w + 50, lineY3);
+      ctx.stroke();
 
-      // 9. Floating Orange AI Energy Particles
-      aiParticles.forEach((p) => {
-        p.x += p.speedX;
-        p.y += p.speedY;
+      ctx.setLineDash([]);
+      ctx.restore();
 
-        if (p.y < 0) {
-          p.y = h;
+      // ==========================================
+      // LAYER 5: Floating Glowing Orange Energy Particles
+      // ==========================================
+      ctx.save();
+      ctx.translate(mouseX * 1.5, mouseY * 1.5);
+
+      particles.forEach((p) => {
+        p.y -= p.speedY;
+        p.x += Math.sin(time * 1.5 + p.phase) * 0.4;
+
+        if (p.y < -10) {
+          p.y = h + 10;
           p.x = Math.random() * w;
         }
-        if (p.x < 0) p.x = w;
-        if (p.x > w) p.x = 0;
 
-        ctx.fillStyle = `rgba(234, 88, 12, ${p.opacity * 0.5})`;
+        ctx.fillStyle = `rgba(249, 115, 22, ${p.opacity * 0.6})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fill();
       });
+
+      ctx.restore();
 
       animFrameId = requestAnimationFrame(render);
     };
@@ -254,6 +256,7 @@ export const WelcomePage: React.FC = () => {
 
     return () => {
       window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animFrameId);
     };
   }, []);
@@ -272,7 +275,7 @@ export const WelcomePage: React.FC = () => {
         background: '#f8fafc'
       }}
     >
-      {/* 3D Nature Canvas Background */}
+      {/* Reference-to-Life 3D Layer Canvas Background */}
       <canvas
         ref={canvasRef}
         style={{
@@ -283,7 +286,7 @@ export const WelcomePage: React.FC = () => {
         }}
       />
 
-      {/* Hero Glass Content Center */}
+      {/* Hero Content Layer (Foreground UI Above All 3D Planes) */}
       <div
         style={{
           position: 'relative',
