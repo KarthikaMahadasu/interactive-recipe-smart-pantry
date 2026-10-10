@@ -127,6 +127,30 @@ export const CookingStepView: React.FC<CookingStepViewProps> = ({
           {currentStep.text}
         </h2>
 
+        {currentStep.ingredientsUsed && currentStep.ingredientsUsed.length > 0 && (
+          <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#ea580c', textTransform: 'uppercase' }}>
+              Ingredients Used:
+            </span>
+            {currentStep.ingredientsUsed.map((ing, i) => (
+              <span
+                key={i}
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  color: '#9a3412',
+                  background: '#ffedd5',
+                  padding: '2px 10px',
+                  borderRadius: '10px',
+                  border: '1px solid #fed7aa'
+                }}
+              >
+                {ing}
+              </span>
+            ))}
+          </div>
+        )}
+
         {currentStep.tip && (
           <div
             style={{

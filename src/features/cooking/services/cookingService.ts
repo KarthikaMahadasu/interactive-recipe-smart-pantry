@@ -1,5 +1,6 @@
 import type { Recipe, RecipeIngredientItem } from '../../../types/recipe';
 import type { Ingredient } from '../../../types/ingredient';
+import { IngredientUtils } from '../../../utils/ingredientUtils';
 
 export interface IngredientValidationResult {
   ingredient: RecipeIngredientItem;
@@ -7,6 +8,7 @@ export interface IngredientValidationResult {
   isAvailable: boolean;
   requiredAmount: number;
   availableAmount: number;
+  availableUnit: string;
   unit: string;
   isInsufficient: boolean;
 }
@@ -20,29 +22,45 @@ export interface CookingValidationSummary {
 
 export class CookingService {
   /**
-   * Validates required recipe ingredients against current pantry state.
+   * Validates required recipe ingredients against current pantry state using matching and unit conversions.
    */
   static validateIngredients(recipe: Recipe, pantry: Ingredient[]): CookingValidationSummary {
     let missingCount = 0;
     let insufficientCount = 0;
 
     const validationDetails: IngredientValidationResult[] = recipe.ingredients.map((req) => {
-      const reqNameLower = req.name.toLowerCase().trim();
-      const pantryItem = pantry.find((p) => p.name.toLowerCase().trim() === reqNameLower || p.name.toLowerCase().includes(reqNameLower));
+      const pantryItem = pantry.find((p) => IngredientUtils.areIngredientsMatching(req.name, p.name));
 
-      const availableAmount = pantryItem ? pantryItem.quantity : 0;
-      const isAvailable = Boolean(pantryItem && pantryItem.quantity > 0);
-      const isInsufficient = isAvailable && availableAmount < req.amount;
+      if (!pantryItem || pantryItem.quantity <= 0) {
+        missingCount++;
+        return {
+          ingredient: req,
+          pantryItem: undefined,
+          isAvailable: false,
+          requiredAmount: req.amount,
+          availableAmount: 0,
+          availableUnit: req.unit,
+          unit: req.unit,
+          isInsufficient: false
+        };
+      }
 
-      if (!isAvailable) missingCount++;
-      if (isInsufficient) insufficientCount++;
+      // Convert pantry item quantity to recipe unit for comparison
+      const convertedPantryQtyInRecipeUnit = IngredientUtils.convertUnit(pantryItem.quantity, pantryItem.unit, req.unit);
+      const isAvailable = true;
+      const isInsufficient = convertedPantryQtyInRecipeUnit < req.amount;
+
+      if (isInsufficient) {
+        insufficientCount++;
+      }
 
       return {
         ingredient: req,
         pantryItem,
         isAvailable,
         requiredAmount: req.amount,
-        availableAmount,
+        availableAmount: pantryItem.quantity,
+        availableUnit: pantryItem.unit,
         unit: req.unit,
         isInsufficient
       };
@@ -61,22 +79,24 @@ export class CookingService {
   /**
    * Calculates exact pantry deductions without introducing negative values.
    */
-  static calculateDeductions(recipe: Recipe, pantry: Ingredient[]): { id: string; name: string; deducted: number; remaining: number }[] {
-    const deductions: { id: string; name: string; deducted: number; remaining: number }[] = [];
+  static calculateDeductions(recipe: Recipe, pantry: Ingredient[]): Array<{ id: string; name: string; deducted: number; remaining: number; unit: string }> {
+    const deductions: Array<{ id: string; name: string; deducted: number; remaining: number; unit: string }> = [];
 
     recipe.ingredients.forEach((req) => {
-      const reqNameLower = req.name.toLowerCase().trim();
-      const pantryItem = pantry.find((p) => p.name.toLowerCase().trim() === reqNameLower || p.name.toLowerCase().includes(reqNameLower));
+      const pantryItem = pantry.find((p) => IngredientUtils.areIngredientsMatching(req.name, p.name));
 
       if (pantryItem) {
-        const deducted = Math.min(pantryItem.quantity, req.amount);
-        const remaining = Math.max(0, pantryItem.quantity - req.amount);
+        const convertedReqInPantryUnit = IngredientUtils.convertUnit(req.amount, req.unit, pantryItem.unit);
+        const deducted = Math.min(pantryItem.quantity, convertedReqInPantryUnit);
+        const remaining = Math.max(0, Math.round((pantryItem.quantity - deducted) * 100) / 100);
+
         deductions.push({
           id: pantryItem.id,
           name: pantryItem.name,
-          deductions: deducted,
-          remaining
-        } as any);
+          deducted: Math.round(deducted * 100) / 100,
+          remaining,
+          unit: pantryItem.unit
+        });
       }
     });
 

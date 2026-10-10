@@ -7,12 +7,14 @@ export interface RecipeIngredientItem {
   amount: number;
   unit: string;
   optional?: boolean;
+  note?: string;
 }
 
 export interface RecipeInstructionStep {
   step: number;
   text: string;
   durationMinutes?: number;
+  ingredientsUsed?: string[];
   tip?: string;
 }
 

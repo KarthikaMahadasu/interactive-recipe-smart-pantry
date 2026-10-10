@@ -4,6 +4,7 @@ import type { Recipe } from '../../../types/recipe';
 import type { Ingredient } from '../../../types/ingredient';
 import { useNavigate } from 'react-router-dom';
 import { useKitchenState } from '../../../state/KitchenContext';
+import { IngredientUtils } from '../../../utils/ingredientUtils';
 
 interface CookingCompletionModalProps {
   recipe: Recipe | null;
@@ -25,25 +26,27 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
 
   if (!isOpen || !recipe) return null;
 
-  // Calculate deduction details
+  // Calculate deduction details using IngredientUtils
   const deductionList = recipe.ingredients.map((req) => {
-    const reqNameLower = req.name.toLowerCase().trim();
-    const pantryItem = pantry.find(
-      (p) => p.name.toLowerCase().trim() === reqNameLower || p.name.toLowerCase().includes(reqNameLower)
-    );
+    const pantryItem = pantry.find((p) => IngredientUtils.areIngredientsMatching(req.name, p.name));
 
     const currentQty = pantryItem ? pantryItem.quantity : 0;
-    const isInsufficient = currentQty < req.amount;
-    const missingAmount = Math.max(0, req.amount - currentQty);
-    const remainingQty = Math.max(0, currentQty - req.amount);
+    const pantryUnit = pantryItem ? pantryItem.unit : req.unit;
+    const reqInPantryUnit = IngredientUtils.convertUnit(req.amount, req.unit, pantryUnit);
+    const isInsufficient = currentQty < reqInPantryUnit;
+    const missingAmount = Math.max(0, reqInPantryUnit - currentQty);
+    const remainingQty = Math.max(0, currentQty - reqInPantryUnit);
 
     return {
       name: req.name,
+      pantryName: pantryItem ? pantryItem.name : req.name,
       required: req.amount,
-      unit: req.unit,
+      reqUnit: req.unit,
+      reqInPantryUnit: Math.round(reqInPantryUnit * 100) / 100,
+      pantryUnit,
       currentQty,
-      missingAmount,
-      remainingQty,
+      missingAmount: Math.round(missingAmount * 100) / 100,
+      remainingQty: Math.round(remainingQty * 100) / 100,
       isInsufficient
     };
   });
@@ -57,7 +60,7 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
         id: `g_cook_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
         name: m.name,
         quantity: m.missingAmount > 0 ? m.missingAmount : 1,
-        unit: m.unit,
+        unit: m.reqUnit,
         reason: `Missing requirement for cooking "${recipe.title}"`,
         priority: 'HIGH',
         source: 'RECIPE_MISSING',
@@ -142,7 +145,7 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
             <div style={{ fontSize: '0.78rem', color: '#78350f', lineHeight: 1.4 }}>
               {missingItems.map((m) => (
                 <div key={m.name}>
-                  &bull; <strong>{m.name}</strong>: Required {m.required} {m.unit}, Available {m.currentQty} {m.unit} (Short by {m.missingAmount} {m.unit})
+                  &bull; <strong>{m.name}</strong>: Required {m.required} {m.reqUnit}, Available {m.currentQty} {m.pantryUnit} (Short by {m.missingAmount} {m.pantryUnit})
                 </div>
               ))}
             </div>
@@ -173,12 +176,12 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
                 <div>
                   <span style={{ fontWeight: 700, color: '#0f172a' }}>{d.name}</span>
                   <span style={{ fontSize: '0.75rem', color: '#dc2626', marginLeft: '8px', fontWeight: 600 }}>
-                    -{d.required} {d.unit}
+                    -{d.required} {d.reqUnit}
                   </span>
                 </div>
 
                 <div style={{ fontSize: '0.78rem', color: '#64748b', textAlign: 'right' }}>
-                  <span>{d.currentQty} {d.unit}</span> &rarr; <strong style={{ color: d.isInsufficient ? '#d97706' : '#16a34a' }}>{d.remainingQty} {d.unit}</strong>
+                  <span>{d.currentQty} {d.pantryUnit}</span> &rarr; <strong style={{ color: d.isInsufficient ? '#d97706' : '#16a34a' }}>{d.remainingQty} {d.pantryUnit}</strong>
                 </div>
               </div>
             ))}

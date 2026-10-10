@@ -52,7 +52,7 @@ export type KitchenAction =
   | { type: 'UPDATE_GROCERY_ITEM'; payload: SmartGroceryItem }
   | { type: 'DELETE_GROCERY_ITEM'; payload: string }
   | { type: 'MARK_GROCERY_PURCHASED'; payload: string }
-  | { type: 'RECEIVE_GROCERY_DELIVERY'; payload: { groceryId: string; receivedQuantity: number; user?: string } }
+  | { type: 'RECEIVE_GROCERY_DELIVERY'; payload: { groceryId: string; receivedQuantity: number; receivedUnit?: string; user?: string } }
   | { type: 'SET_ALL_GROCERY_ITEMS'; payload: SmartGroceryItem[] }
   | { type: 'ADD_AI_RESPONSE'; payload: AIResponsePayload }
   | { type: 'TOGGLE_SPATIAL_3D'; payload: boolean }

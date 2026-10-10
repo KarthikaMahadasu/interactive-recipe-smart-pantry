@@ -1,6 +1,8 @@
-import React from 'react';
-import { CheckCircle2, XCircle, ShoppingBag, AlertTriangle, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle2, XCircle, ShoppingBag, AlertTriangle, Sparkles, Check } from 'lucide-react';
 import type { CookingValidationSummary } from '../services/cookingService';
+import { useKitchenState } from '../../../state/KitchenContext';
+import { useNavigate } from 'react-router-dom';
 
 interface CookingIngredientsCheckProps {
   summary: CookingValidationSummary | null;
@@ -13,9 +15,40 @@ export const CookingIngredientsCheck: React.FC<CookingIngredientsCheckProps> = (
   onStartCooking,
   isCookingStarted
 }) => {
+  const { addGroceryItem } = useKitchenState();
+  const navigate = useNavigate();
+  const [addedGrocery, setAddedGrocery] = useState(false);
+
   if (!summary) return null;
 
   const { canCook, validationDetails, missingCount, insufficientCount } = summary;
+
+  const handleAddMissingToGrocery = () => {
+    const missingItems = validationDetails.filter((d) => !d.isAvailable || d.isInsufficient);
+
+    missingItems.forEach((d) => {
+      const missingQty = !d.isAvailable
+        ? d.requiredAmount
+        : Math.max(1, d.requiredAmount - d.availableAmount);
+
+      addGroceryItem({
+        id: `g_cook_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        name: d.ingredient.name,
+        quantity: missingQty,
+        unit: d.ingredient.unit,
+        reason: 'Missing ingredient for active recipe',
+        priority: 'HIGH',
+        source: 'RECIPE_MISSING',
+        status: 'NEEDED',
+        createdAt: new Date().toISOString()
+      });
+    });
+
+    setAddedGrocery(true);
+    setTimeout(() => {
+      navigate('/grocery');
+    }, 1000);
+  };
 
   return (
     <div
@@ -49,7 +82,7 @@ export const CookingIngredientsCheck: React.FC<CookingIngredientsCheckProps> = (
       </div>
 
       {/* Ingredient Items List */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '10px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '10px' }}>
         {validationDetails.map((detail, idx) => {
           const req = detail.ingredient;
           const isOK = detail.isAvailable && !detail.isInsufficient;
@@ -69,16 +102,28 @@ export const CookingIngredientsCheck: React.FC<CookingIngredientsCheckProps> = (
               }}
             >
               <div>
-                <div style={{ fontWeight: 700, color: '#0f172a' }}>{req.name}</div>
-                <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
-                  Required: {req.amount} {req.unit} | Available: {detail.availableAmount} {req.unit}
+                <div style={{ fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {req.name}
+                  {req.optional && (
+                    <span style={{ fontSize: '0.7rem', color: '#64748b', background: '#e2e8f0', padding: '1px 6px', borderRadius: '8px' }}>
+                      Optional
+                    </span>
+                  )}
                 </div>
+                <div style={{ fontSize: '0.75rem', color: '#475569', marginTop: '2px' }}>
+                  Required: <strong>{req.amount} {req.unit}</strong> | Stock: <strong style={{ color: isOK ? '#16a34a' : '#dc2626' }}>{detail.availableAmount} {detail.availableUnit}</strong>
+                </div>
+                {req.note && (
+                  <div style={{ fontSize: '0.72rem', color: '#d97706', fontStyle: 'italic', marginTop: '2px' }}>
+                    Note: {req.note}
+                  </div>
+                )}
               </div>
 
               {isOK ? (
-                <CheckCircle2 size={18} color="#16a34a" />
+                <CheckCircle2 size={20} color="#16a34a" style={{ flexShrink: 0 }} />
               ) : (
-                <XCircle size={18} color="#dc2626" />
+                <XCircle size={20} color="#dc2626" style={{ flexShrink: 0 }} />
               )}
             </div>
           );
@@ -89,7 +134,7 @@ export const CookingIngredientsCheck: React.FC<CookingIngredientsCheckProps> = (
       {!canCook && (
         <div
           style={{
-            padding: '12px 16px',
+            padding: '14px 16px',
             borderRadius: '14px',
             background: '#fffbe5',
             border: '1px solid #fde68a',
@@ -102,26 +147,28 @@ export const CookingIngredientsCheck: React.FC<CookingIngredientsCheckProps> = (
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#92400e', fontWeight: 600 }}>
             <AlertTriangle size={18} color="#d97706" />
-            <span>Some ingredients are missing or have insufficient stock.</span>
+            <span>Some ingredients are missing or short in current restaurant inventory.</span>
           </div>
 
           <button
-            onClick={() => alert('Grocery list integration point (Module 6). Missing items recorded.')}
+            onClick={handleAddMissingToGrocery}
+            disabled={addedGrocery}
             style={{
-              padding: '6px 12px',
+              padding: '8px 14px',
               borderRadius: '10px',
-              background: '#fef3c7',
-              border: '1px solid #fde68a',
-              color: '#b45309',
+              background: addedGrocery ? '#dcfce7' : '#fef3c7',
+              border: `1px solid ${addedGrocery ? '#86efac' : '#fde68a'}`,
+              color: addedGrocery ? '#15803d' : '#b45309',
               fontSize: '0.78rem',
               fontWeight: 700,
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              cursor: 'pointer'
+              cursor: addedGrocery ? 'default' : 'pointer'
             }}
           >
-            <ShoppingBag size={14} /> Add Missing to Grocery (Module 6)
+            {addedGrocery ? <Check size={14} /> : <ShoppingBag size={14} />}
+            {addedGrocery ? 'Added to Grocery List!' : 'Add Missing to Grocery List'}
           </button>
         </div>
       )}

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { ArrowLeft, CheckCircle, Plus, Trash2, ShoppingBag, Sparkles, Copy, Check, Truck } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Plus, Trash2, ShoppingBag, Sparkles, Copy, Check, Truck, PackagePlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useKitchenState } from '../state/KitchenContext';
 import { GroceryItemDetailModal } from '../features/grocery/components/GroceryItemDetailModal';
 import { GenerateGroceryModal } from '../features/grocery/components/GenerateGroceryModal';
+import { QuickAddInventoryModal } from '../features/grocery/components/QuickAddInventoryModal';
+import { BulkReceiveModal } from '../features/grocery/components/BulkReceiveModal';
 import type { SmartGroceryItem, GroceryPriority, GroceryStatus } from '../features/grocery/types/groceryTypes';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -14,6 +16,8 @@ export const GroceryPage: React.FC = () => {
 
   // Modals state
   const [isGenerateOpen, setIsGenerateOpen] = useState(false);
+  const [isBulkReceiveOpen, setIsBulkReceiveOpen] = useState(false);
+  const [quickAddItem, setQuickAddItem] = useState<SmartGroceryItem | null>(null);
   const [selectedInspectItem, setSelectedInspectItem] = useState<SmartGroceryItem | null>(null);
 
   // Quick Form State
@@ -121,6 +125,26 @@ export const GroceryPage: React.FC = () => {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           <button
+            onClick={() => setIsBulkReceiveOpen(true)}
+            style={{
+              padding: '10px 18px',
+              borderRadius: '16px',
+              background: 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)',
+              color: '#fff',
+              fontWeight: 700,
+              fontSize: '0.88rem',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(22, 163, 74, 0.25)'
+            }}
+          >
+            <Truck size={18} /> Bulk Receive Items
+          </button>
+
+          <button
             onClick={() => setIsGenerateOpen(true)}
             style={{
               padding: '10px 18px',
@@ -209,7 +233,7 @@ export const GroceryPage: React.FC = () => {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Item name (e.g. Rice, Paneer, Dragon Fruit...)"
+          placeholder="Item name (e.g. Rice, Curry Leaves, Garlic...)"
           style={{
             flex: 2,
             minWidth: '200px',
@@ -366,6 +390,20 @@ export const GroceryPage: React.FC = () => {
       {/* Modals */}
       <GenerateGroceryModal isOpen={isGenerateOpen} onClose={() => setIsGenerateOpen(false)} />
 
+      <BulkReceiveModal
+        items={state.groceryList}
+        isOpen={isBulkReceiveOpen}
+        onClose={() => setIsBulkReceiveOpen(false)}
+      />
+
+      {quickAddItem && (
+        <QuickAddInventoryModal
+          item={quickAddItem}
+          isOpen={Boolean(quickAddItem)}
+          onClose={() => setQuickAddItem(null)}
+        />
+      )}
+
       {selectedInspectItem && (
         <GroceryItemDetailModal
           item={selectedInspectItem}
@@ -377,6 +415,8 @@ export const GroceryPage: React.FC = () => {
   );
 
   function renderGroceryCard(item: SmartGroceryItem) {
+    const isReceived = item.status === 'RECEIVED';
+
     return (
       <div
         key={item.id}
@@ -393,7 +433,7 @@ export const GroceryPage: React.FC = () => {
           alignItems: 'center',
           justifyContent: 'space-between',
           cursor: 'pointer',
-          background: item.status === 'PURCHASED' ? '#f0f9ff' : item.status === 'RECEIVED' ? '#ecfdf5' : '#ffffff'
+          background: item.status === 'PURCHASED' ? '#f0f9ff' : isReceived ? '#ecfdf5' : '#ffffff'
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -425,22 +465,62 @@ export const GroceryPage: React.FC = () => {
               style={{
                 fontSize: '0.7rem',
                 fontWeight: 700,
-                color: item.status === 'RECEIVED' ? '#047857' : item.status === 'PURCHASED' ? '#0284c7' : '#b45309'
+                color: isReceived ? '#047857' : item.status === 'PURCHASED' ? '#0284c7' : '#b45309'
               }}
             >
               {item.status}
             </span>
           </div>
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              deleteGroceryItem(item.id);
-            }}
-            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: 4 }}
-          >
-            <Trash2 size={16} />
-          </button>
+          {/* Action Buttons: 1. Add to Inventory (+)  2. Delete */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {!isReceived && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setQuickAddItem(item);
+                }}
+                title={`Add ${item.name} to inventory`}
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: '10px',
+                  background: '#fff7ed',
+                  border: '1px solid #fdba74',
+                  color: '#ea580c',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                <PackagePlus size={16} />
+                <span>+ Stock</span>
+              </button>
+            )}
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteGroceryItem(item.id);
+              }}
+              title="Delete grocery item"
+              style={{
+                padding: '6px',
+                borderRadius: '10px',
+                background: '#fef2f2',
+                border: '1px solid #fecaca',
+                color: '#ef4444',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
         </div>
       </div>
     );

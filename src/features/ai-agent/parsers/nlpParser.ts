@@ -168,7 +168,7 @@ export class NLPParser {
     if (/\b(expir(ing|e|es)|about to expire|use first|what should i use first|what to use first|freshness|spoiling|going bad|what expires soon)\b/i.test(text)) {
       return 'GET_EXPIRING_ITEMS';
     }
-    if (/\b(ingredients (of|for|in)|give me (the )?ingredients (for|of)|what are the ingredients|what ingredients are required for|recipe ingredients)\b/i.test(text)) {
+    if (/\b(show me (the )?ingredients|ingredients (of|for|in)|give me (the )?ingredients (for|of)|what are the ingredients|what ingredients are required for|recipe ingredients|what spices|spices (do we need|for|in))\b/i.test(text)) {
       return 'GET_RECIPE_INGREDIENTS';
     }
     if (
@@ -176,13 +176,16 @@ export class NLPParser {
     ) {
       return 'FIND_RECIPES';
     }
-    if (/\b(can we (make|cook|prepare)|can i (make|cook|prepare)|do we have ingredients for|check recipe availability|do we have all of them|do we have everything needed for)\s+.*/i.test(text)) {
+    if (/\b(can we (make|cook|prepare)|can i (make|cook|prepare)|can we prepare these dishes|do we have ingredients for|check recipe availability|do we have all of them|do we have everything needed for)\s+.*/i.test(text) || /can we prepare (these|the) dishes/i.test(text)) {
       return 'CHECK_RECIPE_AVAILABILITY';
     }
     if (
-      /\b(what am i missing|missing for|ingredients (needed|required) for|what (ingredients )?do i need for|what (ingredients )?do we need for|do i have everything for|do we have everything for|what do i need to (make|cook|prepare)|what are we missing)\b/i.test(text)
+      /\b(which ingredients are missing|what am i missing|missing for|ingredients (needed|required) for|what (ingredients )?do i need for|what (ingredients )?do we need for|do i have everything for|do we have everything for|what do i need to (make|cook|prepare)|what are we missing)\b/i.test(text)
     ) {
       return 'GET_MISSING_INGREDIENTS';
+    }
+    if (/\b(how much oil|how much salt|how much oil and salt|how much .+ will we use|amount of .+ will we use)\b/i.test(text)) {
+      return 'GET_RECIPE_INGREDIENTS';
     }
     if (/\b(instead of|substitute|substitution|can i replace|what can replace|replace\s+[a-z]+|alternative for)\b/i.test(text)) {
       return 'SUGGEST_SUBSTITUTION';
@@ -201,7 +204,10 @@ export class NLPParser {
     if (/\b(cooking status|what is my cooking status|what is the cooking status|am i cooking|current cooking|continue cooking)\b/i.test(text)) {
       return 'GET_COOKING_STATUS';
     }
-    if (/\b(start cooking|cook recipe|prepare recipe|open (the )?cooking studio|let's cook|lets cook|start \w+)\b/i.test(text)) {
+    if (
+      /^(cook|prepare|make|start cooking)\s+/i.test(text) ||
+      /\b(start cooking|cook recipe|prepare recipe|open (the )?cooking studio|let's cook|lets cook)\b/i.test(text)
+    ) {
       return 'START_COOKING';
     }
     if (/\b(recipe details|how to make|instructions for|show recipe for)\b/i.test(text)) {

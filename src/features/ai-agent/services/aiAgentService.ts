@@ -6,6 +6,9 @@ import type { User, Restaurant } from '../../../types/auth';
 import type { InventoryTransaction } from '../../inventory/types/transactionTypes';
 import type { SmartGroceryItem } from '../../grocery/types/groceryTypes';
 import { GroceryService } from '../../grocery/services/groceryService';
+import { RecipeResolverService } from '../../../services/recipes/recipeResolverService';
+import { IngredientUtils } from '../../../utils/ingredientUtils';
+import { CookingService } from '../../cooking/services/cookingService';
 
 const CATEGORY_COLORS: Record<string, string> = {
   produce: '#10b981',
@@ -237,22 +240,51 @@ export class AIAgentService {
       }
 
       case 'GET_RECIPE_INGREDIENTS': {
-        const queryName = params.name || params.recipeName || this.memory.lastRecipeName || 'Chicken Curry';
-        const targetRecipe = recipes.find((r: Recipe) => r.title.toLowerCase().includes(queryName.toLowerCase()));
+        const rawQuery = action.rawCommand || params.name || params.recipeName || this.memory.lastRecipeName || 'Chicken Curry';
+        const resolution = RecipeResolverService.resolveQuery(rawQuery, recipes);
 
+        if (resolution.isAmbiguous) {
+          responseMessage = resolution.clarificationMessage || 'Which recipe do you mean?';
+          responseStatus = 'warning';
+          break;
+        }
+
+        const targetRecipe = resolution.recipe;
         if (!targetRecipe) {
-          responseMessage = `Could not find recipe "${queryName}" in ${restName}'s database.`;
+          responseMessage = `Could not find recipe for "${rawQuery}" in ${restName}'s database.`;
           responseStatus = 'warning';
           break;
         }
 
         this.memory.lastRecipeName = targetRecipe.title;
 
-        const ingList = targetRecipe.ingredients
-          .map((i) => `• ${i.name} — ${i.amount} ${i.unit}`)
+        // Check if query specifically targets spices or oil & salt
+        const isSpiceQuery = /\b(spices|seasonings|herbs)\b/i.test(action.rawCommand);
+        const isOilSaltQuery = /\b(oil|salt|oil and salt)\b/i.test(action.rawCommand);
+
+        let filteredIngredients = targetRecipe.ingredients;
+
+        if (isSpiceQuery) {
+          filteredIngredients = targetRecipe.ingredients.filter((i) => IngredientUtils.isSpice(i.name));
+        } else if (isOilSaltQuery) {
+          filteredIngredients = targetRecipe.ingredients.filter((i) => {
+            const norm = IngredientUtils.normalizeName(i.name);
+            return norm.includes('oil') || norm.includes('salt');
+          });
+        }
+
+        const ingList = filteredIngredients
+          .map((i) => `• ${i.name} — ${i.amount} ${i.unit}${i.note ? ` (${i.note})` : ''}`)
           .join('\n');
 
-        responseMessage = `${targetRecipe.title} ingredients:\n\n${ingList}`;
+        if (isSpiceQuery) {
+          responseMessage = `Spices & Seasonings required for ${targetRecipe.title}:\n\n${ingList || 'No specific spices listed.'}`;
+        } else if (isOilSaltQuery) {
+          responseMessage = `Oil & Salt usage for ${targetRecipe.title}:\n\n${ingList || 'No oil/salt specified.'}`;
+        } else {
+          responseMessage = `${targetRecipe.title} Complete Ingredient List:\n\n${ingList}`;
+        }
+
         responseStatus = 'info';
         actionRequired = 'view_recipes';
         break;
@@ -741,60 +773,57 @@ export class AIAgentService {
 
       case 'CHECK_RECIPE_AVAILABILITY':
       case 'GET_MISSING_INGREDIENTS': {
-        const queryName = params.name || params.recipeName || this.memory.lastRecipeName || 'Chicken Curry';
-        const targetRecipe = recipes.find((r: Recipe) => r.title.toLowerCase().includes(queryName.toLowerCase()));
+        const rawQuery = action.rawCommand || params.name || params.recipeName || this.memory.lastRecipeName || 'Chicken Curry';
+        const activeOrTarget = context.activeCookingRecipe ? context.activeCookingRecipe : null;
+        
+        let targetRecipe: Recipe | null = activeOrTarget;
+        if (!targetRecipe || (rawQuery && !rawQuery.includes('these') && !rawQuery.includes('today'))) {
+          const resolution = RecipeResolverService.resolveQuery(rawQuery, recipes);
+          if (resolution.isAmbiguous) {
+            responseMessage = resolution.clarificationMessage || 'Which specific recipe would you like to check?';
+            responseStatus = 'warning';
+            break;
+          }
+          targetRecipe = resolution.recipe;
+        }
 
         if (!targetRecipe) {
-          responseMessage = queryName
-            ? `Could not find recipe "${queryName}" in restaurant database.`
-            : `Please specify a recipe name to check ingredients.`;
+          responseMessage = `Could not find recipe for "${rawQuery}" in restaurant database.`;
           responseStatus = 'warning';
           break;
         }
 
         this.memory.lastRecipeName = targetRecipe.title;
 
-        const missing: Array<{ name: string; amount: number; unit: string }> = [];
-        const available: Array<{ name: string; available: number; required: number; unit: string }> = [];
+        const valSummary = CookingService.validateIngredients(targetRecipe, pantry);
+        const missingDetails = valSummary.validationDetails.filter((d) => !d.isAvailable || d.isInsufficient);
 
-        targetRecipe.ingredients.forEach((req: { name: string; amount: number; unit: string }) => {
-          const matched = pantry.find((p) => p.name.toLowerCase() === req.name.toLowerCase());
-          if (!matched || matched.quantity < req.amount) {
-            missing.push({
-              name: req.name,
-              amount: req.amount - (matched ? matched.quantity : 0),
-              unit: req.unit
-            });
-          } else {
-            available.push({
-              name: req.name,
-              available: matched.quantity,
-              required: req.amount,
-              unit: req.unit
-            });
-          }
-        });
+        const missing = missingDetails.map((d) => ({
+          name: d.ingredient.name,
+          amount: !d.isAvailable ? d.requiredAmount : Math.max(1, d.requiredAmount - d.availableAmount),
+          unit: d.ingredient.unit
+        }));
 
         this.memory.lastMissingIngredients = missing;
 
-        if (missing.length === 0) {
-          responseMessage = `"${targetRecipe.title}" can be prepared! All required ingredients are available in ${restName}'s inventory.`;
+        if (valSummary.canCook) {
+          responseMessage = `"${targetRecipe.title}" can be prepared! 100% of required ingredients are available in ${restName}'s inventory.`;
           responseStatus = 'success';
         } else {
-          const missingStr = missing.map((m: { name: string; amount: number; unit: string }) => `• ${m.name} — ${m.amount} ${m.unit}`).join('\n');
-          responseMessage = `"${targetRecipe.title}" cannot currently be prepared.\n\nMissing ingredients:\n${missingStr}`;
+          const missingStr = missing.map((m) => `• ${m.name} — ${m.amount} ${m.unit}`).join('\n');
+          responseMessage = `"${targetRecipe.title}" readiness status: ${valSummary.canCook ? 'Ready' : 'Incomplete'}.\n\nMissing or short ingredients:\n${missingStr}`;
           responseStatus = 'warning';
 
-          // Automatically add missing ingredients to grocery if requested
-          if (addGroceryItem) {
-            missing.forEach((m: { name: string; amount: number; unit: string }) => {
+          // Automatically add missing ingredients to grocery list
+          if (addGroceryItem && missing.length > 0) {
+            missing.forEach((m) => {
               addGroceryItem({
                 id: `g_miss_${Date.now()}_${Math.random().toString(36).substring(2, 5)}`,
                 restaurantId: restaurant?.id,
                 name: m.name,
                 quantity: m.amount,
                 unit: m.unit,
-                reason: `Missing ingredient for recipe "${targetRecipe.title}"`,
+                reason: `Missing ingredient for recipe "${targetRecipe!.title}"`,
                 priority: 'HIGH',
                 source: 'RECIPE_MISSING',
                 status: 'NEEDED',
@@ -831,8 +860,16 @@ export class AIAgentService {
       }
 
       case 'START_COOKING': {
-        const queryName = params.name || params.recipeName || '';
-        const targetRecipe = recipes.find((r: Recipe) => r.title.toLowerCase().includes(queryName.toLowerCase())) || recipes[0];
+        const rawQuery = action.rawCommand || params.name || params.recipeName || '';
+        const resolution = RecipeResolverService.resolveQuery(rawQuery, recipes);
+
+        if (resolution.isAmbiguous) {
+          responseMessage = resolution.clarificationMessage || 'Which specific recipe would you like to prepare?';
+          responseStatus = 'warning';
+          break;
+        }
+
+        const targetRecipe = resolution.recipe || recipes[0];
 
         if (!targetRecipe) {
           responseMessage = 'Could not find requested recipe to start cooking.';
@@ -840,23 +877,23 @@ export class AIAgentService {
           break;
         }
 
-        // Verify ingredient availability first (MUST NOT deduct inventory on start)
-        const missing = targetRecipe.ingredients.filter((req: { name: string; amount: number; unit: string }) => {
-          const match = pantry.find((p) => p.name.toLowerCase() === req.name.toLowerCase());
-          return !match || match.quantity < req.amount;
-        });
+        // Verify ingredient availability using CookingService (MUST NOT deduct inventory on start)
+        const valSummary = CookingService.validateIngredients(targetRecipe, pantry);
+        const missing = valSummary.validationDetails.filter((d) => !d.isAvailable || d.isInsufficient);
+
+        if (context.startCooking) {
+          context.startCooking(targetRecipe);
+        }
+        if (context.setSelectedRecipe) {
+          context.setSelectedRecipe(targetRecipe.id);
+        }
 
         if (missing.length > 0) {
-          const missingNames = missing.map((m: { name: string; amount: number; unit: string }) => `• ${m.name} (${m.amount} ${m.unit})`).join('\n');
-          responseMessage = `Cannot start cooking "${targetRecipe.title}". Missing ingredients:\n${missingNames}`;
+          const missingNames = missing.map((m) => `• ${m.ingredient.name} (Need ${m.requiredAmount} ${m.unit}, Stock ${m.availableAmount} ${m.availableUnit})`).join('\n');
+          responseMessage = `Loaded "${targetRecipe.title}" into Cooking Studio workspace!\n\nNote: Some ingredients are short in stock:\n${missingNames}\n\nInventory will be deducted only upon recipe completion confirmation.`;
           responseStatus = 'warning';
+          actionRequired = 'start_cooking';
         } else {
-          if (context.startCooking) {
-            context.startCooking(targetRecipe);
-          }
-          if (context.setSelectedRecipe) {
-            context.setSelectedRecipe(targetRecipe.id);
-          }
           responseMessage = `Started cooking session for "${targetRecipe.title}"! All required ingredients are verified in stock.\n\nNote: Inventory will be deducted upon recipe completion.`;
           responseStatus = 'success';
           actionRequired = 'start_cooking';
