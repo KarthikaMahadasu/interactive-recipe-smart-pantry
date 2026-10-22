@@ -58,6 +58,10 @@ export interface ExtractedEntities {
   expiryDate?: string;
   reason?: string;
   queryType?: 'all' | 'expiring' | 'specific' | 'waste' | 'history' | 'grocery';
+  servings?: number;
+  dietaryConstraint?: string;
+  equipmentConstraint?: string;
+  ingredientList?: string[];
 }
 
 export interface AgentAction {

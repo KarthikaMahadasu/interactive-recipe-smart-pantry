@@ -30,8 +30,8 @@ export const AppLayout: React.FC = () => {
           gap: '6px'
         }}
       >
-        <span>Interactive Recipe & Smart Pantry Manager</span> &bull; 
-        <span>Module 1 AI Kitchen World Foundation</span>
+        <span>Intelligent Kitchen and Restaurant Management System</span> &bull; 
+        <span>Multi-Category Culinary Intelligence</span>
       </footer>
     </div>
   );

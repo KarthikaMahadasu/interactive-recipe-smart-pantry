@@ -1,5 +1,5 @@
 /**
- * Utility functions for the Recipe & Smart Pantry Manager
+ * Utility functions for the Intelligent Kitchen and Restaurant Management System
  */
 
 export function formatQuantity(quantity: number, unit: string): string {

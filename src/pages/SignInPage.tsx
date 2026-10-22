@@ -110,7 +110,7 @@ export const SignInPage: React.FC = () => {
             Sign In to Workspace
           </h2>
           <p style={{ fontSize: '0.88rem', color: '#64748b', marginTop: '4px' }}>
-            Access your shared Intelligent Kitchen Management System
+            Access your Intelligent Kitchen and Restaurant Management System
           </p>
         </div>
 

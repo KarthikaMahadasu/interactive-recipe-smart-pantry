@@ -27,6 +27,7 @@ export const CookingPage: React.FC = () => {
     nextStep,
     prevStep,
     selectRecipe,
+    adjustServings,
     confirmCompletion,
     totalSteps,
     progressPercentage
@@ -107,7 +108,7 @@ export const CookingPage: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Cooking Studio Header */}
-      <CookingHeader recipe={activeRecipe} onRecipeChange={selectRecipe} />
+      <CookingHeader recipe={activeRecipe} onRecipeChange={selectRecipe} onAdjustServings={adjustServings} />
 
       {/* Main Cooking Workspace Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px' }} className="cooking-layout-grid">

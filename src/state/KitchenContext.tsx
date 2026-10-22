@@ -10,6 +10,7 @@ import { InventoryTransactionService } from '../features/inventory/services/inve
 import { GroceryService } from '../features/grocery/services/groceryService';
 import { useAuth } from '../contexts/AuthContext';
 import { IngredientUtils } from '../utils/ingredientUtils';
+import { MASTER_RECIPE_CATALOG } from '../services/recipes/masterRecipeCatalog';
 
 const DEFAULT_PANTRY_KEY = 'smart_pantry_items_v1';
 
@@ -342,7 +343,127 @@ const getDefaultPantry = (restaurantId?: string): Ingredient[] => [
     unit: 'g',
     freshness: 'fresh',
     colorCode: '#fef08a',
-    tags: ['dairy', 'fat'],
+    tags: ['dairy', 'fat', 'baking'],
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ing_28',
+    restaurantId: restaurantId || 'rest_spice_garden',
+    name: 'All-Purpose Flour',
+    category: 'grain',
+    quantity: 5,
+    unit: 'kg',
+    freshness: 'pantry_stable',
+    colorCode: '#fef9c3',
+    tags: ['baking', 'staple', 'pastry'],
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ing_29',
+    restaurantId: restaurantId || 'rest_spice_garden',
+    name: 'Sugar',
+    category: 'other',
+    quantity: 3,
+    unit: 'kg',
+    freshness: 'pantry_stable',
+    colorCode: '#ffffff',
+    tags: ['baking', 'sweetener', 'staple'],
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ing_30',
+    restaurantId: restaurantId || 'rest_spice_garden',
+    name: 'Cocoa Powder',
+    category: 'other',
+    quantity: 500,
+    unit: 'g',
+    freshness: 'pantry_stable',
+    colorCode: '#78350f',
+    tags: ['baking', 'chocolate', 'dessert'],
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ing_31',
+    restaurantId: restaurantId || 'rest_spice_garden',
+    name: 'Milk',
+    category: 'dairy',
+    quantity: 3,
+    unit: 'L',
+    freshness: 'fresh',
+    colorCode: '#e0f2fe',
+    tags: ['dairy', 'baking', 'beverage'],
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ing_32',
+    restaurantId: restaurantId || 'rest_spice_garden',
+    name: 'Eggs',
+    category: 'dairy',
+    quantity: 12,
+    unit: 'pcs',
+    freshness: 'fresh',
+    colorCode: '#fed7aa',
+    tags: ['protein', 'baking'],
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ing_33',
+    restaurantId: restaurantId || 'rest_spice_garden',
+    name: 'Dark Chocolate',
+    category: 'other',
+    quantity: 500,
+    unit: 'g',
+    freshness: 'pantry_stable',
+    colorCode: '#451a03',
+    tags: ['chocolate', 'baking', 'dessert'],
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ing_34',
+    restaurantId: restaurantId || 'rest_spice_garden',
+    name: 'Drumsticks',
+    category: 'produce',
+    quantity: 1,
+    unit: 'kg',
+    freshness: 'fresh',
+    colorCode: '#15803d',
+    tags: ['vegetable', 'curry', 'fresh'],
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ing_35',
+    restaurantId: restaurantId || 'rest_spice_garden',
+    name: 'Pasta',
+    category: 'grain',
+    quantity: 2,
+    unit: 'kg',
+    freshness: 'pantry_stable',
+    colorCode: '#fde68a',
+    tags: ['pasta', 'staple', 'italian'],
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ing_36',
+    restaurantId: restaurantId || 'rest_spice_garden',
+    name: 'Baking Powder',
+    category: 'other',
+    quantity: 200,
+    unit: 'g',
+    freshness: 'pantry_stable',
+    colorCode: '#f1f5f9',
+    tags: ['baking', 'leavening'],
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ing_37',
+    restaurantId: restaurantId || 'rest_spice_garden',
+    name: 'Vanilla Extract',
+    category: 'liquid',
+    quantity: 100,
+    unit: 'ml',
+    freshness: 'pantry_stable',
+    colorCode: '#b45309',
+    tags: ['baking', 'flavoring'],
     createdAt: new Date().toISOString()
   }
 ];
@@ -353,441 +474,29 @@ function loadPantryForRestaurant(restaurantId?: string | null): Ingredient[] {
     const saved = localStorage.getItem(key);
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        // Merge missing default essentials into user's saved pantry so baking/curry recipes can run seamlessly
+        const defaults = getDefaultPantry(restaurantId || undefined);
+        const existingNames = new Set(parsed.map((p: Ingredient) => p.name.toLowerCase()));
+        const missingDefaults = defaults.filter((d) => !existingNames.has(d.name.toLowerCase()));
+        if (missingDefaults.length > 0) {
+          const merged = [...parsed, ...missingDefaults];
+          localStorage.setItem(key, JSON.stringify(merged));
+          return merged;
+        }
+        return parsed;
+      }
     }
   } catch (e) {
     console.warn(`Could not parse saved pantry for key ${key}`, e);
   }
-  return getDefaultPantry(restaurantId || undefined);
+  const defaultItems = getDefaultPantry(restaurantId || undefined);
+  localStorage.setItem(key, JSON.stringify(defaultItems));
+  return defaultItems;
 }
 
-const initialRecipes: Recipe[] = [
-  {
-    id: 'rec_rice',
-    title: 'Steamed Basmati Rice',
-    description: 'Fluffy, long-grain basmati rice cooked to perfection with subtle salt and oil seasoning.',
-    prepTime: 10,
-    cookTime: 15,
-    servings: 4,
-    difficulty: 'Easy',
-    category: 'Lunch',
-    cuisine: 'Indian',
-    dietaryTags: ['Vegan', 'Gluten-Free', 'Staple'],
-    colorGradient: 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)',
-    createdAt: new Date().toISOString(),
-    ingredients: [
-      { name: 'Rice', amount: 500, unit: 'g', note: 'Rinsed and soaked for 20 mins' },
-      { name: 'Water', amount: 1, unit: 'L', note: 'Filtered cooking water' },
-      { name: 'Salt', amount: 5, unit: 'g', note: 'For boiling seasoning' },
-      { name: 'Cooking Oil', amount: 10, unit: 'ml', note: 'Prevents rice sticking' }
-    ],
-    instructions: [
-      { step: 1, text: 'Rinse 500 g Rice in cold water until water runs clear; soak for 20 minutes.', durationMinutes: 20, ingredientsUsed: ['Rice', 'Water'], tip: 'Soaking ensures long fluffy grains.' },
-      { step: 2, text: 'Bring 1 L Water to a rolling boil, add 5 g Salt and 10 ml Cooking Oil.', durationMinutes: 5, ingredientsUsed: ['Water', 'Salt', 'Cooking Oil'] },
-      { step: 3, text: 'Add drained Rice to boiling water, reduce heat to low, cover tightly with lid and simmer for 12 minutes.', durationMinutes: 12, ingredientsUsed: ['Rice'] },
-      { step: 4, text: 'Turn off heat, let rest covered for 5 minutes, then fluff gently with a fork before serving.', durationMinutes: 5, ingredientsUsed: [] }
-    ],
-    nutrition: { calories: 240, protein: 5, carbs: 52, fat: 1 }
-  },
-  {
-    id: 'rec_potato_curry',
-    title: 'Homestyle Potato Masala Curry',
-    description: 'Tender potato cubes cooked in a spiced onion-tomato gravy with mustard, cumin, and curry leaves.',
-    prepTime: 12,
-    cookTime: 20,
-    servings: 4,
-    difficulty: 'Easy',
-    category: 'Dinner',
-    cuisine: 'Indian',
-    dietaryTags: ['Vegan', 'Gluten-Free', 'Comfort-Food'],
-    colorGradient: 'linear-gradient(135deg, #ea580c 0%, #d97706 100%)',
-    createdAt: new Date().toISOString(),
-    ingredients: [
-      { name: 'Potato', amount: 600, unit: 'g', note: 'Peeled and diced into 1-inch cubes' },
-      { name: 'Onion', amount: 150, unit: 'g', note: 'Finely chopped' },
-      { name: 'Tomato', amount: 150, unit: 'g', note: 'Pureed or chopped' },
-      { name: 'Cooking Oil', amount: 30, unit: 'ml', note: 'For sautéing and tempering' },
-      { name: 'Ginger Garlic Paste', amount: 15, unit: 'g', note: 'Aromatic paste' },
-      { name: 'Green Chillies', amount: 10, unit: 'g', note: 'Slit chillies' },
-      { name: 'Salt', amount: 10, unit: 'g', note: 'To taste' },
-      { name: 'Red Chilli Powder', amount: 6, unit: 'g', note: 'Warm spice' },
-      { name: 'Turmeric Powder', amount: 4, unit: 'g', note: 'Golden color' },
-      { name: 'Mustard Seeds', amount: 3, unit: 'g', note: 'Tempering' },
-      { name: 'Cumin Seeds', amount: 3, unit: 'g', note: 'Tempering' },
-      { name: 'Curry Leaves', amount: 5, unit: 'g', note: 'Fresh sprig' },
-      { name: 'Garam Masala', amount: 4, unit: 'g', note: 'Finishing spice' },
-      { name: 'Water', amount: 300, unit: 'ml', note: 'Gravy simmer' }
-    ],
-    instructions: [
-      { step: 1, text: 'Peel and cube 600 g Potatoes, chop 150 g Onion and 150 g Tomato.', durationMinutes: 8, ingredientsUsed: ['Potato', 'Onion', 'Tomato'] },
-      { step: 2, text: 'Heat 30 ml Cooking Oil in a pan, add Mustard Seeds, Cumin Seeds, and Curry Leaves until they splutter.', durationMinutes: 3, ingredientsUsed: ['Cooking Oil', 'Mustard Seeds', 'Cumin Seeds', 'Curry Leaves'] },
-      { step: 3, text: 'Add Onions, Green Chillies, and Ginger Garlic Paste; sauté until golden brown.', durationMinutes: 5, ingredientsUsed: ['Onion', 'Green Chillies', 'Ginger Garlic Paste'] },
-      { step: 4, text: 'Add Tomatoes, Salt, Turmeric Powder, and Red Chilli Powder; cook until soft.', durationMinutes: 4, ingredientsUsed: ['Tomato', 'Salt', 'Turmeric Powder', 'Red Chilli Powder'] },
-      { step: 5, text: 'Add Potatoes and 300 ml Water; cover and simmer for 12 minutes until potatoes are tender.', durationMinutes: 12, ingredientsUsed: ['Potato', 'Water'] },
-      { step: 6, text: 'Stir in 4 g Garam Masala, simmer 2 minutes, and serve hot.', durationMinutes: 2, ingredientsUsed: ['Garam Masala'] }
-    ],
-    nutrition: { calories: 290, protein: 5, carbs: 42, fat: 11 }
-  },
-  {
-    id: 'rec_egg_curry',
-    title: 'Spiced Egg Masala Curry',
-    description: 'Hard-boiled eggs simmered in a rich, spicy onion-tomato gravy with aromatic masalas.',
-    prepTime: 15,
-    cookTime: 20,
-    servings: 4,
-    difficulty: 'Easy',
-    category: 'Dinner',
-    cuisine: 'Indian',
-    dietaryTags: ['High-Protein', 'Gluten-Free'],
-    colorGradient: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
-    createdAt: new Date().toISOString(),
-    ingredients: [
-      { name: 'Eggs', amount: 4, unit: 'pcs', note: 'Boiled and shallow fried' },
-      { name: 'Onion', amount: 200, unit: 'g', note: 'Chopped' },
-      { name: 'Tomato', amount: 150, unit: 'g', note: 'Chopped' },
-      { name: 'Cooking Oil', amount: 30, unit: 'ml', note: 'For frying eggs and curry base' },
-      { name: 'Ginger Garlic Paste', amount: 15, unit: 'g', note: 'Fresh' },
-      { name: 'Salt', amount: 10, unit: 'g', note: 'To taste' },
-      { name: 'Red Chilli Powder', amount: 8, unit: 'g', note: 'Spicy chilli' },
-      { name: 'Turmeric Powder', amount: 4, unit: 'g', note: 'For color' },
-      { name: 'Garam Masala', amount: 5, unit: 'g', note: 'Finishing spice' },
-      { name: 'Water', amount: 250, unit: 'ml', note: 'For gravy' }
-    ],
-    instructions: [
-      { step: 1, text: 'Boil 4 Eggs for 10 minutes, peel shell, and make light vertical slits.', durationMinutes: 10, ingredientsUsed: ['Eggs'] },
-      { step: 2, text: 'Heat 10 ml Cooking Oil with pinch of Turmeric & Chilli Powder; sear eggs until golden exterior forms.', durationMinutes: 3, ingredientsUsed: ['Cooking Oil', 'Eggs', 'Turmeric Powder', 'Red Chilli Powder'] },
-      { step: 3, text: 'Heat remaining Oil, sauté Onions and Ginger Garlic Paste until translucent.', durationMinutes: 5, ingredientsUsed: ['Cooking Oil', 'Onion', 'Ginger Garlic Paste'] },
-      { step: 4, text: 'Add Tomatoes, Salt, and remaining spices; cook until oil separates.', durationMinutes: 5, ingredientsUsed: ['Tomato', 'Salt', 'Red Chilli Powder', 'Turmeric Powder'] },
-      { step: 5, text: 'Add 250 ml Water and seared Eggs; simmer for 6 minutes until gravy thickens.', durationMinutes: 6, ingredientsUsed: ['Eggs', 'Water', 'Garam Masala'] }
-    ],
-    nutrition: { calories: 340, protein: 18, carbs: 14, fat: 22 }
-  },
-  {
-    id: 'rec_tomato_dal',
-    title: 'Aromatic Tomato Dal (Pappu)',
-    description: 'Yellow lentils cooked with juicy ripe tomatoes, tempered with mustard seeds, cumin, garlic, and curry leaves.',
-    prepTime: 10,
-    cookTime: 20,
-    servings: 4,
-    difficulty: 'Easy',
-    category: 'Lunch',
-    cuisine: 'South Indian',
-    dietaryTags: ['Vegan', 'Gluten-Free', 'High-Protein'],
-    colorGradient: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-    createdAt: new Date().toISOString(),
-    ingredients: [
-      { name: 'Toor Dal', amount: 250, unit: 'g', note: 'Rinsed lentils' },
-      { name: 'Tomato', amount: 250, unit: 'g', note: 'Ripe chopped tomatoes' },
-      { name: 'Water', amount: 1, unit: 'L', note: 'For cooking lentils' },
-      { name: 'Cooking Oil', amount: 25, unit: 'ml', note: 'For tempering' },
-      { name: 'Green Chillies', amount: 10, unit: 'g', note: 'Slit chillies' },
-      { name: 'Salt', amount: 10, unit: 'g', note: 'To taste' },
-      { name: 'Turmeric Powder', amount: 4, unit: 'g', note: 'Golden color' },
-      { name: 'Mustard Seeds', amount: 3, unit: 'g', note: 'Tempering' },
-      { name: 'Cumin Seeds', amount: 3, unit: 'g', note: 'Tempering' },
-      { name: 'Curry Leaves', amount: 5, unit: 'g', note: 'Fresh sprig' }
-    ],
-    instructions: [
-      { step: 1, text: 'Pressure cook 250 g Toor Dal and 250 g Tomatoes with 1 L Water, 4 g Turmeric, and Green Chillies until tender.', durationMinutes: 15, ingredientsUsed: ['Toor Dal', 'Tomato', 'Water', 'Turmeric Powder', 'Green Chillies'] },
-      { step: 2, text: 'Mash cooked dal gently to combine tomatoes and lentils.', durationMinutes: 2, ingredientsUsed: ['Toor Dal', 'Tomato'] },
-      { step: 3, text: 'Heat 25 ml Cooking Oil in a pan; add Mustard Seeds, Cumin Seeds, and Curry Leaves until fragrant.', durationMinutes: 3, ingredientsUsed: ['Cooking Oil', 'Mustard Seeds', 'Cumin Seeds', 'Curry Leaves'] },
-      { step: 4, text: 'Pour tempering into cooked tomato dal, add 10 g Salt, simmer 2 minutes, and serve warm.', durationMinutes: 2, ingredientsUsed: ['Salt'] }
-    ],
-    nutrition: { calories: 220, protein: 13, carbs: 34, fat: 4 }
-  },
-  {
-    id: 'rec_potato_fry',
-    title: 'Crispy Potato Masala Fry',
-    description: 'Golden fried potato cubes tossed with mustard, cumin, curry leaves, chillies, and aromatic spices.',
-    prepTime: 10,
-    cookTime: 18,
-    servings: 3,
-    difficulty: 'Easy',
-    category: 'Dinner',
-    cuisine: 'South Indian',
-    dietaryTags: ['Vegan', 'Gluten-Free', 'Comfort-Food'],
-    colorGradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-    createdAt: new Date().toISOString(),
-    ingredients: [
-      { name: 'Potato', amount: 600, unit: 'g', note: 'Peeled and diced into 1/2-inch cubes' },
-      { name: 'Cooking Oil', amount: 30, unit: 'ml', note: 'For tempering and roasting' },
-      { name: 'Salt', amount: 8, unit: 'g', note: 'Adjust to taste' },
-      { name: 'Red Chilli Powder', amount: 5, unit: 'g', note: 'For fiery warmth' },
-      { name: 'Turmeric Powder', amount: 3, unit: 'g', note: 'For vibrant golden color' },
-      { name: 'Mustard Seeds', amount: 3, unit: 'g', note: 'For tempering' },
-      { name: 'Cumin Seeds', amount: 3, unit: 'g', note: 'For earthy aroma' },
-      { name: 'Onion', amount: 100, unit: 'g', note: 'Finely sliced' },
-      { name: 'Green Chillies', amount: 10, unit: 'g', note: 'Slit lengthwise' },
-      { name: 'Curry Leaves', amount: 5, unit: 'g', note: 'Fresh sprig' }
-    ],
-    instructions: [
-      { step: 1, text: 'Wash, peel, and cut 600 g Potatoes into uniform 1/2-inch cubes.', durationMinutes: 10, ingredientsUsed: ['Potato'] },
-      { step: 2, text: 'Heat 30 ml Cooking Oil in a wide pan over medium heat. Add 3 g Mustard Seeds, 3 g Cumin Seeds, and 5 g Curry Leaves until they splutter.', durationMinutes: 3, ingredientsUsed: ['Cooking Oil', 'Mustard Seeds', 'Cumin Seeds', 'Curry Leaves'] },
-      { step: 3, text: 'Add 100 g sliced Onion and 10 g Green Chillies; sauté for 3 minutes until soft.', durationMinutes: 3, ingredientsUsed: ['Onion', 'Green Chillies'] },
-      { step: 4, text: 'Add diced Potatoes, 8 g Salt, 3 g Turmeric Powder, and 5 g Red Chilli Powder. Toss thoroughly.', durationMinutes: 2, ingredientsUsed: ['Potato', 'Salt', 'Turmeric Powder', 'Red Chilli Powder'] },
-      { step: 5, text: 'Cover pan and cook on medium-low flame for 10 minutes, stirring occasionally until potatoes are tender inside.', durationMinutes: 10, ingredientsUsed: ['Potato'] },
-      { step: 6, text: 'Remove lid, roast on medium heat for 3 minutes until edges become crisp and golden brown.', durationMinutes: 3, ingredientsUsed: [] }
-    ],
-    nutrition: { calories: 280, protein: 4, carbs: 38, fat: 12 }
-  },
-  {
-    id: 'rec_4',
-    title: 'Comforting Rice & Potato Masala Fry',
-    description: 'A complete comfort meal pairing fragrant fluffy rice with golden spiced potato masala fry.',
-    prepTime: 15,
-    cookTime: 25,
-    servings: 4,
-    difficulty: 'Easy',
-    category: 'Dinner',
-    cuisine: 'Indian',
-    dietaryTags: ['Vegan', 'Gluten-Free', 'Comfort-Food'],
-    colorGradient: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
-    createdAt: new Date().toISOString(),
-    ingredients: [
-      { name: 'Rice', amount: 500, unit: 'g', note: 'Basmati rice for boiling' },
-      { name: 'Potato', amount: 600, unit: 'g', note: 'Diced for frying' },
-      { name: 'Water', amount: 1, unit: 'L', note: 'For rice boiling' },
-      { name: 'Cooking Oil', amount: 40, unit: 'ml', note: 'For frying and tempering' },
-      { name: 'Salt', amount: 13, unit: 'g', note: 'Divided between rice and fry' },
-      { name: 'Red Chilli Powder', amount: 5, unit: 'g', note: 'Seasoning for potatoes' },
-      { name: 'Turmeric Powder', amount: 3, unit: 'g', note: 'Golden spice color' },
-      { name: 'Mustard Seeds', amount: 3, unit: 'g', note: 'Tempering' },
-      { name: 'Cumin Seeds', amount: 3, unit: 'g', note: 'Tempering' },
-      { name: 'Onion', amount: 100, unit: 'g', note: 'Sliced' },
-      { name: 'Green Chillies', amount: 10, unit: 'g', note: 'Fresh slit chillies' },
-      { name: 'Curry Leaves', amount: 5, unit: 'g', note: 'Fresh leaves' }
-    ],
-    instructions: [
-      { step: 1, text: 'Boil 500 g Rice in 1 L Water with 5 g Salt and 10 ml Cooking Oil until fluffy.', durationMinutes: 15, ingredientsUsed: ['Rice', 'Water', 'Salt', 'Cooking Oil'] },
-      { step: 2, text: 'Dice 600 g Potatoes, slice 100 g Onion and 10 g Green Chillies.', durationMinutes: 5, ingredientsUsed: ['Potato', 'Onion', 'Green Chillies'] },
-      { step: 3, text: 'Heat 30 ml Cooking Oil in a pan, add Mustard Seeds, Cumin Seeds, Curry Leaves, Onions, and Green Chillies.', durationMinutes: 4, ingredientsUsed: ['Cooking Oil', 'Mustard Seeds', 'Cumin Seeds', 'Curry Leaves', 'Onion', 'Green Chillies'] },
-      { step: 4, text: 'Add Potatoes, 8 g Salt, Turmeric Powder, and Red Chilli Powder. Cook until golden crispy.', durationMinutes: 12, ingredientsUsed: ['Potato', 'Salt', 'Turmeric Powder', 'Red Chilli Powder'] },
-      { step: 5, text: 'Plate steaming rice alongside crispy spiced potato fry and serve immediately.', durationMinutes: 2, ingredientsUsed: [] }
-    ],
-    nutrition: { calories: 480, protein: 9, carbs: 85, fat: 13 }
-  },
-  {
-    id: 'rec_5',
-    title: 'Restaurant Style Chicken Curry',
-    description: 'Tender chicken simmered in an onion-tomato gravy with ginger garlic paste, green chillies, and garish spices.',
-    prepTime: 20,
-    cookTime: 30,
-    servings: 4,
-    difficulty: 'Medium',
-    category: 'Dinner',
-    cuisine: 'Indian',
-    dietaryTags: ['High-Protein', 'Non-Vegetarian', 'Gluten-Free'],
-    colorGradient: 'linear-gradient(135deg, #f43f5e 0%, #b91c1c 100%)',
-    createdAt: new Date().toISOString(),
-    ingredients: [
-      { name: 'Chicken', amount: 1, unit: 'kg', note: 'Curry cut pieces' },
-      { name: 'Onion', amount: 300, unit: 'g', note: 'Finely chopped' },
-      { name: 'Tomato', amount: 200, unit: 'g', note: 'Pureed or chopped' },
-      { name: 'Cooking Oil', amount: 45, unit: 'ml', note: '3 tbsp for sautéing' },
-      { name: 'Ginger Garlic Paste', amount: 30, unit: 'g', note: 'Freshly ground' },
-      { name: 'Salt', amount: 12, unit: 'g', note: 'Seasoning to taste' },
-      { name: 'Red Chilli Powder', amount: 10, unit: 'g', note: 'Kashmiri or spicy red chilli' },
-      { name: 'Turmeric Powder', amount: 5, unit: 'g', note: 'Color & anti-inflammatory' },
-      { name: 'Garam Masala', amount: 5, unit: 'g', note: 'Finishing spice' },
-      { name: 'Green Chillies', amount: 10, unit: 'g', note: 'Slit chillies' },
-      { name: 'Water', amount: 400, unit: 'ml', note: 'For gravy simmer' }
-    ],
-    instructions: [
-      { step: 1, text: 'Clean 1 kg Chicken and marinate with 15 g Ginger Garlic Paste, 3 g Salt, and 2 g Turmeric Powder for 15 minutes.', durationMinutes: 15, ingredientsUsed: ['Chicken', 'Ginger Garlic Paste', 'Salt', 'Turmeric Powder'] },
-      { step: 2, text: 'Heat 45 ml Cooking Oil in a heavy pot, add 300 g Onions and 10 g Green Chillies; sauté until golden brown.', durationMinutes: 8, ingredientsUsed: ['Cooking Oil', 'Onion', 'Green Chillies'] },
-      { step: 3, text: 'Add remaining Ginger Garlic Paste and cook for 2 minutes until fragrant.', durationMinutes: 2, ingredientsUsed: ['Ginger Garlic Paste'] },
-      { step: 4, text: 'Add 200 g Tomatoes, 9 g Salt, 10 g Red Chilli Powder, and 3 g Turmeric; cook until oil separates.', durationMinutes: 7, ingredientsUsed: ['Tomato', 'Salt', 'Red Chilli Powder', 'Turmeric Powder'] },
-      { step: 5, text: 'Add marinated Chicken pieces and sear on high heat for 5 minutes.', durationMinutes: 5, ingredientsUsed: ['Chicken'] },
-      { step: 6, text: 'Pour in 400 ml Water, cover tightly, and simmer on medium-low for 15 minutes until chicken is tender.', durationMinutes: 15, ingredientsUsed: ['Water'] },
-      { step: 7, text: 'Stir in 5 g Garam Masala, simmer 2 minutes, and garnish.', durationMinutes: 2, ingredientsUsed: ['Garam Masala'] }
-    ],
-    nutrition: { calories: 420, protein: 42, carbs: 12, fat: 24 }
-  },
-  {
-    id: 'rec_6',
-    title: 'Paneer Butter Masala',
-    description: 'Succulent paneer cubes simmered in a velvety tomato, cashew, and yogurt butter gravy.',
-    prepTime: 15,
-    cookTime: 20,
-    servings: 3,
-    difficulty: 'Medium',
-    category: 'Dinner',
-    cuisine: 'North Indian',
-    dietaryTags: ['Vegetarian', 'High-Protein'],
-    colorGradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-    createdAt: new Date().toISOString(),
-    ingredients: [
-      { name: 'Fresh Paneer', amount: 400, unit: 'g', note: 'Cubed into 1-inch pieces' },
-      { name: 'Tomato', amount: 400, unit: 'g', note: 'Pureed' },
-      { name: 'Raw Cashews', amount: 50, unit: 'g', note: 'Soaked for creaminess' },
-      { name: 'Greek Yogurt', amount: 50, unit: 'g', note: 'Whisked yogurt' },
-      { name: 'Butter', amount: 30, unit: 'g', note: 'Rich butter for pan' },
-      { name: 'Ginger Garlic Paste', amount: 20, unit: 'g', note: 'Fresh aromatic paste' },
-      { name: 'Salt', amount: 10, unit: 'g', note: 'To taste' },
-      { name: 'Red Chilli Powder', amount: 8, unit: 'g', note: 'Kashmiri chilli' },
-      { name: 'Garam Masala', amount: 4, unit: 'g', note: 'Spice seasoning' },
-      { name: 'Water', amount: 200, unit: 'ml', note: 'Gravy adjustment' }
-    ],
-    instructions: [
-      { step: 1, text: 'Blend 400 g Tomatoes and 50 g soaked Raw Cashews into a smooth silky paste.', durationMinutes: 5, ingredientsUsed: ['Tomato', 'Raw Cashews'] },
-      { step: 2, text: 'Melt 30 g Butter in a pan, add 20 g Ginger Garlic Paste and sauté for 1 minute.', durationMinutes: 2, ingredientsUsed: ['Butter', 'Ginger Garlic Paste'] },
-      { step: 3, text: 'Add tomato cashew puree, 10 g Salt, 8 g Red Chilli Powder, and 200 ml Water; simmer for 8 minutes.', durationMinutes: 8, ingredientsUsed: ['Tomato', 'Raw Cashews', 'Salt', 'Red Chilli Powder', 'Water'] },
-      { step: 4, text: 'Whisk in 50 g Greek Yogurt and 4 g Garam Masala until glossy.', durationMinutes: 3, ingredientsUsed: ['Greek Yogurt', 'Garam Masala'] },
-      { step: 5, text: 'Gently add 400 g Fresh Paneer cubes and simmer on low heat for 4 minutes before serving.', durationMinutes: 4, ingredientsUsed: ['Fresh Paneer'] }
-    ],
-    nutrition: { calories: 450, protein: 22, carbs: 24, fat: 30 }
-  },
-  {
-    id: 'rec_dal_tadka',
-    title: 'Yellow Dal Tadka',
-    description: 'Golden yellow pigeon pea lentil soup tempered with cumin, mustard seeds, garlic, and curry leaves.',
-    prepTime: 10,
-    cookTime: 20,
-    servings: 4,
-    difficulty: 'Easy',
-    category: 'Lunch',
-    cuisine: 'Indian',
-    dietaryTags: ['Vegetarian', 'High-Protein', 'Gluten-Free'],
-    colorGradient: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)',
-    createdAt: new Date().toISOString(),
-    ingredients: [
-      { name: 'Toor Dal', amount: 250, unit: 'g', note: 'Rinsed yellow split lentils' },
-      { name: 'Water', amount: 1, unit: 'L', note: 'For boiling lentils' },
-      { name: 'Cooking Oil', amount: 30, unit: 'ml', note: 'For tempering' },
-      { name: 'Onion', amount: 100, unit: 'g', note: 'Chopped' },
-      { name: 'Tomato', amount: 100, unit: 'g', note: 'Diced' },
-      { name: 'Ginger Garlic Paste', amount: 15, unit: 'g', note: 'Tempering aromatic' },
-      { name: 'Green Chillies', amount: 10, unit: 'g', note: 'Slit' },
-      { name: 'Salt', amount: 8, unit: 'g', note: 'Seasoning' },
-      { name: 'Turmeric Powder', amount: 4, unit: 'g', note: 'Golden color' },
-      { name: 'Red Chilli Powder', amount: 4, unit: 'g', note: 'Flavoring' },
-      { name: 'Mustard Seeds', amount: 3, unit: 'g', note: 'Tempering' },
-      { name: 'Cumin Seeds', amount: 3, unit: 'g', note: 'Tempering' },
-      { name: 'Curry Leaves', amount: 5, unit: 'g', note: 'Fresh sprig' }
-    ],
-    instructions: [
-      { step: 1, text: 'Pressure cook 250 g Toor Dal with 1 L Water, 4 g Turmeric Powder, and 4 g Salt for 4 whistles until soft.', durationMinutes: 15, ingredientsUsed: ['Toor Dal', 'Water', 'Turmeric Powder', 'Salt'] },
-      { step: 2, text: 'Heat 30 ml Cooking Oil in a pan. Add Mustard Seeds, Cumin Seeds, and Curry Leaves until they pop.', durationMinutes: 3, ingredientsUsed: ['Cooking Oil', 'Mustard Seeds', 'Cumin Seeds', 'Curry Leaves'] },
-      { step: 3, text: 'Add 100 g Onion, Green Chillies, and Ginger Garlic Paste; sauté until translucent.', durationMinutes: 4, ingredientsUsed: ['Onion', 'Green Chillies', 'Ginger Garlic Paste'] },
-      { step: 4, text: 'Add 100 g Tomato, remaining 4 g Salt, and Red Chilli Powder; cook until soft.', durationMinutes: 3, ingredientsUsed: ['Tomato', 'Salt', 'Red Chilli Powder'] },
-      { step: 5, text: 'Pour cooked Dal into tempering pan, mix well, simmer 2 minutes, and serve.', durationMinutes: 2, ingredientsUsed: ['Toor Dal'] }
-    ],
-    nutrition: { calories: 230, protein: 14, carbs: 36, fat: 5 }
-  },
-  {
-    id: 'rec_veg_curry',
-    title: 'Homestyle Mixed Vegetable Curry',
-    description: 'Seasonal mixed vegetables cooked in a spiced onion-tomato curry base.',
-    prepTime: 15,
-    cookTime: 20,
-    servings: 4,
-    difficulty: 'Easy',
-    category: 'Dinner',
-    cuisine: 'Indian',
-    dietaryTags: ['Vegan', 'Gluten-Free', 'High-Fiber'],
-    colorGradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-    createdAt: new Date().toISOString(),
-    ingredients: [
-      { name: 'Mixed Vegetables', amount: 500, unit: 'g', note: 'Carrot, peas, beans, potato' },
-      { name: 'Onion', amount: 150, unit: 'g', note: 'Finely chopped' },
-      { name: 'Tomato', amount: 150, unit: 'g', note: 'Chopped' },
-      { name: 'Cooking Oil', amount: 30, unit: 'ml', note: 'Sautéing oil' },
-      { name: 'Ginger Garlic Paste', amount: 15, unit: 'g', note: 'Aromatic base' },
-      { name: 'Salt', amount: 10, unit: 'g', note: 'Seasoning' },
-      { name: 'Red Chilli Powder', amount: 6, unit: 'g', note: 'Spice powder' },
-      { name: 'Turmeric Powder', amount: 3, unit: 'g', note: 'Golden spice' },
-      { name: 'Garam Masala', amount: 4, unit: 'g', note: 'Finishing spice' },
-      { name: 'Water', amount: 300, unit: 'ml', note: 'Curry liquid' }
-    ],
-    instructions: [
-      { step: 1, text: 'Dice 500 g Mixed Vegetables into bite-sized pieces.', durationMinutes: 8, ingredientsUsed: ['Mixed Vegetables'] },
-      { step: 2, text: 'Heat 30 ml Cooking Oil, sauté 150 g Onion and 15 g Ginger Garlic Paste until light brown.', durationMinutes: 4, ingredientsUsed: ['Cooking Oil', 'Onion', 'Ginger Garlic Paste'] },
-      { step: 3, text: 'Add 150 g Tomato, 10 g Salt, 6 g Red Chilli Powder, and 3 g Turmeric; cook for 4 minutes.', durationMinutes: 4, ingredientsUsed: ['Tomato', 'Salt', 'Red Chilli Powder', 'Turmeric Powder'] },
-      { step: 4, text: 'Add Mixed Vegetables and 300 ml Water; cover and cook on medium flame for 12 minutes.', durationMinutes: 12, ingredientsUsed: ['Mixed Vegetables', 'Water'] },
-      { step: 5, text: 'Stir in 4 g Garam Masala and simmer 2 minutes before serving.', durationMinutes: 2, ingredientsUsed: ['Garam Masala'] }
-    ],
-    nutrition: { calories: 210, protein: 6, carbs: 28, fat: 8 }
-  },
-  {
-    id: 'rec_1',
-    title: 'Dragon Fruit & Berry Smoothie Bowl',
-    description: 'Vibrant, antioxidant-packed smoothie bowl garnished with raw cashews and honey.',
-    prepTime: 10,
-    cookTime: 0,
-    servings: 2,
-    difficulty: 'Easy',
-    category: 'Breakfast',
-    cuisine: 'Modern Fusion',
-    dietaryTags: ['Vegetarian', 'Gluten-Free', 'High-Antioxidant'],
-    colorGradient: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)',
-    createdAt: new Date().toISOString(),
-    ingredients: [
-      { name: 'Dragon Fruit', amount: 1, unit: 'pcs', note: 'Fresh dragon fruit' },
-      { name: 'Greek Yogurt', amount: 150, unit: 'g', note: 'Chilled yogurt' },
-      { name: 'Raw Cashews', amount: 30, unit: 'g', note: 'For topping' }
-    ],
-    instructions: [
-      { step: 1, text: 'Dice fresh Dragon Fruit into uniform cubes, set half aside for topping.', durationMinutes: 3, ingredientsUsed: ['Dragon Fruit'] },
-      { step: 2, text: 'Blend remaining Dragon Fruit with 150 g Greek Yogurt until smooth.', durationMinutes: 3, ingredientsUsed: ['Dragon Fruit', 'Greek Yogurt'] },
-      { step: 3, text: 'Pour into chilled bowl and garnish with 30 g Raw Cashews.', durationMinutes: 2, ingredientsUsed: ['Raw Cashews'] }
-    ],
-    nutrition: { calories: 310, protein: 12, carbs: 42, fat: 11 }
-  },
-  {
-    id: 'rec_2',
-    title: 'Pan-Seared Paneer & Avocado Bowl',
-    description: 'Crispy golden paneer cubes served over warm seasoned grain with Hass avocado slices.',
-    prepTime: 15,
-    cookTime: 10,
-    servings: 2,
-    difficulty: 'Medium',
-    category: 'Lunch',
-    cuisine: 'Indian Fusion',
-    dietaryTags: ['Vegetarian', 'High-Protein', 'Keto-Friendly'],
-    colorGradient: 'linear-gradient(135deg, #f59e0b 0%, #10b981 100%)',
-    createdAt: new Date().toISOString(),
-    ingredients: [
-      { name: 'Fresh Paneer', amount: 200, unit: 'g', note: 'Cubed paneer' },
-      { name: 'Hass Avocado', amount: 1, unit: 'pcs', note: 'Sliced' },
-      { name: 'Cherry Tomatoes', amount: 100, unit: 'g', note: 'Halved' },
-      { name: 'Cooking Oil', amount: 15, unit: 'ml', note: 'For searing' },
-      { name: 'Salt', amount: 4, unit: 'g', note: 'Seasoning' },
-      { name: 'Red Chilli Powder', amount: 3, unit: 'g', note: 'Seasoning' }
-    ],
-    instructions: [
-      { step: 1, text: 'Cut Paneer into cubes, toss with 4 g Salt and 3 g Red Chilli Powder.', durationMinutes: 3, ingredientsUsed: ['Fresh Paneer', 'Salt', 'Red Chilli Powder'] },
-      { step: 2, text: 'Heat 15 ml Cooking Oil in a pan, sear Paneer cubes until golden brown.', durationMinutes: 5, ingredientsUsed: ['Cooking Oil', 'Fresh Paneer'] },
-      { step: 3, text: 'Slice Avocado, halve Cherry Tomatoes, and assemble in bowl with warm paneer.', durationMinutes: 2, ingredientsUsed: ['Hass Avocado', 'Cherry Tomatoes'] }
-    ],
-    nutrition: { calories: 480, protein: 24, carbs: 36, fat: 36 }
-  },
-  {
-    id: 'rec_3',
-    title: 'Nutritious Cashew & Ragi Porridge',
-    description: 'Wholesome finger millet porridge simmered with roasted cashew cream and cardamom.',
-    prepTime: 5,
-    cookTime: 15,
-    servings: 2,
-    difficulty: 'Easy',
-    category: 'Breakfast',
-    cuisine: 'Traditional Indian',
-    dietaryTags: ['Vegetarian', 'Gluten-Free', 'High-Fiber'],
-    colorGradient: 'linear-gradient(135deg, #b45309 0%, #d97706 100%)',
-    createdAt: new Date().toISOString(),
-    ingredients: [
-      { name: 'Finger Millet (Ragi)', amount: 100, unit: 'g', note: 'Fine ragi flour' },
-      { name: 'Raw Cashews', amount: 50, unit: 'g', note: 'Soaked for cream' },
-      { name: 'Water', amount: 500, unit: 'ml', note: 'For whisking' },
-      { name: 'Salt', amount: 2, unit: 'g', note: 'Pinch of salt' }
-    ],
-    instructions: [
-      { step: 1, text: 'Soak 50 g Raw Cashews and blend into smooth paste with 100 ml Water.', durationMinutes: 5, ingredientsUsed: ['Raw Cashews', 'Water'] },
-      { step: 2, text: 'Whisk 100 g Ragi flour in remaining 400 ml Water with 2 g Salt; simmer until thickened.', durationMinutes: 8, ingredientsUsed: ['Finger Millet (Ragi)', 'Water', 'Salt'] },
-      { step: 3, text: 'Stir in cashew cream and serve warm.', durationMinutes: 2, ingredientsUsed: ['Raw Cashews'] }
-    ],
-    nutrition: { calories: 360, protein: 11, carbs: 54, fat: 12 }
-  }
-];
+const initialRecipes: Recipe[] = MASTER_RECIPE_CATALOG;
+
 
 const initialState: KitchenGlobalState = {
   pantry: loadPantryForRestaurant(null),

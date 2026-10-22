@@ -319,11 +319,11 @@ export const WelcomePage: React.FC = () => {
             boxShadow: '0 4px 20px rgba(234, 88, 12, 0.1)'
           }}
         >
-          <Sparkles size={16} /> Intelligent Kitchen OS & Smart Pantry
+          <Sparkles size={16} /> Intelligent Kitchen and Restaurant Management System
         </div>
 
         {/* Peaceful Grand Main Heading */}
-        <div style={{ textAlign: 'center', maxWidth: '780px' }}>
+        <div style={{ textAlign: 'center', maxWidth: '820px' }}>
           <h1
             style={{
               fontSize: 'clamp(2.4rem, 5vw, 3.8rem)',
@@ -335,7 +335,7 @@ export const WelcomePage: React.FC = () => {
               textShadow: '0 2px 10px rgba(234, 88, 12, 0.15)'
             }}
           >
-            Serene Kitchen Intelligence & Restaurant Management
+            Intelligent Kitchen and Restaurant Management System
           </h1>
           <p
             style={{

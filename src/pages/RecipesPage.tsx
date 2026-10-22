@@ -7,7 +7,7 @@ import { RecipeDetailsModal } from '../features/recipes/components/RecipeDetails
 import { AIBrainOrb } from '../features/ai-brain/AIBrainOrb';
 import { useKitchenState } from '../state/KitchenContext';
 
-const CATEGORY_OPTIONS = ['all', 'Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dessert'];
+const CATEGORY_OPTIONS = ['all', 'Cakes & Baking', 'Chocolate & Confectionery', 'Indian Curries', 'Rice Dishes', 'Pasta & Noodles', 'Breakfast', 'Dessert'];
 const DIFFICULTY_OPTIONS = ['all', 'Easy', 'Medium', 'Hard'];
 
 export const RecipesPage: React.FC = () => {

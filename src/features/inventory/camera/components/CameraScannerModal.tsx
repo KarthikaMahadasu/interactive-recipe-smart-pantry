@@ -14,8 +14,8 @@ import {
   MinusCircle,
   Trash2,
   ArrowRight,
-  FileText,
-  Check
+  Check,
+  Scale
 } from 'lucide-react';
 import type { Ingredient, IngredientCategory } from '../../../../types/ingredient';
 import type { SmartGroceryItem } from '../../../grocery/types/groceryTypes';
@@ -50,26 +50,28 @@ const CATEGORY_OPTIONS: IngredientCategory[] = [
 ];
 
 const STANDARD_RESTAURANT_ITEMS = [
-  'Milk',
-  'Greek Yogurt',
-  'Fresh Paneer',
-  'Organic Tofu',
-  'Rice',
-  'Whole Wheat Flour',
-  'Tomato',
-  'Cherry Tomatoes',
   'Potato',
   'Onion',
-  'Carrot',
-  'Fresh Chicken Breast',
+  'Tomato',
+  'Rice',
+  'Whole Wheat Flour',
   'Eggs',
+  'Dark Chocolate',
+  'Milk',
+  'Fresh Paneer',
+  'Organic Tofu',
+  'Hass Avocado',
+  'Carrot',
+  'Dragon Fruit',
+  'Fresh Chicken Breast',
   'Extra Virgin Olive Oil',
   'Raw Cashews',
-  'Dragon Fruit',
   'Cheddar Cheese',
   'Heavy Cream',
   'Whole Wheat Bread',
-  'Tomato Sauce'
+  'Tomato Sauce',
+  'Sea Salt',
+  'Cane Sugar'
 ];
 
 export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, onClose }) => {
@@ -87,6 +89,7 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Modal Flow Step
   const [step, setStep] = useState<CameraActionStep>('preview');
@@ -97,6 +100,7 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
   // Vision Analysis Result
   const [analysisResult, setAnalysisResult] = useState<ImageAnalysisResult | null>(null);
   const [selectedIngredientName, setSelectedIngredientName] = useState<string>('');
+  const [isIngredientConfirmed, setIsIngredientConfirmed] = useState<boolean>(false);
   const [inventoryMatch, setInventoryMatch] = useState<CameraInventoryMatch | null>(null);
 
   // Manual Correction State
@@ -108,7 +112,6 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
   const [actionQuantity, setActionQuantity] = useState<string>('1');
   const [actionUnit, setActionUnit] = useState<string>('kg');
   const [actionCategory, setActionCategory] = useState<IngredientCategory>('produce');
-  const [actionNotes] = useState<string>('');
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   // Multi-item scanning support state
@@ -151,7 +154,7 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
       }
     } else {
       console.warn('Camera access error:', lastErr);
-      setCameraError('Camera access was denied or unavailable. You can upload an image file or take a photo with your device camera.');
+      setCameraError('Camera access was denied or unavailable. You can upload an image file below.');
     }
   };
 
@@ -168,6 +171,7 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
       setCapturedImage(null);
       setAnalysisResult(null);
       setSelectedIngredientName('');
+      setIsIngredientConfirmed(false);
       setInventoryMatch(null);
       setIsManualCorrection(false);
       setActiveAction(null);
@@ -199,12 +203,11 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
       setCapturedImage(dataUrl);
       setStep('captured');
       stopCamera();
-      // Auto analyze captured frame
       processImageAnalysis(dataUrl);
     }
   };
 
-  // File upload fallback handler
+  // File upload handler
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -220,15 +223,17 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
       }
     };
     reader.readAsDataURL(file);
+    // Reset file input
+    if (e.target) e.target.value = '';
   };
 
-  // Run generalized image analysis pipeline
+  // Run real visual image analysis pipeline
   const processImageAnalysis = async (imageData: string) => {
     setStep('analyzing');
     setAIState('working');
+    setIsIngredientConfirmed(false);
 
     try {
-      // Analyze single primary & potential multi-item results
       const multi = await ImageAnalysisService.detectMultipleItems(imageData);
       setDetectedItemsList(multi.items);
       setSelectedMultiIndex(0);
@@ -236,13 +241,13 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
       const primary = multi.items[0];
       setAnalysisResult(primary);
 
-      if (primary && primary.detectedItem) {
+      if (primary && primary.detectedItem && primary.confidenceLevel !== 'uncertain') {
         setSelectedIngredientName(primary.detectedItem);
-        setActionUnit(primary.suggestedUnit || primary.ocrResult?.extractedUnit || 'kg');
-        setActionQuantity((primary.suggestedQuantity || primary.ocrResult?.extractedQuantity || 1).toString());
+        setActionUnit(primary.suggestedUnit || 'kg');
+        setActionQuantity((primary.suggestedQuantity || 1).toString());
         setActionCategory(primary.category);
 
-        // Evaluate Inventory & Grocery Match
+        // Cross-check with inventory
         const match = CameraInventoryService.checkInventoryAndGrocery(
           primary.detectedItem,
           state.pantry,
@@ -266,13 +271,14 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
     }
   };
 
-  // Switch active item in multi-item scan mode
+  // Switch item in multi-item scan mode
   const handleSelectMultiItem = (index: number) => {
     setSelectedMultiIndex(index);
     const item = detectedItemsList[index];
     if (item && item.detectedItem) {
       setAnalysisResult(item);
       setSelectedIngredientName(item.detectedItem);
+      setIsIngredientConfirmed(false);
       setActionUnit(item.suggestedUnit || 'kg');
       setActionQuantity((item.suggestedQuantity || 1).toString());
       setActionCategory(item.category);
@@ -286,13 +292,34 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
     }
   };
 
+  // Confirm predicted ingredient (Requirement 5 & 6)
+  const handleConfirmIngredient = () => {
+    if (!selectedIngredientName) return;
+    setIsIngredientConfirmed(true);
+
+    // Refresh inventory and grocery status for the confirmed item
+    const match = CameraInventoryService.checkInventoryAndGrocery(
+      selectedIngredientName,
+      state.pantry,
+      state.groceryList
+    );
+    setInventoryMatch(match);
+    if (match.inventoryItem) {
+      setActionUnit(match.inventoryItem.unit);
+      setActionCategory(match.inventoryItem.category);
+    }
+  };
+
   // Manual Item Correction Picker Selection
   const handleSelectManualItem = (itemName: string) => {
     const norm = IngredientNormalizationService.normalize(itemName);
+    if (!norm.name) return;
+
     setSelectedIngredientName(norm.name);
     setActionCategory(norm.category);
     setActionUnit(norm.unit);
     setActionQuantity('1');
+    setIsIngredientConfirmed(true);
 
     const match = CameraInventoryService.checkInventoryAndGrocery(
       norm.name,
@@ -300,6 +327,10 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
       state.groceryList
     );
     setInventoryMatch(match);
+    if (match.inventoryItem) {
+      setActionUnit(match.inventoryItem.unit);
+      setActionCategory(match.inventoryItem.category);
+    }
     setIsManualCorrection(false);
     setStep('detected');
   };
@@ -310,7 +341,6 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
     setShowConfirmation(false);
     setStatusMessage(null);
 
-    // Pre-fill defaults based on match
     if (inventoryMatch?.inventoryItem) {
       setActionUnit(inventoryMatch.inventoryItem.unit);
       setActionCategory(inventoryMatch.inventoryItem.category);
@@ -320,30 +350,34 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
   // Execute and Verify Inventory / Grocery Update
   const handleConfirmAction = async () => {
     if (!selectedIngredientName || !activeAction) return;
+
+    const numQty = parseFloat(actionQuantity);
+    if (isNaN(numQty) || numQty <= 0) {
+      alert('Please enter a valid positive quantity.');
+      return;
+    }
+
     setStep('verifying');
     setAIState('thinking');
 
-    const numQty = Math.max(0.01, parseFloat(actionQuantity) || 1);
     const trimmedName = selectedIngredientName.trim();
     const existingIng = inventoryMatch?.inventoryItem;
 
     try {
-      await new Promise((res) => setTimeout(res, 500)); // Smooth state sequence delay
+      await new Promise((res) => setTimeout(res, 400));
 
       if (activeAction === 'use_stock' && existingIng) {
-        // Record Usage
         recordUsage(
           existingIng.id,
           numQty,
           actionUnit,
-          actionNotes.trim() || `Recorded usage via Camera Scanner by ${user?.name || 'Staff'}`
+          `Recorded usage via Inventory Scanner by ${user?.name || 'Staff'}`
         );
 
-        const newRemaining = Math.max(0, existingIng.quantity - numQty);
+        const newRemaining = Math.max(0, Math.round((existingIng.quantity - numQty) * 100) / 100);
         const successMsg = `Recorded usage of ${numQty} ${actionUnit} ${trimmedName}. Remaining stock: ${newRemaining} ${existingIng.unit}.`;
         setStatusMessage(successMsg);
 
-        // Add to AI Response History
         addAIResponse({
           message: successMsg,
           actionRequired: 'explore_pantry',
@@ -351,17 +385,16 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
           isMock: false
         });
       } else if (activeAction === 'add_stock' && existingIng) {
-        // Add More Stock to Existing Item
         const newTotal = Math.round((existingIng.quantity + numQty) * 100) / 100;
         updateIngredient({
           ...existingIng,
           quantity: newTotal,
-          notes: actionNotes.trim() || `Added stock via Camera Scanner by ${user?.name || 'Staff'}`,
+          notes: `Added stock via Inventory Scanner by ${user?.name || 'Staff'}`,
           updatedBy: user?.name || 'Staff',
           updatedAt: new Date().toISOString()
         });
 
-        const successMsg = `Added ${numQty} ${actionUnit} to existing ${trimmedName} stock. Updated total: ${newTotal} ${existingIng.unit}.`;
+        const successMsg = `Added ${numQty} ${actionUnit} to existing ${trimmedName} stock. Updated total stock: ${newTotal} ${existingIng.unit}.`;
         setStatusMessage(successMsg);
 
         addAIResponse({
@@ -371,16 +404,15 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
           isMock: false
         });
       } else if (activeAction === 'record_waste' && existingIng) {
-        // Record Waste
         recordWaste(
           existingIng.id,
           numQty,
           actionUnit,
-          actionNotes.trim() || `Recorded waste via Camera Scanner by ${user?.name || 'Staff'}`
+          `Recorded waste via Inventory Scanner by ${user?.name || 'Staff'}`
         );
 
-        const newRemaining = Math.max(0, existingIng.quantity - numQty);
-        const successMsg = `Recorded ${numQty} ${actionUnit} ${trimmedName} as waste. Remaining stock: ${newRemaining} ${existingIng.unit}.`;
+        const newRemaining = Math.max(0, Math.round((existingIng.quantity - numQty) * 100) / 100);
+        const successMsg = `Recorded ${numQty} ${actionUnit} ${trimmedName} as kitchen waste. Remaining stock: ${newRemaining} ${existingIng.unit}.`;
         setStatusMessage(successMsg);
 
         addAIResponse({
@@ -390,40 +422,52 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
           isMock: false
         });
       } else if (activeAction === 'add_inventory') {
-        // Create New Inventory Stock
-        const newIng: Ingredient = {
-          id: `ing_cam_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-          restaurantId: restaurant?.id || 'rest_spice_garden',
-          name: trimmedName,
-          quantity: numQty,
-          unit: actionUnit,
-          category: actionCategory,
-          freshness: 'fresh',
-          colorCode: '#06b6d4',
-          notes: actionNotes.trim() || `Added via Camera Scanner by ${user?.name || 'Staff'}`,
-          createdAt: new Date().toISOString(),
-          createdBy: user?.name || 'Staff'
-        };
-        addIngredient(newIng);
+        // Prevent accidental duplicates if item already exists in pantry
+        const duplicateCheck = IngredientNormalizationService.findInInventory(trimmedName, state.pantry);
+        if (duplicateCheck) {
+          const newTotal = Math.round((duplicateCheck.quantity + numQty) * 100) / 100;
+          updateIngredient({
+            ...duplicateCheck,
+            quantity: newTotal,
+            updatedBy: user?.name || 'Staff',
+            updatedAt: new Date().toISOString()
+          });
+          const successMsg = `${trimmedName} already existed in inventory. Updated existing stock to ${newTotal} ${duplicateCheck.unit}.`;
+          setStatusMessage(successMsg);
+        } else {
+          const newIng: Ingredient = {
+            id: `ing_cam_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+            restaurantId: restaurant?.id || 'rest_spice_garden',
+            name: trimmedName,
+            quantity: numQty,
+            unit: actionUnit,
+            category: actionCategory,
+            freshness: 'fresh',
+            colorCode: '#ea580c',
+            notes: `Added via Inventory Scanner by ${user?.name || 'Staff'}`,
+            createdAt: new Date().toISOString(),
+            createdBy: user?.name || 'Staff'
+          };
+          addIngredient(newIng);
 
-        const successMsg = `Added ${numQty} ${actionUnit} ${trimmedName} to restaurant inventory.`;
-        setStatusMessage(successMsg);
+          const successMsg = `Added ${numQty} ${actionUnit} ${trimmedName} to restaurant inventory.`;
+          setStatusMessage(successMsg);
+        }
 
         addAIResponse({
-          message: successMsg,
+          message: `Inventory updated: ${numQty} ${actionUnit} ${trimmedName}`,
           actionRequired: 'explore_pantry',
           timestamp: new Date().toLocaleTimeString(),
           isMock: false
         });
       } else if (activeAction === 'add_grocery') {
-        // Add to Restaurant Grocery List
         const newGItem: SmartGroceryItem = {
           id: `g_cam_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
           restaurantId: restaurant?.id || 'rest_spice_garden',
           name: trimmedName,
           quantity: numQty,
           unit: actionUnit,
-          reason: actionNotes.trim() || `Added via Camera Scan by ${user?.name || 'Staff'}`,
+          reason: `Added via Inventory Scanner by ${user?.name || 'Staff'}`,
           priority: 'MEDIUM',
           source: 'MANUAL',
           status: 'NEEDED',
@@ -433,7 +477,7 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
         };
         addGroceryItem(newGItem);
 
-        const successMsg = `Added ${numQty} ${actionUnit} ${trimmedName} to restaurant grocery list.`;
+        const successMsg = `Added ${numQty} ${actionUnit} ${trimmedName} to restaurant grocery restock list.`;
         setStatusMessage(successMsg);
 
         addAIResponse({
@@ -457,6 +501,7 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
     setCapturedImage(null);
     setAnalysisResult(null);
     setSelectedIngredientName('');
+    setIsIngredientConfirmed(false);
     setInventoryMatch(null);
     setIsManualCorrection(false);
     setActiveAction(null);
@@ -466,7 +511,6 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
     startCamera();
   };
 
-  // Filter manual items for picker
   const filteredStandardItems = STANDARD_RESTAURANT_ITEMS.filter((item) =>
     item.toLowerCase().includes(searchFilter.toLowerCase())
   );
@@ -477,8 +521,8 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
         position: 'fixed',
         inset: 0,
         zIndex: 110,
-        background: 'rgba(8, 12, 20, 0.92)',
-        backdropFilter: 'blur(12px)',
+        background: 'rgba(15, 23, 42, 0.70)',
+        backdropFilter: 'blur(10px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -491,59 +535,62 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
         onClick={(e) => e.stopPropagation()}
         style={{
           width: '100%',
-          maxWidth: '620px',
-          padding: '24px',
+          maxWidth: '640px',
+          padding: '26px',
           borderRadius: '24px',
-          background: '#111827',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.7)',
+          background: '#ffffff',
+          border: '1.5px solid #fed7aa',
+          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(234, 88, 12, 0.08)',
           display: 'flex',
           flexDirection: 'column',
           gap: '18px',
           maxHeight: '92vh',
           overflowY: 'auto',
-          color: '#f8fafc'
+          color: '#0f172a'
         }}
       >
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div
               style={{
-                width: '38px',
-                height: '38px',
+                width: '42px',
+                height: '42px',
                 borderRadius: '12px',
-                background: 'linear-gradient(135deg, #0284c7, #2563eb)',
+                background: 'linear-gradient(135deg, #ea580c, #f97316)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#fff'
+                color: '#ffffff',
+                boxShadow: '0 4px 12px rgba(234, 88, 12, 0.25)'
               }}
             >
-              <Camera size={20} />
+              <Camera size={22} />
             </div>
             <div>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0, color: '#f8fafc' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>
                 Restaurant Inventory Scanner
               </h2>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: 0 }}>
-                Intelligent vision & stock verification pipeline
+              <p style={{ fontSize: '0.82rem', color: '#64748b', margin: 0 }}>
+                Visual Food Classifier & Shared Inventory Verification
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
+            aria-label="Close Scanner"
             style={{
-              background: 'rgba(255, 255, 255, 0.08)',
+              background: '#f1f5f9',
               border: 'none',
               borderRadius: '10px',
-              width: '32px',
-              height: '32px',
-              color: '#94a3b8',
+              width: '34px',
+              height: '34px',
+              color: '#64748b',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              transition: 'all 0.15s ease'
             }}
           >
             <X size={18} />
@@ -561,16 +608,16 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                 borderRadius: '18px',
                 background: '#090d16',
                 overflow: 'hidden',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                border: '1px solid #e2e8f0',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}
             >
               {cameraError ? (
-                <div style={{ padding: '24px', textAlign: 'center', color: '#f87171', maxWidth: '400px' }}>
+                <div style={{ padding: '24px', textAlign: 'center', color: '#dc2626', maxWidth: '420px' }}>
                   <AlertTriangle size={36} style={{ marginBottom: '8px' }} />
-                  <p style={{ fontSize: '0.88rem', margin: 0 }}>{cameraError}</p>
+                  <p style={{ fontSize: '0.9rem', margin: 0, fontWeight: 500 }}>{cameraError}</p>
                 </div>
               ) : (
                 <video
@@ -587,8 +634,8 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                 <div
                   style={{
                     position: 'absolute',
-                    inset: '20px',
-                    border: '2px dashed rgba(56, 189, 248, 0.5)',
+                    inset: '24px',
+                    border: '2px dashed rgba(234, 88, 12, 0.7)',
                     borderRadius: '16px',
                     pointerEvents: 'none',
                     display: 'flex',
@@ -598,11 +645,12 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                 >
                   <span
                     style={{
-                      background: 'rgba(15, 23, 42, 0.75)',
+                      background: 'rgba(15, 23, 42, 0.85)',
                       padding: '6px 14px',
                       borderRadius: '20px',
                       fontSize: '0.75rem',
-                      color: '#38bdf8',
+                      color: '#fed7aa',
+                      fontWeight: 600,
                       backdropFilter: 'blur(4px)'
                     }}
                   >
@@ -621,44 +669,52 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                   onClick={handleCapturePhoto}
                   style={{
                     flex: 1,
-                    padding: '12px',
+                    padding: '13px',
                     borderRadius: '14px',
-                    background: 'linear-gradient(135deg, #0284c7, #2563eb)',
-                    color: '#fff',
+                    background: 'linear-gradient(135deg, #ea580c, #f97316)',
+                    color: '#ffffff',
                     border: 'none',
-                    fontWeight: 600,
+                    fontWeight: 700,
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '8px',
-                    fontSize: '0.92rem'
+                    fontSize: '0.94rem',
+                    boxShadow: '0 4px 12px rgba(234, 88, 12, 0.25)'
                   }}
                 >
                   <Camera size={18} /> Take Photo
                 </button>
               )}
 
-              <label
+              <button
+                onClick={() => fileInputRef.current?.click()}
                 style={{
                   flex: cameraError ? 1 : undefined,
-                  padding: '12px 20px',
+                  padding: '13px 22px',
                   borderRadius: '14px',
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  color: '#f8fafc',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  fontWeight: 600,
+                  background: '#f8fafc',
+                  color: '#0f172a',
+                  border: '1.5px solid #cbd5e1',
+                  fontWeight: 700,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '8px',
-                  fontSize: '0.92rem'
+                  fontSize: '0.94rem'
                 }}
               >
-                <Upload size={18} /> Upload Image
-                <input type="file" accept="image/*" onChange={handleFileUpload} style={{ display: 'none' }} />
-              </label>
+                <Upload size={18} style={{ color: '#ea580c' }} /> Upload Photo
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                style={{ display: 'none' }}
+              />
             </div>
           </div>
         )}
@@ -675,108 +731,177 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
               gap: '16px'
             }}
           >
-            <RefreshCw size={40} className="spin-animation" style={{ color: '#38bdf8' }} />
+            <RefreshCw size={42} className="spin-animation" style={{ color: '#ea580c' }} />
             <div>
-              <h3 style={{ fontSize: '1.1rem', margin: 0 }}>Analyzing Ingredient...</h3>
-              <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '4px' }}>
-                Extracting pixel feature descriptors & checking restaurant catalog
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0, color: '#0f172a' }}>
+                Analyzing Ingredient...
+              </h3>
+              <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '6px' }}>
+                Extracting pixel feature descriptors & chromaticity matrix
               </p>
             </div>
           </div>
         )}
 
-        {/* STEP 3: DETECTION RESULT / UNCERTAINTY STATE & INVENTORY MATCH */}
+        {/* STEP 3: DETECTION RESULT SCREEN */}
         {step === 'detected' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {/* Captured Image Preview Thumbnail */}
+            {/* Captured Image Preview Bar */}
             {capturedImage && (
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  padding: '10px 14px',
-                  borderRadius: '14px',
-                  border: '1px solid rgba(255, 255, 255, 0.08)'
+                  gap: '14px',
+                  background: '#f8fafc',
+                  padding: '12px 16px',
+                  borderRadius: '16px',
+                  border: '1px solid #e2e8f0'
                 }}
               >
                 <img
                   src={capturedImage}
-                  alt="Captured scan"
-                  style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '10px' }}
+                  alt="Scanned photo preview"
+                  style={{
+                    width: '64px',
+                    height: '64px',
+                    objectFit: 'cover',
+                    borderRadius: '12px',
+                    border: '1.5px solid #cbd5e1'
+                  }}
                 />
                 <div style={{ flex: 1 }}>
-                  <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Scanned Photo
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700 }}>
+                    Uploaded Photo
                   </span>
-                  <div style={{ fontSize: '0.85rem', color: '#38bdf8', fontWeight: 600 }}>
-                    {analysisResult?.ocrResult ? 'OCR Text Label Detected' : 'Image Feature Matrix Analyzed'}
+                  <div style={{ fontSize: '0.88rem', color: '#ea580c', fontWeight: 700 }}>
+                    {analysisResult?.ocrResult ? 'Verified Packaging Label OCR' : 'Visual Food Classification'}
                   </div>
                 </div>
-                <button
-                  onClick={handleResetScanner}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#94a3b8',
-                    cursor: 'pointer',
-                    fontSize: '0.8rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}
-                >
-                  <RefreshCw size={14} /> Retake
-                </button>
+
+                {/* Retake & Upload Another Photo Controls */}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    onClick={handleResetScanner}
+                    style={{
+                      background: '#ffffff',
+                      border: '1.5px solid #cbd5e1',
+                      borderRadius: '10px',
+                      padding: '6px 12px',
+                      color: '#334155',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    <RefreshCw size={14} /> Retake
+                  </button>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{
+                      background: '#ffffff',
+                      border: '1.5px solid #cbd5e1',
+                      borderRadius: '10px',
+                      padding: '6px 12px',
+                      color: '#334155',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    <Upload size={14} /> Upload Another
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    style={{ display: 'none' }}
+                  />
+                </div>
               </div>
             )}
 
-            {/* UNCERTAIN RECOGNITION HANDLING */}
+            {/* Multi-Item Candidate Switcher Tabs */}
+            {detectedItemsList.length > 1 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+                <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 700 }}>Detected Candidates:</span>
+                {detectedItemsList.map((item: ImageAnalysisResult, idx: number) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSelectMultiItem(idx)}
+                    style={{
+                      padding: '6px 14px',
+                      borderRadius: '14px',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      background: selectedMultiIndex === idx ? 'linear-gradient(135deg, #ea580c, #f97316)' : '#f1f5f9',
+                      color: selectedMultiIndex === idx ? '#ffffff' : '#334155',
+                      border: 'none',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {item.detectedItem || 'Unknown'}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* CASE A: UNCERTAIN RECOGNITION (Requirement 4) */}
             {(!selectedIngredientName || analysisResult?.confidenceLevel === 'uncertain') && !isManualCorrection && (
               <div
                 style={{
-                  background: 'rgba(239, 68, 68, 0.1)',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
-                  padding: '18px',
-                  borderRadius: '16px',
+                  background: '#fff1f2',
+                  border: '1.5px solid #fecdd3',
+                  padding: '20px',
+                  borderRadius: '18px',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '12px'
+                  gap: '14px'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#f87171' }}>
-                  <AlertTriangle size={22} />
-                  <span style={{ fontWeight: 700, fontSize: '0.98rem' }}>
-                    Unable to identify the ingredient confidently
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#e11d48' }}>
+                  <AlertTriangle size={24} />
+                  <span style={{ fontWeight: 800, fontSize: '1.05rem' }}>
+                    Ingredient not confidently identified
                   </span>
                 </div>
-                <p style={{ fontSize: '0.85rem', color: '#cbd5e1', margin: 0 }}>
-                  The image feature score is below high-confidence thresholds. We do not automatically select an incorrect inventory item.
+                <p style={{ fontSize: '0.88rem', color: '#475569', margin: 0, lineHeight: 1.5 }}>
+                  The visual classifier feature distance is below high-confidence thresholds. To avoid incorrect stock records, please select the correct kitchen ingredient manually below.
                 </p>
 
                 {analysisResult?.alternatives && analysisResult.alternatives.length > 0 && (
-                  <div style={{ marginTop: '4px' }}>
-                    <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>Possible matches:</span>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '6px' }}>
+                  <div>
+                    <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700 }}>
+                      Suggested kitchen ingredients:
+                    </span>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px' }}>
                       {analysisResult.alternatives.map((alt: string) => (
                         <button
                           key={alt}
                           onClick={() => handleSelectManualItem(alt)}
                           style={{
-                            background: 'rgba(255, 255, 255, 0.08)',
-                            border: '1px solid rgba(255, 255, 255, 0.15)',
-                            padding: '6px 12px',
+                            background: '#ffffff',
+                            border: '1.5px solid #cbd5e1',
+                            padding: '7px 14px',
                             borderRadius: '20px',
-                            color: '#f8fafc',
-                            fontSize: '0.82rem',
+                            color: '#0f172a',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '6px'
                           }}
                         >
-                          <Check size={14} style={{ color: '#38bdf8' }} /> {alt}
+                          <Check size={14} style={{ color: '#ea580c' }} /> {alt}
                         </button>
                       ))}
                     </div>
@@ -785,32 +910,16 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
 
                 <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
                   <button
-                    onClick={handleResetScanner}
-                    style={{
-                      flex: 1,
-                      padding: '10px',
-                      borderRadius: '12px',
-                      background: 'rgba(255, 255, 255, 0.08)',
-                      color: '#fff',
-                      border: 'none',
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Retake Photo
-                  </button>
-                  <button
                     onClick={() => setIsManualCorrection(true)}
                     style={{
                       flex: 1,
-                      padding: '10px',
+                      padding: '12px',
                       borderRadius: '12px',
-                      background: '#0284c7',
-                      color: '#fff',
+                      background: 'linear-gradient(135deg, #ea580c, #f97316)',
+                      color: '#ffffff',
                       border: 'none',
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
+                      fontSize: '0.9rem',
+                      fontWeight: 700,
                       cursor: 'pointer'
                     }}
                   >
@@ -820,87 +929,245 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
               </div>
             )}
 
-            {/* CONFIDENT DETECTION DISPLAY */}
-            {selectedIngredientName && analysisResult?.confidenceLevel !== 'uncertain' && !isManualCorrection && (
+            {/* CASE B: PREDICTED INGREDIENT - REQUIRE USER CONFIRMATION (Requirement 5) */}
+            {selectedIngredientName && analysisResult?.confidenceLevel !== 'uncertain' && !isIngredientConfirmed && !isManualCorrection && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                {/* Detected Item Banner */}
                 <div
                   style={{
-                    background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(37, 99, 235, 0.15))',
-                    border: '1px solid rgba(56, 189, 248, 0.3)',
-                    padding: '16px 20px',
-                    borderRadius: '16px',
+                    background: '#fff7ed',
+                    border: '1.5px solid #fed7aa',
+                    padding: '20px',
+                    borderRadius: '18px',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    flexWrap: 'wrap',
+                    flexDirection: 'column',
                     gap: '12px'
                   }}
                 >
-                  <div>
-                    <span style={{ fontSize: '0.75rem', color: '#38bdf8', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                      📷 Ingredient Detected
-                    </span>
-                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: '2px 0 0 0', color: '#ffffff' }}>
-                      {selectedIngredientName}
-                    </h3>
-                    {analysisResult?.ocrResult && (
-                      <span style={{ fontSize: '0.75rem', color: '#a7f3d0', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                        <FileText size={12} /> {analysisResult.ocrResult.detectedText}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span
+                        style={{
+                          background: '#ffedd5',
+                          color: '#c2410c',
+                          padding: '4px 10px',
+                          borderRadius: '10px',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}
+                      >
+                        📷 Visual Prediction
                       </span>
-                    )}
+                      {analysisResult?.confidence && (
+                        <span
+                          style={{
+                            background: '#dcfce7',
+                            color: '#15803d',
+                            padding: '4px 10px',
+                            borderRadius: '10px',
+                            fontSize: '0.75rem',
+                            fontWeight: 700
+                          }}
+                        >
+                          {Math.round(analysisResult.confidence * 100)}% Confidence
+                        </span>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() => setIsManualCorrection(true)}
+                      style={{
+                        background: '#ffffff',
+                        border: '1.5px solid #cbd5e1',
+                        padding: '6px 14px',
+                        borderRadius: '10px',
+                        color: '#475569',
+                        fontSize: '0.82rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      <Edit3 size={14} /> Correct Item
+                    </button>
                   </div>
 
+                  <div>
+                    <h3 style={{ fontSize: '1.6rem', fontWeight: 800, margin: '4px 0 0 0', color: '#0f172a' }}>
+                      {selectedIngredientName}
+                    </h3>
+                    <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '4px 0 0 0' }}>
+                      Please confirm this ingredient identity before entering measured quantity.
+                    </p>
+                  </div>
+
+                  {analysisResult?.detectedFeatures && analysisResult.detectedFeatures.length > 0 && (
+                    <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '12px', border: '1px solid #fed7aa' }}>
+                      <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 700, display: 'block' }}>
+                        Computer Vision Descriptors:
+                      </span>
+                      <div style={{ fontSize: '0.82rem', color: '#334155', marginTop: '2px' }}>
+                        {analysisResult.detectedFeatures.join(' • ')}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Confirmation Button */}
                   <button
-                    onClick={() => setIsManualCorrection(true)}
+                    onClick={handleConfirmIngredient}
                     style={{
-                      background: 'rgba(255, 255, 255, 0.08)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      padding: '6px 12px',
-                      borderRadius: '10px',
-                      color: '#94a3b8',
-                      fontSize: '0.78rem',
+                      marginTop: '6px',
+                      padding: '13px',
+                      borderRadius: '14px',
+                      background: 'linear-gradient(135deg, #ea580c, #f97316)',
+                      color: '#ffffff',
+                      border: 'none',
+                      fontWeight: 800,
+                      fontSize: '0.96rem',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '4px'
+                      justifyContent: 'center',
+                      gap: '8px',
+                      boxShadow: '0 4px 14px rgba(234, 88, 12, 0.3)'
                     }}
                   >
-                    <Edit3 size={14} /> Correct Item
+                    <CheckCircle2 size={18} /> Confirm {selectedIngredientName}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* CASE C: INGREDIENT CONFIRMED -> ENTER MEASURED QUANTITY & INVENTORY ACTIONS (Requirements 6, 7, 8) */}
+            {selectedIngredientName && isIngredientConfirmed && !isManualCorrection && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {/* Confirmed Banner */}
+                <div
+                  style={{
+                    background: '#f0fdf4',
+                    border: '1.5px solid #bbf7d0',
+                    padding: '14px 18px',
+                    borderRadius: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <CheckCircle2 size={22} style={{ color: '#16a34a' }} />
+                    <div>
+                      <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: 700, textTransform: 'uppercase' }}>
+                        Confirmed Ingredient
+                      </span>
+                      <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
+                        {selectedIngredientName}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setIsIngredientConfirmed(false);
+                      setIsManualCorrection(true);
+                    }}
+                    style={{
+                      background: '#ffffff',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '8px',
+                      padding: '5px 10px',
+                      fontSize: '0.78rem',
+                      fontWeight: 600,
+                      color: '#475569',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Change
                   </button>
                 </div>
 
-                {/* Multi-Item Detection Tabs if multiple items identified */}
-                {detectedItemsList.length > 1 && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>Detected:</span>
-                    {detectedItemsList.map((item: ImageAnalysisResult, idx: number) => (
-                      <button
-                        key={idx}
-                        onClick={() => handleSelectMultiItem(idx)}
-                        style={{
-                          padding: '5px 12px',
-                          borderRadius: '14px',
-                          fontSize: '0.78rem',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          background: selectedMultiIndex === idx ? '#0284c7' : 'rgba(255, 255, 255, 0.08)',
-                          color: selectedMultiIndex === idx ? '#fff' : '#cbd5e1',
-                          border: 'none',
-                          whiteSpace: 'nowrap'
-                        }}
-                      >
-                        {item.detectedItem || 'Unknown'}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* SHARED RESTAURANT INVENTORY STATUS CARD */}
+                {/* MEASURED QUANTITY & UNIT PROMPT (Requirement 6) */}
                 <div
                   style={{
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    background: '#ffffff',
+                    border: '1.5px solid #fed7aa',
+                    padding: '18px',
+                    borderRadius: '16px',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#c2410c' }}>
+                    <Scale size={20} />
+                    <span style={{ fontWeight: 700, fontSize: '0.94rem' }}>
+                      Enter Actual Kitchen Quantity & Unit
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.82rem', color: '#64748b', margin: 0 }}>
+                    Do not infer exact weight from an ordinary photo. Enter the measured quantity weighed or received in your restaurant kitchen.
+                  </p>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', color: '#475569', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                        Quantity
+                      </label>
+                      <input
+                        type="number"
+                        step="any"
+                        min="0.01"
+                        value={actionQuantity}
+                        onChange={(e) => setActionQuantity(e.target.value)}
+                        placeholder="e.g. 5"
+                        style={{
+                          width: '100%',
+                          padding: '10px 14px',
+                          borderRadius: '12px',
+                          background: '#ffffff',
+                          border: '1.5px solid #cbd5e1',
+                          color: '#0f172a',
+                          fontSize: '0.95rem',
+                          fontWeight: 600
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '0.78rem', color: '#475569', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                        Unit
+                      </label>
+                      <select
+                        value={actionUnit}
+                        onChange={(e) => setActionUnit(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '10px 14px',
+                          borderRadius: '12px',
+                          background: '#ffffff',
+                          border: '1.5px solid #cbd5e1',
+                          color: '#0f172a',
+                          fontSize: '0.95rem',
+                          fontWeight: 600
+                        }}
+                      >
+                        {COMMON_UNITS.map((u) => (
+                          <option key={u} value={u}>
+                            {u}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SHARED INVENTORY STATUS CARD (Requirement 7) */}
+                <div
+                  style={{
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
                     padding: '16px',
                     borderRadius: '16px',
                     display: 'flex',
@@ -909,14 +1176,14 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Package size={16} /> Restaurant Inventory Status
+                    <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Package size={16} style={{ color: '#ea580c' }} /> Restaurant Inventory Status
                     </span>
                     {inventoryMatch?.existsInInventory ? (
                       <span
                         style={{
-                          background: 'rgba(16, 185, 129, 0.2)',
-                          color: '#34d399',
+                          background: '#dcfce7',
+                          color: '#15803d',
                           padding: '4px 10px',
                           borderRadius: '12px',
                           fontSize: '0.75rem',
@@ -926,13 +1193,13 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                           gap: '4px'
                         }}
                       >
-                        <CheckCircle2 size={13} /> Available
+                        <CheckCircle2 size={13} /> Available in Inventory
                       </span>
                     ) : (
                       <span
                         style={{
-                          background: 'rgba(245, 158, 11, 0.2)',
-                          color: '#fbbf24',
+                          background: '#fef3c7',
+                          color: '#b45309',
                           padding: '4px 10px',
                           borderRadius: '12px',
                           fontSize: '0.75rem',
@@ -946,110 +1213,107 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
 
                   {inventoryMatch?.existsInInventory && inventoryMatch.inventoryItem ? (
                     <div>
-                      <p style={{ fontSize: '0.85rem', color: '#cbd5e1', margin: '0 0 8px 0' }}>
-                        <strong>{selectedIngredientName}</strong> is already available in your restaurant inventory.
+                      <p style={{ fontSize: '0.86rem', color: '#334155', margin: '0 0 8px 0' }}>
+                        <strong>{selectedIngredientName}</strong> is already tracked in your restaurant inventory.
                       </p>
                       <div
                         style={{
                           display: 'grid',
                           gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
                           gap: '10px',
-                          background: 'rgba(0, 0, 0, 0.25)',
+                          background: '#ffffff',
                           padding: '12px',
-                          borderRadius: '12px'
+                          borderRadius: '12px',
+                          border: '1px solid #e2e8f0'
                         }}
                       >
                         <div>
-                          <span style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block' }}>Current Stock</span>
-                          <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#38bdf8' }}>
+                          <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block' }}>Current Stock</span>
+                          <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ea580c' }}>
                             {inventoryMatch.inventoryItem.quantity} {inventoryMatch.inventoryItem.unit}
                           </span>
                         </div>
                         <div>
-                          <span style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block' }}>Category</span>
-                          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f8fafc', textTransform: 'capitalize' }}>
+                          <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block' }}>Category</span>
+                          <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0f172a', textTransform: 'capitalize' }}>
                             {inventoryMatch.inventoryItem.category}
                           </span>
                         </div>
-                        {inventoryMatch.inventoryItem.expiresAt && (
-                          <div>
-                            <span style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block' }}>Expires</span>
-                            <span style={{ fontSize: '0.85rem', color: '#f8fafc' }}>
-                              {new Date(inventoryMatch.inventoryItem.expiresAt).toLocaleDateString()}
-                            </span>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ) : (
-                    <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: 0 }}>
-                      {selectedIngredientName} was detected, but does not currently exist in active restaurant stock.
+                    <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>
+                      {selectedIngredientName} is not currently in active restaurant stock. You can add it now.
                     </p>
                   )}
                 </div>
 
-                {/* SHARED RESTAURANT GROCERY LIST STATUS CARD */}
+                {/* SHARED GROCERY RESTOCK STATUS */}
                 <div
                   style={{
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    padding: '16px',
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                    padding: '14px 16px',
                     borderRadius: '16px',
                     display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px'
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <ShoppingCart size={16} /> Restaurant Grocery Status
-                    </span>
-                    {inventoryMatch?.existsInGrocery ? (
-                      <span
-                        style={{
-                          background: 'rgba(56, 189, 248, 0.2)',
-                          color: '#38bdf8',
-                          padding: '4px 10px',
-                          borderRadius: '12px',
-                          fontSize: '0.75rem',
-                          fontWeight: 700
-                        }}
-                      >
-                        Status: {inventoryMatch.groceryStatus || 'NEEDED'}
-                      </span>
-                    ) : (
-                      <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Not on Grocery List</span>
-                    )}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ShoppingCart size={16} style={{ color: '#0284c7' }} />
+                    <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>Grocery Restock List:</span>
                   </div>
-
-                  {inventoryMatch?.existsInGrocery && inventoryMatch.groceryItem && (
-                    <div style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>
-                      ✓ <strong>{selectedIngredientName}</strong> is on the restaurant grocery list. Required:{' '}
-                      <span style={{ color: '#38bdf8', fontWeight: 700 }}>
-                        {inventoryMatch.groceryItem.quantity} {inventoryMatch.groceryItem.unit}
-                      </span>
-                    </div>
+                  {inventoryMatch?.existsInGrocery ? (
+                    <span style={{ fontSize: '0.78rem', color: '#0369a1', fontWeight: 700 }}>
+                      ✓ Listed ({inventoryMatch.groceryItem?.quantity} {inventoryMatch.groceryItem?.unit} needed)
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Not on Grocery List</span>
                   )}
                 </div>
 
-                {/* ACTION BUTTONS SELECTION */}
+                {/* ACTION BUTTONS (Requirement 8) */}
                 {!activeAction && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
-                    <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>What would you like to do?</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
+                    <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: 700 }}>
+                      Choose Inventory Action:
+                    </span>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '10px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
                       {inventoryMatch?.existsInInventory ? (
                         <>
                           <button
+                            onClick={() => handleOpenAction('add_stock')}
+                            style={{
+                              padding: '13px',
+                              borderRadius: '12px',
+                              background: 'linear-gradient(135deg, #ea580c, #f97316)',
+                              border: 'none',
+                              color: '#ffffff',
+                              fontWeight: 700,
+                              fontSize: '0.88rem',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '6px',
+                              boxShadow: '0 4px 12px rgba(234, 88, 12, 0.25)'
+                            }}
+                          >
+                            <Plus size={16} /> Add More Stock
+                          </button>
+
+                          <button
                             onClick={() => handleOpenAction('use_stock')}
                             style={{
-                              padding: '12px',
+                              padding: '13px',
                               borderRadius: '12px',
-                              background: 'rgba(56, 189, 248, 0.15)',
-                              border: '1px solid rgba(56, 189, 248, 0.3)',
-                              color: '#38bdf8',
-                              fontWeight: 600,
-                              fontSize: '0.85rem',
+                              background: '#eff6ff',
+                              border: '1.5px solid #bfdbfe',
+                              color: '#1d4ed8',
+                              fontWeight: 700,
+                              fontSize: '0.88rem',
                               cursor: 'pointer',
                               display: 'flex',
                               alignItems: 'center',
@@ -1061,35 +1325,15 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                           </button>
 
                           <button
-                            onClick={() => handleOpenAction('add_stock')}
-                            style={{
-                              padding: '12px',
-                              borderRadius: '12px',
-                              background: 'linear-gradient(135deg, #0284c7, #2563eb)',
-                              border: 'none',
-                              color: '#ffffff',
-                              fontWeight: 600,
-                              fontSize: '0.85rem',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '6px'
-                            }}
-                          >
-                            <Plus size={16} /> Add More Stock
-                          </button>
-
-                          <button
                             onClick={() => handleOpenAction('record_waste')}
                             style={{
-                              padding: '12px',
+                              padding: '13px',
                               borderRadius: '12px',
-                              background: 'rgba(239, 68, 68, 0.12)',
-                              border: '1px solid rgba(239, 68, 68, 0.3)',
-                              color: '#f87171',
-                              fontWeight: 600,
-                              fontSize: '0.85rem',
+                              background: '#fef2f2',
+                              border: '1.5px solid #fecaca',
+                              color: '#dc2626',
+                              fontWeight: 700,
+                              fontSize: '0.88rem',
                               cursor: 'pointer',
                               display: 'flex',
                               alignItems: 'center',
@@ -1104,18 +1348,19 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                         <button
                           onClick={() => handleOpenAction('add_inventory')}
                           style={{
-                            padding: '12px',
+                            padding: '13px',
                             borderRadius: '12px',
                             background: 'linear-gradient(135deg, #10b981, #059669)',
                             border: 'none',
                             color: '#ffffff',
-                            fontWeight: 600,
-                            fontSize: '0.88rem',
+                            fontWeight: 700,
+                            fontSize: '0.9rem',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '6px'
+                            gap: '6px',
+                            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)'
                           }}
                         >
                           <Plus size={16} /> Add to Inventory
@@ -1125,13 +1370,13 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                       <button
                         onClick={() => handleOpenAction('add_grocery')}
                         style={{
-                          padding: '12px',
+                          padding: '13px',
                           borderRadius: '12px',
-                          background: 'rgba(255, 255, 255, 0.08)',
-                          border: '1px solid rgba(255, 255, 255, 0.15)',
-                          color: '#f8fafc',
-                          fontWeight: 600,
-                          fontSize: '0.85rem',
+                          background: '#f8fafc',
+                          border: '1.5px solid #cbd5e1',
+                          color: '#0f172a',
+                          fontWeight: 700,
+                          fontSize: '0.88rem',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
@@ -1139,101 +1384,58 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                           gap: '6px'
                         }}
                       >
-                        <ShoppingCart size={16} /> Add to Grocery List
+                        <ShoppingCart size={16} style={{ color: '#ea580c' }} /> Add to Grocery List
                       </button>
                     </div>
                   </div>
                 )}
 
-                {/* ACTION FORM & CONFIRMATION DIALOG */}
+                {/* ACTION CONFIRMATION PROMPT */}
                 {activeAction && (
                   <div
                     style={{
-                      background: 'rgba(15, 23, 42, 0.8)',
-                      border: '1px solid rgba(56, 189, 248, 0.3)',
+                      background: '#fff7ed',
+                      border: '1.5px solid #fed7aa',
                       padding: '18px',
                       borderRadius: '16px',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '14px',
-                      marginTop: '8px'
+                      gap: '12px'
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#38bdf8' }}>
+                      <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#c2410c' }}>
                         {activeAction === 'use_stock' && 'Record Stock Usage'}
                         {activeAction === 'add_stock' && 'Add Quantity to Existing Stock'}
-                        {activeAction === 'record_waste' && 'Record Inventory Waste'}
+                        {activeAction === 'record_waste' && 'Record Stock Waste'}
                         {activeAction === 'add_inventory' && 'Add New Item to Inventory'}
                         {activeAction === 'add_grocery' && 'Add Item to Grocery Restock List'}
                       </span>
                       <button
                         onClick={() => setActiveAction(null)}
-                        style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '0.8rem' }}
+                        style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}
                       >
-                        Cancel Action
+                        Cancel
                       </button>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                      <div>
-                        <label style={{ fontSize: '0.78rem', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Quantity</label>
-                        <input
-                          type="number"
-                          step="any"
-                          min="0.01"
-                          value={actionQuantity}
-                          onChange={(e) => setActionQuantity(e.target.value)}
-                          style={{
-                            width: '100%',
-                            padding: '10px 12px',
-                            borderRadius: '10px',
-                            background: 'rgba(255, 255, 255, 0.08)',
-                            border: '1px solid rgba(255, 255, 255, 0.15)',
-                            color: '#fff',
-                            fontSize: '0.92rem'
-                          }}
-                        />
-                      </div>
-
-                      <div>
-                        <label style={{ fontSize: '0.78rem', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Unit</label>
-                        <select
-                          value={actionUnit}
-                          onChange={(e) => setActionUnit(e.target.value)}
-                          style={{
-                            width: '100%',
-                            padding: '10px 12px',
-                            borderRadius: '10px',
-                            background: '#1e293b',
-                            border: '1px solid rgba(255, 255, 255, 0.15)',
-                            color: '#fff',
-                            fontSize: '0.92rem'
-                          }}
-                        >
-                          {COMMON_UNITS.map((u) => (
-                            <option key={u} value={u}>
-                              {u}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
                     </div>
 
                     {activeAction === 'add_inventory' && (
                       <div>
-                        <label style={{ fontSize: '0.78rem', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Category</label>
+                        <label style={{ fontSize: '0.78rem', color: '#475569', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                          Category
+                        </label>
                         <select
                           value={actionCategory}
                           onChange={(e) => setActionCategory(e.target.value as IngredientCategory)}
                           style={{
                             width: '100%',
-                            padding: '10px 12px',
-                            borderRadius: '10px',
-                            background: '#1e293b',
-                            border: '1px solid rgba(255, 255, 255, 0.15)',
-                            color: '#fff',
-                            fontSize: '0.92rem'
+                            padding: '10px 14px',
+                            borderRadius: '12px',
+                            background: '#ffffff',
+                            border: '1.5px solid #cbd5e1',
+                            color: '#0f172a',
+                            fontSize: '0.95rem',
+                            fontWeight: 600
                           }}
                         >
                           {CATEGORY_OPTIONS.map((cat) => (
@@ -1245,29 +1447,27 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                       </div>
                     )}
 
-                    {/* CONFIRMATION SUMMARY PROMPT */}
                     {!showConfirmation ? (
                       <button
                         onClick={() => setShowConfirmation(true)}
                         style={{
                           padding: '12px',
                           borderRadius: '12px',
-                          background: 'linear-gradient(135deg, #0284c7, #2563eb)',
-                          color: '#fff',
+                          background: 'linear-gradient(135deg, #ea580c, #f97316)',
+                          color: '#ffffff',
                           border: 'none',
                           fontWeight: 700,
-                          fontSize: '0.9rem',
-                          cursor: 'pointer',
-                          marginTop: '4px'
+                          fontSize: '0.92rem',
+                          cursor: 'pointer'
                         }}
                       >
-                        Review & Confirm Update
+                        Review & Confirm Action
                       </button>
                     ) : (
                       <div
                         style={{
-                          background: 'rgba(2, 132, 199, 0.15)',
-                          border: '1px solid rgba(56, 189, 248, 0.4)',
+                          background: '#ffffff',
+                          border: '1.5px solid #fed7aa',
                           padding: '14px',
                           borderRadius: '12px',
                           display: 'flex',
@@ -1275,12 +1475,12 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                           gap: '10px'
                         }}
                       >
-                        <div style={{ fontSize: '0.85rem', color: '#f8fafc', fontWeight: 600 }}>
-                          {activeAction === 'use_stock' && `Record usage of ${actionQuantity} ${actionUnit} ${selectedIngredientName}?`}
-                          {activeAction === 'add_stock' && `Add ${actionQuantity} ${actionUnit} ${selectedIngredientName} to restaurant stock?`}
-                          {activeAction === 'record_waste' && `Record ${actionQuantity} ${actionUnit} ${selectedIngredientName} as waste?`}
-                          {activeAction === 'add_inventory' && `Add ${actionQuantity} ${actionUnit} ${selectedIngredientName} to restaurant inventory?`}
-                          {activeAction === 'add_grocery' && `Add ${actionQuantity} ${actionUnit} ${selectedIngredientName} to grocery list?`}
+                        <div style={{ fontSize: '0.9rem', color: '#0f172a', fontWeight: 700 }}>
+                          {activeAction === 'use_stock' && `Confirm usage of ${actionQuantity} ${actionUnit} ${selectedIngredientName}?`}
+                          {activeAction === 'add_stock' && `Confirm adding ${actionQuantity} ${actionUnit} to ${selectedIngredientName} stock?`}
+                          {activeAction === 'record_waste' && `Confirm recording ${actionQuantity} ${actionUnit} ${selectedIngredientName} as waste?`}
+                          {activeAction === 'add_inventory' && `Confirm adding ${actionQuantity} ${actionUnit} ${selectedIngredientName} to restaurant inventory?`}
+                          {activeAction === 'add_grocery' && `Confirm adding ${actionQuantity} ${actionUnit} ${selectedIngredientName} to grocery restock list?`}
                         </div>
 
                         <div style={{ display: 'flex', gap: '10px' }}>
@@ -1288,25 +1488,26 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                             onClick={handleConfirmAction}
                             style={{
                               flex: 1,
-                              padding: '10px',
+                              padding: '11px',
                               borderRadius: '10px',
                               background: '#10b981',
-                              color: '#fff',
+                              color: '#ffffff',
                               border: 'none',
-                              fontWeight: 700,
+                              fontWeight: 800,
                               cursor: 'pointer'
                             }}
                           >
-                            Confirm Update
+                            Yes, Save Changes
                           </button>
                           <button
                             onClick={() => setShowConfirmation(false)}
                             style={{
-                              padding: '10px 16px',
+                              padding: '11px 16px',
                               borderRadius: '10px',
-                              background: 'rgba(255, 255, 255, 0.08)',
-                              color: '#94a3b8',
+                              background: '#f1f5f9',
+                              color: '#64748b',
                               border: 'none',
+                              fontWeight: 600,
                               cursor: 'pointer'
                             }}
                           >
@@ -1320,12 +1521,12 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
               </div>
             )}
 
-            {/* MANUAL ITEM CORRECTION SEARCH PICKER */}
+            {/* MANUAL ITEM PICKER (Search & Select) */}
             {isManualCorrection && (
               <div
                 style={{
-                  background: 'rgba(15, 23, 42, 0.9)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  background: '#f8fafc',
+                  border: '1.5px solid #e2e8f0',
                   padding: '18px',
                   borderRadius: '16px',
                   display: 'flex',
@@ -1334,14 +1535,14 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#f8fafc' }}>
-                    Select Restaurant Ingredient Item
+                  <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0f172a' }}>
+                    Select Kitchen Ingredient
                   </span>
                   <button
                     onClick={() => setIsManualCorrection(false)}
-                    style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+                    style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontWeight: 600 }}
                   >
-                    Back
+                    Cancel
                   </button>
                 </div>
 
@@ -1350,19 +1551,19 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    padding: '8px 12px',
-                    borderRadius: '10px',
-                    border: '1px solid rgba(255, 255, 255, 0.15)'
+                    background: '#ffffff',
+                    padding: '8px 14px',
+                    borderRadius: '12px',
+                    border: '1.5px solid #cbd5e1'
                   }}
                 >
-                  <Search size={16} style={{ color: '#94a3b8' }} />
+                  <Search size={16} style={{ color: '#ea580c' }} />
                   <input
                     type="text"
                     placeholder="Search or enter ingredient name..."
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
-                    style={{ background: 'none', border: 'none', color: '#fff', flex: 1, outline: 'none', fontSize: '0.88rem' }}
+                    style={{ background: 'none', border: 'none', color: '#0f172a', flex: 1, outline: 'none', fontSize: '0.9rem', fontWeight: 500 }}
                   />
                 </div>
 
@@ -1383,10 +1584,11 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                         textAlign: 'left',
                         padding: '10px 14px',
                         borderRadius: '10px',
-                        background: 'rgba(255, 255, 255, 0.04)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
-                        color: '#f8fafc',
-                        fontSize: '0.88rem',
+                        background: '#ffffff',
+                        border: '1px solid #e2e8f0',
+                        color: '#0f172a',
+                        fontSize: '0.9rem',
+                        fontWeight: 600,
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
@@ -1394,7 +1596,7 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                       }}
                     >
                       <span>{itemName}</span>
-                      <ArrowRight size={14} style={{ color: '#38bdf8' }} />
+                      <ArrowRight size={14} style={{ color: '#ea580c' }} />
                     </button>
                   ))}
 
@@ -1405,11 +1607,11 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                         textAlign: 'left',
                         padding: '10px 14px',
                         borderRadius: '10px',
-                        background: 'rgba(14, 165, 233, 0.2)',
-                        border: '1px solid rgba(56, 189, 248, 0.3)',
-                        color: '#38bdf8',
-                        fontWeight: 600,
-                        fontSize: '0.88rem',
+                        background: '#fff7ed',
+                        border: '1.5px solid #fed7aa',
+                        color: '#ea580c',
+                        fontWeight: 700,
+                        fontSize: '0.9rem',
                         cursor: 'pointer'
                       }}
                     >
@@ -1425,48 +1627,53 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
         {/* STEP 4: VERIFYING STATE */}
         {step === 'verifying' && (
           <div style={{ padding: '40px 20px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
-            <RefreshCw size={36} className="spin-animation" style={{ color: '#10b981' }} />
+            <RefreshCw size={38} className="spin-animation" style={{ color: '#10b981' }} />
             <div>
-              <h3 style={{ fontSize: '1.1rem', margin: 0 }}>Updating & Verifying Shared Restaurant Inventory...</h3>
-              <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '4px' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0, color: '#0f172a' }}>
+                Updating & Verifying Shared Restaurant Inventory...
+              </h3>
+              <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '6px' }}>
                 Verifying transaction persistence in restaurant store
               </p>
             </div>
           </div>
         )}
 
-        {/* STEP 5: SUCCESS & VERIFIED STATE RESULT */}
+        {/* STEP 5: SUCCESS STATE */}
         {step === 'success' && (
           <div
             style={{
-              padding: '24px',
+              padding: '28px',
               textAlign: 'center',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               gap: '16px',
-              background: 'rgba(16, 185, 129, 0.1)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
+              background: '#f0fdf4',
+              border: '1.5px solid #bbf7d0',
               borderRadius: '20px'
             }}
           >
             <div
               style={{
-                width: '48px',
-                height: '48px',
+                width: '52px',
+                height: '52px',
                 borderRadius: '50%',
                 background: '#10b981',
-                color: '#fff',
+                color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
               }}
             >
-              <CheckCircle2 size={28} />
+              <CheckCircle2 size={30} />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.2rem', margin: 0, color: '#f8fafc' }}>Action Verified & Saved</h3>
-              <p style={{ fontSize: '0.9rem', color: '#a7f3d0', marginTop: '6px', lineHeight: '1.4' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: '#0f172a' }}>
+                Action Verified & Saved
+              </h3>
+              <p style={{ fontSize: '0.92rem', color: '#15803d', marginTop: '6px', lineHeight: '1.4', fontWeight: 600 }}>
                 {statusMessage || 'Shared restaurant inventory state updated successfully.'}
               </p>
             </div>
@@ -1478,10 +1685,10 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                   flex: 1,
                   padding: '12px',
                   borderRadius: '12px',
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  color: '#fff',
-                  border: 'none',
-                  fontWeight: 600,
+                  background: '#ffffff',
+                  border: '1.5px solid #cbd5e1',
+                  color: '#0f172a',
+                  fontWeight: 700,
                   cursor: 'pointer'
                 }}
               >
@@ -1493,10 +1700,10 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({ isOpen, 
                   flex: 1,
                   padding: '12px',
                   borderRadius: '12px',
-                  background: '#10b981',
-                  color: '#fff',
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  color: '#ffffff',
                   border: 'none',
-                  fontWeight: 700,
+                  fontWeight: 800,
                   cursor: 'pointer'
                 }}
               >

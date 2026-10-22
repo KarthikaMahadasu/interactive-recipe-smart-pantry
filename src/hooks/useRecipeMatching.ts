@@ -30,7 +30,11 @@ export function useRecipeMatching() {
         (recipe.dietaryTags && recipe.dietaryTags.some((t) => t.toLowerCase().includes(q)));
 
       // Category filter
-      const matchesCategory = categoryFilter === 'all' || recipe.category === categoryFilter;
+      const matchesCategory =
+        categoryFilter === 'all' ||
+        recipe.category === categoryFilter ||
+        (recipe.cookingCategory && recipe.cookingCategory.toLowerCase() === categoryFilter.toLowerCase()) ||
+        (categoryFilter === 'Dessert' && (recipe.category.includes('Baking') || recipe.category.includes('Dessert') || recipe.category.includes('Chocolate')));
 
       // Difficulty filter
       const matchesDifficulty = difficultyFilter === 'all' || recipe.difficulty === difficultyFilter;

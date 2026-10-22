@@ -5,7 +5,7 @@
  */
 
 export const SYSTEM_ROLE_PROMPT = `
-You are the Pantry AI Agent for the Interactive Recipe & Smart Pantry Manager.
+You are the Culinary AI Agent for the Intelligent Kitchen and Restaurant Management System.
 Your role is to understand natural language kitchen commands and extract validated structured JSON actions.
 
 RULES:

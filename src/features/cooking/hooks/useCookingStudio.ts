@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useKitchenState } from '../../../state/KitchenContext';
 import { CookingService, type CookingValidationSummary } from '../services/cookingService';
+import { RecipeResolverService } from '../../../services/recipes/recipeResolverService';
 import type { Recipe } from '../../../types/recipe';
 
 export type CookingStatus = 'not_started' | 'in_progress' | 'paused' | 'completed';
@@ -11,15 +12,26 @@ export function useCookingStudio() {
   const [cookingStatus, setCookingStatus] = useState<CookingStatus>('not_started');
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [showCompletionModal, setShowCompletionModal] = useState<boolean>(false);
+  const [hasDeducted, setHasDeducted] = useState<boolean>(false);
+  const [customServings, setCustomServings] = useState<number | null>(null);
 
-  // Active recipe from state
-  const activeRecipe: Recipe | null = useMemo(() => {
+  // Base unscaled recipe from state
+  const baseRecipe: Recipe | null = useMemo(() => {
     if (state.activeCookingRecipe) return state.activeCookingRecipe;
     if (state.selectedRecipeId) {
       return state.recipes.find((r) => r.id === state.selectedRecipeId) || null;
     }
     return state.recipes[0] || null;
   }, [state.activeCookingRecipe, state.selectedRecipeId, state.recipes]);
+
+  // Current active servings
+  const currentServings = customServings ?? (baseRecipe?.servings || 4);
+
+  // Scaled recipe based on active servings
+  const activeRecipe: Recipe | null = useMemo(() => {
+    if (!baseRecipe) return null;
+    return RecipeResolverService.scaleRecipe(baseRecipe, currentServings);
+  }, [baseRecipe, currentServings]);
 
   // Real ingredient validation against active pantry
   const validationSummary: CookingValidationSummary | null = useMemo(() => {
@@ -69,26 +81,37 @@ export function useCookingStudio() {
     setSelectedRecipe(recipe.id);
     setCookingStatus('not_started');
     setCurrentStepIndex(0);
+    setHasDeducted(false);
+    setCustomServings(recipe.servings || 4);
   }, [setSelectedRecipe]);
 
+  const adjustServings = useCallback((newServings: number) => {
+    const clamped = Math.max(1, Math.min(50, newServings));
+    setCustomServings(clamped);
+  }, []);
+
   const confirmCompletion = useCallback(() => {
-    if (!activeRecipe) return;
+    if (!activeRecipe || hasDeducted) return;
     finishCookingDeduction(activeRecipe);
+    setHasDeducted(true);
     setCookingStatus('completed');
     setShowCompletionModal(false);
     setAIState('success');
     setTimeout(() => {
       setAIState('idle');
     }, 3000);
-  }, [activeRecipe, finishCookingDeduction, setAIState]);
+  }, [activeRecipe, hasDeducted, finishCookingDeduction, setAIState]);
 
   return {
     activeRecipe,
+    baseRecipe,
     cookingStatus,
     currentStepIndex,
     currentStep,
+    currentServings,
     validationSummary,
     showCompletionModal,
+    hasDeducted,
     setShowCompletionModal,
     startCooking,
     pauseCooking,
@@ -96,6 +119,7 @@ export function useCookingStudio() {
     nextStep,
     prevStep,
     selectRecipe,
+    adjustServings,
     confirmCompletion,
     totalSteps: activeRecipe?.instructions.length || 0,
     progressPercentage: activeRecipe ? Math.round(((currentStepIndex + 1) / activeRecipe.instructions.length) * 100) : 0

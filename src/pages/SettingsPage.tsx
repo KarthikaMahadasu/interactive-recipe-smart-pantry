@@ -237,6 +237,69 @@ export const SettingsPage: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Storage & Architecture Card (Requirement 8) */}
+      <div
+        className="glass-panel"
+        style={{
+          padding: '28px',
+          borderRadius: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <ShieldCheck size={22} color="#ea580c" />
+          <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
+            Storage Architecture & Data Integrity
+          </h2>
+        </div>
+
+        <p style={{ fontSize: '0.85rem', color: '#475569', lineHeight: 1.5 }}>
+          The system utilizes high-performance, client-side partitioned browser storage (<code style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: '6px', color: '#ea580c' }}>restaurant_[id]_inventory_v1</code>). All inventory items, recipes, transactions, and grocery requisitions are isolated per restaurant tenant without external cloud dependencies.
+        </p>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', paddingTop: '8px' }}>
+          <button
+            onClick={() => {
+              const exportPayload = {
+                system: 'Intelligent Kitchen and Restaurant Management System',
+                exportedAt: new Date().toISOString(),
+                pantry: state.pantry,
+                groceryList: state.groceryList,
+                transactions: state.transactions,
+                preferences: state.userPreferences
+              };
+              const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `kitchen_system_backup_${new Date().toISOString().split('T')[0]}.json`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            style={{
+              padding: '10px 20px',
+              borderRadius: '14px',
+              background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
+              color: '#ffffff',
+              fontWeight: 700,
+              fontSize: '0.88rem',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 4px 16px rgba(234, 88, 12, 0.25)'
+            }}
+          >
+            Export Restaurant Data (JSON Backup)
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

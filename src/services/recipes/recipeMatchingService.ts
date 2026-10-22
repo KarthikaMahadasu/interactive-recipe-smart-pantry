@@ -17,16 +17,22 @@ export interface RecipeMatchResult {
   canMakeWithSubstitutions: boolean;
 }
 
-// Data-driven substitution lookup table (Requirement 21)
+// Data-driven substitution lookup table
 const SUBSTITUTION_DICTIONARY: Record<string, string[]> = {
-  'milk': ['soy milk', 'almond milk', 'oat milk', 'coconut milk', 'greek yogurt'],
+  'milk': ['soy milk', 'almond milk', 'oat milk', 'coconut milk', 'greek yogurt', 'heavy cream'],
   'paneer': ['tofu', 'ricotta', 'halloumi'],
   'tofu': ['paneer', 'tempeh'],
   'olive oil': ['vegetable oil', 'coconut oil', 'butter', 'ghee'],
-  'butter': ['ghee', 'olive oil', 'coconut oil'],
-  'greek yogurt': ['curd', 'sour cream', 'coconut yogurt'],
+  'cooking oil': ['butter', 'ghee', 'olive oil', 'coconut oil'],
+  'butter': ['ghee', 'olive oil', 'coconut oil', 'cooking oil'],
+  'greek yogurt': ['curd', 'sour cream', 'coconut yogurt', 'milk'],
   'rice': ['quinoa', 'millet', 'cauliflower rice'],
-  'chicken': ['tofu', 'paneer', 'mushroom', 'seitan']
+  'chicken': ['tofu', 'paneer', 'mushroom', 'seitan'],
+  'eggs': ['greek yogurt', 'applesauce', 'banana', 'tofu', 'buttermilk'],
+  'sugar': ['honey', 'maple syrup', 'jaggery', 'powdered sugar'],
+  'all-purpose flour': ['whole wheat flour', 'oat flour', 'finger millet (ragi)'],
+  'cocoa powder': ['dark chocolate'],
+  'dark chocolate': ['cocoa powder']
 };
 
 export class RecipeMatchingService {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X, CheckCircle2, AlertTriangle, ArrowRight, ShoppingBag } from 'lucide-react';
 import type { Recipe } from '../../../types/recipe';
 import type { Ingredient } from '../../../types/ingredient';
@@ -23,6 +23,7 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
 }) => {
   const navigate = useNavigate();
   const { addGroceryItem } = useKitchenState();
+  const [isDeducting, setIsDeducting] = useState(false);
 
   if (!isOpen || !recipe) return null;
 
@@ -232,7 +233,10 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
             </button>
 
             <button
+              disabled={isDeducting}
               onClick={() => {
+                if (isDeducting) return;
+                setIsDeducting(true);
                 onConfirm();
                 setTimeout(() => {
                   navigate('/pantry');
@@ -242,7 +246,11 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
                 flex: 2,
                 padding: '12px',
                 borderRadius: '14px',
-                background: hasInsufficient ? 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)' : 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
+                background: isDeducting
+                  ? '#16a34a'
+                  : hasInsufficient
+                  ? 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)'
+                  : 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)',
                 color: '#ffffff',
                 fontWeight: 800,
                 fontSize: '0.9rem',
@@ -251,11 +259,20 @@ export const CookingCompletionModal: React.FC<CookingCompletionModalProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '6px',
-                cursor: 'pointer',
+                cursor: isDeducting ? 'not-allowed' : 'pointer',
+                opacity: isDeducting ? 0.8 : 1,
                 boxShadow: '0 4px 18px rgba(234, 88, 12, 0.25)'
               }}
             >
-              Confirm & Deduct Stock <ArrowRight size={16} />
+              {isDeducting ? (
+                <>
+                  <CheckCircle2 size={16} /> Stock Deducted Successfully!
+                </>
+              ) : (
+                <>
+                  Confirm & Deduct Stock <ArrowRight size={16} />
+                </>
+              )}
             </button>
           </div>
         </div>

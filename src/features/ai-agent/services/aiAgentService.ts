@@ -38,7 +38,7 @@ export interface AgentExecutionContext {
   adjustStock?: (itemId: string, actualQuantity: number, reason: string) => void;
   addGroceryItem?: (item: SmartGroceryItem) => void;
   markGroceryPurchased?: (id: string) => void;
-  receiveGroceryDelivery?: (groceryId: string, receivedQuantity: number) => void;
+  receiveGroceryDelivery?: (groceryId: string, receivedQuantity: number, receivedUnit?: string) => void;
   setSelectedRecipe: (id: string | null) => void;
   startCooking?: (recipe: Recipe) => void;
   finishCookingDeduction?: (recipe: Recipe) => void;
@@ -493,27 +493,42 @@ export class AIAgentService {
 
       case 'RECEIVE_GROCERY': {
         if (!params.name) {
-          responseMessage = 'Which grocery item delivery arrived? (e.g. "Rice has arrived, received 10 kg")';
+          responseMessage = 'Which grocery item delivery arrived? (e.g. "We received 2 kg of flour. Update inventory.")';
           responseStatus = 'warning';
           break;
         }
 
-        const target = groceryList.find((g) => g.name.toLowerCase().includes(params.name!.toLowerCase()));
-        const qty = params.quantity && params.quantity > 0 ? params.quantity : target ? target.quantity : 1;
+        const targetG = groceryList.find((g) => IngredientUtils.areIngredientsMatching(g.name, params.name!));
+        const targetP = pantry.find((p) => IngredientUtils.areIngredientsMatching(p.name, params.name!));
+        const unit = params.unit || targetG?.unit || targetP?.unit || 'pcs';
+        const qty = params.quantity && params.quantity > 0 ? params.quantity : targetG ? targetG.quantity : 1;
 
-        if (target && receiveGroceryDelivery) {
-          receiveGroceryDelivery(target.id, qty);
-          responseMessage = `Grocery delivery received for ${restName}! Added ${qty} ${target.unit} of ${target.name} directly into shared restaurant inventory.`;
+        if (targetG && receiveGroceryDelivery) {
+          receiveGroceryDelivery(targetG.id, qty, unit);
+          responseMessage = `Recorded delivery receipt for ${restName}: Received ${qty} ${unit} of ${targetG.name}. Restocked into shared inventory and updated grocery order status!`;
+          responseStatus = 'success';
+          actionRequired = 'explore_pantry';
+        } else if (targetP) {
+          // Update existing inventory item directly without creating a duplicate
+          const converted = IngredientUtils.convertUnit(qty, unit, targetP.unit);
+          const newTotal = Math.round((targetP.quantity + converted) * 100) / 100;
+          updateIngredient({
+            ...targetP,
+            quantity: newTotal,
+            freshness: 'fresh',
+            updatedAt: new Date().toISOString()
+          });
+          responseMessage = `Received delivery of ${qty} ${unit} of ${targetP.name} for ${restName}! Updated existing inventory stock from ${targetP.quantity} ${targetP.unit} to ${newTotal} ${targetP.unit}.`;
           responseStatus = 'success';
           actionRequired = 'explore_pantry';
         } else {
-          // If not in grocery list, add directly to pantry
+          // If neither in grocery nor in pantry, create new inventory item
           const newIng: Ingredient = {
             id: `ing_deliv_ai_${Date.now()}`,
             restaurantId: restaurant?.id,
             name: params.name,
             quantity: qty,
-            unit: params.unit || 'pcs',
+            unit,
             category: 'produce',
             freshness: 'fresh',
             colorCode: '#10b981',
@@ -521,12 +536,13 @@ export class AIAgentService {
             createdBy: user?.name || 'Staff'
           };
           addIngredient(newIng);
-          responseMessage = `Received delivery of ${qty} ${params.unit || 'pcs'} of ${params.name}! Added into ${restName}'s shared inventory.`;
+          responseMessage = `Received new delivery of ${qty} ${unit} of ${params.name}! Added into ${restName}'s shared inventory.`;
           responseStatus = 'success';
           actionRequired = 'explore_pantry';
         }
         break;
       }
+
 
       case 'GET_GROCERY_STATUS': {
         if (groceryList.length === 0) {
@@ -725,11 +741,59 @@ export class AIAgentService {
       }
 
       case 'FIND_RECIPES_BY_INGREDIENT': {
+        // Multi-ingredient matching support (e.g., "I have flour, milk, sugar, eggs and cocoa powder. What desserts can I make?")
+        if (params.ingredientList && params.ingredientList.length > 0) {
+          const userIngs = params.ingredientList.map((i) => i.toLowerCase().trim());
+          const queryLower = action.rawCommand.toLowerCase();
+          const isDessertQuery = /\b(dessert|desserts|sweet|cake|baking|chocolate|brownie)\b/i.test(queryLower);
+
+          const scored = recipes.map((r: Recipe) => {
+            let matchCount = 0;
+            r.ingredients.forEach((req) => {
+              if (userIngs.some((userIng) => IngredientUtils.areIngredientsMatching(req.name, userIng))) {
+                matchCount++;
+              }
+            });
+            const pct = Math.round((matchCount / r.ingredients.length) * 100);
+            return { recipe: r, matchCount, pct };
+          });
+
+          let candidates = scored.filter((s) => s.matchCount >= 2);
+          if (isDessertQuery) {
+            candidates = candidates.filter((c) =>
+              c.recipe.category === 'Cakes & Baking' ||
+              c.recipe.category === 'Cookies & Brownies' ||
+              c.recipe.category === 'Chocolate & Confectionery' ||
+              c.recipe.category === 'Puddings & Chilled Desserts' ||
+              c.recipe.category === 'Dessert' ||
+              c.recipe.cookingCategory === 'cake' ||
+              c.recipe.cookingCategory === 'brownie' ||
+              c.recipe.cookingCategory === 'cupcake' ||
+              c.recipe.cookingCategory === 'chocolate' ||
+              c.recipe.cookingCategory === 'chilled_dessert'
+            );
+          }
+
+          candidates.sort((a, b) => b.pct - a.pct);
+
+          if (candidates.length === 0) {
+            responseMessage = `With ${userIngs.join(', ')}, we could not find an exact recipe match in ${restName}'s database. You can try making homemade chocolate or mug cake!`;
+            responseStatus = 'warning';
+          } else {
+            const list = candidates.slice(0, 4).map((c) => `• ${c.recipe.title} (${c.pct}% ingredients covered)`).join('\n');
+            responseMessage = `With your ingredients (${userIngs.join(', ')}), you can make:\n\n${list}\n\nAsk "Teach me to bake [dish]" or "Start cooking" to begin!`;
+            responseStatus = 'success';
+          }
+          actionRequired = 'view_recipes';
+          break;
+        }
+
         if (!params.name) {
           responseMessage = 'Which ingredient would you like recipes for?';
           responseStatus = 'warning';
           break;
         }
+
         const targetIng = params.name.toLowerCase().trim();
         const matchingRecipes = recipes.filter(
           (r: Recipe) =>
@@ -742,7 +806,7 @@ export class AIAgentService {
           responseStatus = 'warning';
         } else {
           const list = matchingRecipes
-            .map((r: Recipe) => `• ${r.title} (${r.prepTime + r.cookTime} mins)`)
+            .map((r: Recipe) => `• ${r.title} (${r.prepTime + r.cookTime} mins, ${r.category})`)
             .join('\n');
           responseMessage = `Found ${matchingRecipes.length} recipe(s) matching "${params.name}":\n\n${list}`;
           responseStatus = 'success';
@@ -752,15 +816,53 @@ export class AIAgentService {
       }
 
       case 'FIND_RECIPES': {
+        const rawCmd = action.rawCommand.toLowerCase();
+
+        // 1. Eggless constraint filter: "Find a cake recipe without eggs"
+        if (params.dietaryConstraint === 'Eggless' || /\b(without eggs?|no eggs?|eggless)\b/i.test(rawCmd)) {
+          const egglessRecipes = recipes.filter((r) =>
+            r.dietaryTags.some((t) => /eggless/i.test(t)) ||
+            !r.ingredients.some((ing) => ing.name.toLowerCase() === 'eggs')
+          );
+          if (egglessRecipes.length > 0) {
+            const list = egglessRecipes.map((r) => `• ${r.title} (${r.category}, ${r.cookTime} mins)`).join('\n');
+            responseMessage = `Eggless / No-Egg recipes in ${restName}'s collection:\n\n${list}`;
+            responseStatus = 'success';
+            actionRequired = 'view_recipes';
+            break;
+          }
+        }
+
+        // 2. No-Oven / Stovetop constraint filter: "What can we make without an oven?"
+        if (params.equipmentConstraint === 'No-Oven' || /\b(without (an )?oven|no oven|stovetop)\b/i.test(rawCmd)) {
+          const noOvenRecipes = recipes.filter((r) =>
+            r.dietaryTags.some((t) => /no-oven|chilled|quick/i.test(t)) ||
+            r.cookingCategory === 'curry' ||
+            r.cookingCategory === 'rice' ||
+            r.cookingCategory === 'pasta' ||
+            r.cookingCategory === 'chilled_dessert' ||
+            r.cookingCategory === 'chocolate' ||
+            r.equipment?.some((e) => /stovetop|pot|cooker|pan|wok/i.test(e))
+          );
+          if (noOvenRecipes.length > 0) {
+            const list = noOvenRecipes.slice(0, 6).map((r) => `• ${r.title} (${r.category})`).join('\n');
+            responseMessage = `Dishes and desserts you can prepare without an oven (using stovetop, double-boiler, or chilling):\n\n${list}`;
+            responseStatus = 'success';
+            actionRequired = 'view_recipes';
+            break;
+          }
+        }
+
+        // 3. General pantry cookability check
         const cookable = recipes.filter((r: Recipe) => {
           return r.ingredients.every((req: { name: string; amount: number; unit: string }) => {
-            const match = pantry.find((p) => p.name.toLowerCase() === req.name.toLowerCase());
+            const match = pantry.find((p) => IngredientUtils.areIngredientsMatching(p.name, req.name));
             return match && match.quantity >= req.amount;
           });
         });
 
         if (cookable.length === 0) {
-          responseMessage = `No recipes can be 100% prepared with ${restName}'s current inventory. Check missing ingredients to restock.`;
+          responseMessage = `No recipes can be 100% prepared with ${restName}'s current inventory without restock. Check missing ingredients for options like Steamed Basmati Rice or Potato Masala Fry.`;
           responseStatus = 'warning';
         } else {
           const list = cookable.map((r: Recipe) => `• ${r.title} (${r.prepTime + r.cookTime} mins, ${r.difficulty})`).join('\n');
@@ -770,6 +872,39 @@ export class AIAgentService {
         actionRequired = 'view_recipes';
         break;
       }
+
+      case 'GET_RECIPE_DETAILS': {
+        const rawQuery = action.rawCommand || params.name || params.recipeName || '';
+        const resolution = RecipeResolverService.resolveQuery(rawQuery, recipes);
+
+        if (resolution.isAmbiguous) {
+          responseMessage = resolution.clarificationMessage || 'Which specific recipe would you like instructions for?';
+          responseStatus = 'warning';
+          break;
+        }
+
+        const targetRecipe = resolution.recipe || recipes[0];
+        if (!targetRecipe) {
+          responseMessage = `Could not find recipe for "${rawQuery}".`;
+          responseStatus = 'warning';
+          break;
+        }
+
+        this.memory.lastRecipeName = targetRecipe.title;
+        if (context.setSelectedRecipe) {
+          context.setSelectedRecipe(targetRecipe.id);
+        }
+
+        const ingList = targetRecipe.ingredients.map((ing) => `• ${ing.amount} ${ing.unit} ${ing.name}${ing.note ? ` (${ing.note})` : ''}`).join('\n');
+        const eqList = targetRecipe.equipment ? `\nEquipment: ${targetRecipe.equipment.join(', ')}` : '';
+        const tempInfo = targetRecipe.temperature ? `\nTemperature: ${targetRecipe.temperature}` : '';
+
+        responseMessage = `RECIPE: ${targetRecipe.title.toUpperCase()} (${targetRecipe.category})\nPrep: ${targetRecipe.prepTime} mins | Cook: ${targetRecipe.cookTime} mins | Servings: ${targetRecipe.servings}${tempInfo}${eqList}\n\nIngredients:\n${ingList}\n\nMethod: ${targetRecipe.instructions.length} guided steps available. Say "Start cooking ${targetRecipe.title}" to begin in the Cooking Studio!`;
+        responseStatus = 'info';
+        actionRequired = 'view_recipes';
+        break;
+      }
+
 
       case 'CHECK_RECIPE_AVAILABILITY':
       case 'GET_MISSING_INGREDIENTS': {

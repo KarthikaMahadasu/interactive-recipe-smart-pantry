@@ -12,10 +12,10 @@ export class IngredientUtils {
    */
   static normalizeName(name: string): string {
     if (!name) return '';
-    let clean = name.trim().toLowerCase();
+    let clean = name.trim().toLowerCase().replace(/-/g, ' ');
     
     // Remove common prefixes
-    clean = clean.replace(/^(fresh|organic|raw|chopped|diced|sliced|minced|pureed|rinsed|soaked|bone-in|skinless)\s+/i, '');
+    clean = clean.replace(/^(fresh|organic|raw|chopped|diced|sliced|minced|pureed|rinsed|soaked|bone in|skinless)\s+/i, '');
 
     // Plural normalization for common ingredients
     if (clean === 'potatoes' || clean === 'potato') return 'potato';
