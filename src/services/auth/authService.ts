@@ -4,6 +4,7 @@ const STORAGE_KEY_RESTAURANTS = 'restaurant_system_restaurants_v1';
 const STORAGE_KEY_USERS = 'restaurant_system_users_v1';
 const STORAGE_KEY_CREDENTIALS = 'restaurant_system_credentials_v1';
 const STORAGE_KEY_SESSION = 'restaurant_system_session_v1';
+const STORAGE_KEY_SIGNED_OUT = 'restaurant_system_signed_out_v1';
 
 // Pre-seeded default data for immediate demo/testing capability
 const DEFAULT_RESTAURANT_ID = 'rest_spice_garden';
@@ -228,6 +229,7 @@ export class AuthService {
     localStorage.setItem(STORAGE_KEY_CREDENTIALS, JSON.stringify(credentials));
 
     // Set Active Session
+    localStorage.removeItem(STORAGE_KEY_SIGNED_OUT);
     this.createSession(newOwner, newRestaurant);
 
     return { user: newOwner, restaurant: newRestaurant };
@@ -267,6 +269,7 @@ export class AuthService {
       throw new Error(`Associated restaurant workspace not found for user`);
     }
 
+    localStorage.removeItem(STORAGE_KEY_SIGNED_OUT);
     this.createSession(user, restaurant);
     return { user, restaurant };
   }
@@ -291,9 +294,16 @@ export class AuthService {
 
   /**
    * Retrieves active session from localStorage.
+   * If no session is saved and user has not explicitly signed out, auto-initializes
+   * the reference demo owner session (Spice Garden) so production immediately matches localhost.
    */
   static getCurrentSession(): { user: User; restaurant: Restaurant } | null {
     try {
+      const isExplicitlySignedOut = localStorage.getItem(STORAGE_KEY_SIGNED_OUT) === 'true';
+      if (isExplicitlySignedOut) {
+        return null;
+      }
+
       const sessionRaw = localStorage.getItem(STORAGE_KEY_SESSION);
       if (sessionRaw) {
         const parsed = JSON.parse(sessionRaw);
@@ -306,6 +316,15 @@ export class AuthService {
           return { user: currentUser, restaurant: currentRestaurant };
         }
       }
+
+      // Auto-initialize demo workspace session (Spice Garden / Tejaswi [Owner])
+      const users = this.getUsers();
+      const restaurants = this.getRestaurants();
+      const defaultUser = users[0] || DEFAULT_USERS[0];
+      const defaultRestaurant = restaurants[0] || DEFAULT_RESTAURANT;
+
+      this.createSession(defaultUser, defaultRestaurant);
+      return { user: defaultUser, restaurant: defaultRestaurant };
     } catch (e) {
       console.warn('Error reading active session', e);
     }
@@ -313,11 +332,12 @@ export class AuthService {
   }
 
   /**
-   * Signs out current user.
+   * Signs out current user and records explicit sign-out state.
    */
   static signOut(): void {
     try {
       localStorage.removeItem(STORAGE_KEY_SESSION);
+      localStorage.setItem(STORAGE_KEY_SIGNED_OUT, 'true');
     } catch (e) {
       console.warn('Error signing out', e);
     }
